@@ -25,10 +25,14 @@ namespace Event_Management.Validations.TicketValidations
             RuleFor(x => x.Status)
                 .IsInEnum().WithMessage("Invalid ticket status.");
 
-            RuleFor(x => x.QRCodeUrl)
-                .NotEmpty().WithMessage("QR Code URL is required.")
-                .Must(url => Uri.TryCreate(url, UriKind.Absolute, out _)).WithMessage("Invalid QR Code URL.")
-                .Matches(@"^https?:\/\/.*$").WithMessage("QR Code URL must start with http:// or https://.");
+            RuleFor(x => x.QRCodeData)
+                .NotEmpty().WithMessage("QRCodeData cannot be empty.")
+                .Matches(@"^[a-zA-Z0-9\-]+$").WithMessage("QRCodeData can only contain alphanumeric characters and dashes.")  // You can adjust this pattern based on your QR code format
+                .Length(10, 100).WithMessage("QRCodeData must be between 10 and 100 characters long."); // Adjust the length as per your needs
+
+            RuleFor(x => x.QRCodeImageUrl)
+                .NotEmpty().WithMessage("QRCodeImageUrl cannot be empty.")
+                .Must(BeAValidUrl).WithMessage("QRCodeImageUrl must be a valid URL.");
 
             RuleFor(x => x.Event)
                 .NotNull().WithMessage("Event information is required.");
@@ -41,6 +45,13 @@ namespace Event_Management.Validations.TicketValidations
 
             RuleFor(x => x.Participant)
                 .NotNull().WithMessage("Participant information is required.");
+        }
+
+        private bool BeAValidUrl(string url)
+        {
+            Uri uriResult;
+            return Uri.TryCreate(url, UriKind.Absolute, out uriResult!)
+                && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);  // Ensure the URL is either http or https
         }
     }
 }

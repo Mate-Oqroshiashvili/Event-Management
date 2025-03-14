@@ -5,7 +5,6 @@ namespace Event_Management.Models.Dtos.PurchaseDtos
     public class PurchaseUpdateDto
     {
         public int? Quantity { get; set; }
-        public decimal? TotalAmount { get; set; }
         public PurchaseStatus? Status { get; set; }
         public List<int>? TicketIds { get; set; }
 

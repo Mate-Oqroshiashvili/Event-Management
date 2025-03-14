@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using Event_Management.Models.Dtos.TicketDtos;
+using System.Net;
 using System.Net.Mail;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
@@ -67,6 +68,43 @@ namespace Event_Management.Repositories.CodeRepositoryFolder
                 body: $"Verification Code: {text}");
 
             return "SMS Code Sent successfully";
+        }
+
+        public async Task<string> SendTicketToEmail(string email, TicketDto ticket)
+        {
+            try
+            {
+                var userName = _configuration["EmailSettings:UserName"];
+                var password = _configuration["EmailSettings:Password"];
+
+                using (var client = new SmtpClient(_configuration["EmailSettings:SmtpServer"]))
+                {
+                    client.Port = int.Parse(_configuration["EmailSettings:Port"]!);
+                    client.Credentials = new NetworkCredential(userName, password);
+                    client.EnableSsl = true;
+
+                    MailMessage mailMessage = new MailMessage()
+                    {
+                        From = new MailAddress(_configuration["EmailSettings:From"]!),
+                        Subject = "Your Event Ticket",
+                        Body = $"Your ticket for {ticket.Event.Title} is attached. Please scan the QR code at the entrance.",
+                        IsBodyHtml = true
+                    };
+
+                    mailMessage.To.Add(email);
+
+                    string qrCodePath = Path.Combine("wwwroot", ticket.QRCodeImageUrl.TrimStart('/'));
+                    mailMessage.Attachments.Add(new Attachment(qrCodePath));
+
+                    await client.SendMailAsync(mailMessage);
+                    return "Ticket sent successfully!";
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw;
+            }
         }
     }
 }

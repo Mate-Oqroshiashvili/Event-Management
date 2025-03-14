@@ -16,15 +16,13 @@ namespace Event_Management.Validations.PurchaseValidations
 
             RuleFor(p => p.UserId)
                 .GreaterThan(0).WithMessage("User ID must be a positive integer.");
-            
-            RuleFor(p => p.PromoCodeId)
-                .GreaterThan(0).WithMessage("User ID must be a positive integer.");
+
+            RuleFor(p => p.PromoCodeText)
+                .Matches(@"^[a-zA-Z0-9]{8}$")
+                .WithMessage("Promo code must be exactly 8 characters long, containing only English letters and numbers.");
 
             RuleFor(p => p.Quantity)
                 .GreaterThan(0).WithMessage("Quantity must be at least 1.");
-
-            RuleFor(p => p.TotalAmount)
-                .GreaterThan(0).WithMessage("Total amount must be greater than zero.");
 
             RuleFor(p => p.PurchaseDate)
                 .NotEmpty().WithMessage("Purchase date is required.")

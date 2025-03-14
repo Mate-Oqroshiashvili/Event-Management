@@ -2,18 +2,23 @@
 using Event_Management.Data;
 using Event_Management.Models;
 using Event_Management.Models.Dtos.TicketDtos;
+using Event_Management.Repositories.ImageRepositoryFolder;
 using Microsoft.EntityFrameworkCore;
+using SkiaSharp;
+using SkiaSharp.QrCode;
 
 namespace Event_Management.Repositories.TicketRepositoryFolder
 {
     public class TicketRepository : ITicketRepository
     {
         private readonly DataContext _context;
+        private readonly IImageRepository _imageRepository;
         private readonly IMapper _mapper;
 
-        public TicketRepository(DataContext context, IMapper mapper)
+        public TicketRepository(DataContext context, IImageRepository imageRepository, IMapper mapper)
         {
             _context = context;
+            _imageRepository = imageRepository;
             _mapper = mapper;
         }
 
@@ -45,7 +50,7 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
 
             return ticketDtos;
         }
-        
+
         public async Task<TicketDto> GetTicketByIdAsync(int id)
         {
             var ticket = await _context.Tickets
@@ -62,14 +67,49 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
 
         public async Task<TicketDto> AddTicketAsync(TicketCreateDto ticketCreateDto)
         {
-            var ticket = _mapper.Map<Ticket>(ticketCreateDto);
+            try
+            {
+                var ticket = _mapper.Map<Ticket>(ticketCreateDto);
+                await _context.Tickets.AddAsync(ticket);
+                await _context.SaveChangesAsync(); // Ensure ticket.Id is assigned
 
-            await _context.Tickets.AddAsync(ticket);
+                // Generate QR Code after Id is available
+                var purchaseId = ticket.PurchaseId?.ToString() ?? "N/A"; // More concise null handling
+                var qrCodeData = $"{ticket.Id}-{ticket.EventId}-{purchaseId}";
+
+                ticket.QRCodeData = qrCodeData;
+
+                // Use the ImageRepository to handle QR code generation and storing
+                ticket.QRCodeImageUrl = await GenerateQRCodeImage(qrCodeData); // Async call
+                ticket.Status = Models.Enums.TicketStatus.AVAILABLE;
+                ticket.ExpiryDate = ticket.Event.EndDate;
+
+                await _context.SaveChangesAsync(); // Save QRCodeImageUrl
+
+                return _mapper.Map<TicketDto>(ticket);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error adding ticket: {ex.Message}");
+                return null!; // Return null or handle the error appropriately
+            }
+        }
+
+        public async Task<string> ValidateTicketAsync(string qrCodeData)
+        {
+            var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.QRCodeData == qrCodeData);
+
+            if (ticket == null)
+                return "Invalid ticket"; // Specific error if ticket not found
+
+            if (ticket.IsUsed)
+                return "Ticket has already been used"; // Error if ticket already used
+
+            // Mark ticket as used
+            ticket.IsUsed = true;
             await _context.SaveChangesAsync();
 
-            var ticketDto = _mapper.Map<TicketDto>(ticket);
-
-            return ticketDto;
+            return "Ticket validated successfully"; // Clear success message
         }
 
         public async Task<bool> UpdateTicketAsync(int id, TicketUpdateDto ticketUpdateDto)
@@ -91,6 +131,49 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
             _context.Tickets.Remove(ticket);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        private async Task<string> GenerateQRCodeImage(string qrText)
+        {
+            try
+            {
+                int qrSize = 256; // QR code image size
+
+                // Generate QR Code data
+                var generator = new QRCodeGenerator();
+                var qrData = generator.CreateQrCode(qrText, ECCLevel.Q);
+
+                // Create QR Code Bitmap
+                using (var bitmap = new SKBitmap(qrSize, qrSize))
+                using (var canvas = new SKCanvas(bitmap))
+                {
+                    canvas.Clear(SKColors.White);
+
+                    // Define the renderer
+                    var renderer = new QRCodeRenderer();
+                    var qrRect = new SKRect(0, 0, qrSize, qrSize);
+                    renderer.Render(canvas, qrRect, qrData, SKColors.White, SKColors.Black, null);
+
+                    // Convert to image
+                    using (var image = SKImage.FromBitmap(bitmap))
+                    using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
+                    {
+                        string tempFilePath = Path.GetTempFileName();
+                        await File.WriteAllBytesAsync(tempFilePath, data.ToArray());
+
+                        // Use ImageRepository to handle file storage
+                        using var stream = new FileStream(tempFilePath, FileMode.Open, FileAccess.Read);
+                        var formFile = new FormFile(stream, 0, stream.Length, "qrCode", "qrcode.png");
+
+                        return await _imageRepository.GenerateImageSource(formFile);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error generating QR code: {ex.Message}");
+                return string.Empty; // Return an empty string if QR code generation fails
+            }
         }
     }
 }

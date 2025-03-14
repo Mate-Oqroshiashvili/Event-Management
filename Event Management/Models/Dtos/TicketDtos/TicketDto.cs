@@ -13,7 +13,8 @@ namespace Event_Management.Models.Dtos.TicketDtos
         public decimal Price { get; set; }
         public int Quantity { get; set; }
         public TicketStatus Status { get; set; }
-        public string QRCodeUrl { get; set; }
+        public string QRCodeData { get; set; }  // QR Code String
+        public string QRCodeImageUrl { get; set; }  // Image URL
         public EventDto Event { get; set; }
         public UserDto User { get; set; }
         public PurchaseDto Purchase { get; set; }

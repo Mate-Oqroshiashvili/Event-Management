@@ -7,6 +7,7 @@ namespace Event_Management.Models.Dtos.PromoCodeDtos
         public int Id { get; set; }
         public int EventId { get; set; }
         public string PromoCodeText { get; set; }
+        public int SaleAmountInPercentages { get; set; }
         public PromoCodeStatus PromoCodeStatus { get; set; }
     }
 }

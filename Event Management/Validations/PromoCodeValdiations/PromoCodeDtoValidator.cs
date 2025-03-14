@@ -16,7 +16,8 @@ namespace Event_Management.Validations.PromoCodeValdiations
 
             RuleFor(x => x.PromoCodeText)
                 .NotEmpty().WithMessage("PromoCodeText is required.")
-                .MaximumLength(50).WithMessage("PromoCodeText must not exceed 50 characters.");
+                .Matches(@"^[a-zA-Z0-9]{8}$")
+                .WithMessage("Promo code must be exactly 8 characters long, containing only English letters and numbers.");
 
             RuleFor(x => x.PromoCodeStatus)
                 .Must(promoCodeStatus => Enum.IsDefined(typeof(PromoCodeStatus), promoCodeStatus))

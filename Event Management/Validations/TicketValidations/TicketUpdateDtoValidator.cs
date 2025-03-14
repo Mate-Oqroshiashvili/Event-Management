@@ -21,11 +21,6 @@ namespace Event_Management.Validations.TicketValidations
 
             RuleFor(x => x.Status)
                 .IsInEnum().WithMessage("Invalid ticket status.");
-
-            RuleFor(x => x.QRCodeUrl)
-                .NotEmpty().WithMessage("QR Code URL is required.")
-                .Must(url => Uri.TryCreate(url, UriKind.Absolute, out _)).WithMessage("Invalid QR Code URL.")
-                .Matches(@"^https?:\/\/.*$").WithMessage("QR Code URL must start with http:// or https://.");
         }
     }
 }
