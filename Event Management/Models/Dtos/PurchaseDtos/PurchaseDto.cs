@@ -12,6 +12,7 @@ namespace Event_Management.Models.Dtos.PurchaseDtos
         public DateTime PurchaseDate { get; set; }
         public PurchaseStatus Status { get; set; }
         public UserDto User { get; set; }
+        public PromoCode? PromoCode { get; set; }
         public List<TicketDto> Tickets { get; set; } = new();
     }
 }

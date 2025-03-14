@@ -10,10 +10,12 @@ namespace Event_Management.Helpers
         {
             CreateMap<Purchase, PurchaseDto>()
                 .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))
+                .ForMember(dest => dest.PromoCode, opt => opt.MapFrom(src => src.PromoCode))
                 .ForMember(dest => dest.Tickets, opt => opt.MapFrom(src => src.Tickets));
 
             CreateMap<PurchaseDto, Purchase>()
                 .ForMember(dest => dest.User, opt => opt.Ignore())
+                .ForMember(dest => dest.PromoCode, opt => opt.Ignore())
                 .ForMember(dest => dest.Tickets, opt => opt.Ignore());
 
             CreateMap<PurchaseCreateDto, Purchase>();

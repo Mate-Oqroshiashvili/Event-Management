@@ -33,6 +33,10 @@ namespace Event_Management.Validations.UserValidations
             RuleFor(x => x.Role)
                 .Must(role => Enum.IsDefined(typeof(Role), role))
                 .WithMessage("Invalid role.");
+
+            RuleFor(x => x.UserType)
+                .Must(userType => Enum.IsDefined(typeof(UserType), userType))
+                .WithMessage("Invalid user type.");
         }
     }
 }

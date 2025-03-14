@@ -11,6 +11,7 @@ namespace Event_Management.Models
         public string PasswordHash { get; set; }
         public string? ProfilePicture { get; set; } = string.Empty;
         public Role Role { get; set; }
+        public UserType UserType { get; set; }
         public string? EmailVerificationCode { get; set; }
         public string? SmsVerificationCode { get; set; }
         public DateTime CodeExpiration { get; set; }

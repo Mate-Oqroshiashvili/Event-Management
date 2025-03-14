@@ -37,6 +37,7 @@ namespace Event_Management.Repositories.AuthRepositoryFolder
 
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(registerUserDto.Password);
             user.Role = Role.BASIC;
+            user.UserType = UserType.Basic;
             user.PasswordHash = passwordHash;
 
             await _userRepository.AddUserAsync(user);

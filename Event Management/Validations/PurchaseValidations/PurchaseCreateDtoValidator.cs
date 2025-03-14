@@ -16,6 +16,9 @@ namespace Event_Management.Validations.PurchaseValidations
 
             RuleFor(p => p.UserId)
                 .GreaterThan(0).WithMessage("User ID must be a positive integer.");
+            
+            RuleFor(p => p.PromoCodeId)
+                .GreaterThan(0).WithMessage("User ID must be a positive integer.");
 
             RuleFor(p => p.Quantity)
                 .GreaterThan(0).WithMessage("Quantity must be at least 1.");

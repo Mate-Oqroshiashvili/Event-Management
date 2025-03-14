@@ -18,6 +18,7 @@ namespace Event_Management.Extensions
             services.AddAutoMapper(typeof(LocationMappingProfile));
             services.AddAutoMapper(typeof(OrganizerMappingProfile));
             services.AddAutoMapper(typeof(ParticipantMappingProfile));
+            services.AddAutoMapper(typeof(PromoCodeMappingProfile));
             services.AddAutoMapper(typeof(PurchaseMappingProfile));
             services.AddAutoMapper(typeof(TicketMappingProfile));
             services.AddAutoMapper(typeof(UserMappingProfile));

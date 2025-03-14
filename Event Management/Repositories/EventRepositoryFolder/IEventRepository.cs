@@ -1,5 +1,6 @@
 ﻿using Event_Management.Models;
 using Event_Management.Models.Dtos.EventDtos;
+using Event_Management.Models.Dtos.UserDtos;
 
 namespace Event_Management.Repositories.EventRepositoryFolder
 {

@@ -12,6 +12,8 @@ namespace Event_Management.Models
         public int Quantity { get; set; }
         public TicketStatus Status { get; set; }
         public string QRCodeUrl { get; set; }
+        public bool IsUsed { get; set; } = false; // Track if QR is scanned
+        public DateTime ExpiryDate { get; set; } // QR Expiration date
 
         public Event Event { get; set; }
         public User? User { get; set; }

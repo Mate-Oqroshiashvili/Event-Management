@@ -9,6 +9,8 @@
         public string? Country { get; set; }
         public string? PostalCode { get; set; }
         public int? Capacity { get; set; }
+        public int AvailableStaff { get; set; }
+        public int BookedStaff { get; set; }
         public string? Description { get; set; }
         public IFormFile? Image { get; set; }
         public bool? IsIndoor { get; set; }

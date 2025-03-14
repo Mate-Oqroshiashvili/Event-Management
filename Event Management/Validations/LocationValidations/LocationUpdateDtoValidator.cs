@@ -46,6 +46,14 @@ namespace Event_Management.Validations.LocationValidations
                 .GreaterThan(0).WithMessage("Capacity must be greater than zero.")
                 .LessThan(100000).WithMessage("Capacity must be realistic (less than 100,000).");
 
+            RuleFor(l => l.AvailableStaff)
+                .GreaterThan(0).WithMessage("Number of available Staff must be greater than zero.")
+                .LessThan(500).WithMessage("Available staff count must be realistic (less than 500).");
+
+            RuleFor(l => l.BookedStaff)
+                .GreaterThan(0).WithMessage("Number of booked Staff must be greater than zero.")
+                .LessThan(l => l.AvailableStaff + 1).WithMessage("Booked staff count must be realistic.");
+
             RuleFor(l => l.Description)
                 .MaximumLength(500).WithMessage("Description must not exceed 500 characters.")
                 .Must(desc => !desc.Contains("free") && !desc.Contains("discount") && !desc.Contains("spam"))

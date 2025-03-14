@@ -14,6 +14,7 @@ namespace Event_Management.Models.Dtos.UserDtos
         public string PhoneNumber { get; set; }
         public string? ProfilePictureUrl { get; set; } = string.Empty;
         public Role Role { get; set; }
+        public UserType UserType { get; set; }
         public string? EmailVerificationCode { get; set; }
         public string? SmsVerificationCode { get; set; }
         public DateTime CodeExpiration { get; set; }

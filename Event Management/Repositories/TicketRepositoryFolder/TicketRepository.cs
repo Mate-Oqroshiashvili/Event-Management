@@ -31,6 +31,21 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
             return ticketDtos;
         }
 
+        public async Task<IEnumerable<TicketDto>> GetTicketsByEventIdAsync(int eventId)
+        {
+            var tickets = await _context.Tickets
+                .Include(x => x.Participant)
+                .Include(x => x.Purchase)
+                .Include(x => x.Event)
+                .Include(x => x.User)
+                .Where(x => x.EventId == eventId)
+                .ToListAsync();
+
+            var ticketDtos = _mapper.Map<IEnumerable<TicketDto>>(tickets);
+
+            return ticketDtos;
+        }
+        
         public async Task<TicketDto> GetTicketByIdAsync(int id)
         {
             var ticket = await _context.Tickets

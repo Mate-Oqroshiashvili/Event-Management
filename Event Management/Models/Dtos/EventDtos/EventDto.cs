@@ -1,7 +1,9 @@
 ﻿using Event_Management.Models.Dtos.LocationDtos;
 using Event_Management.Models.Dtos.OrganizerDtos;
 using Event_Management.Models.Dtos.ParticipantDtos;
+using Event_Management.Models.Dtos.PromoCodeDtos;
 using Event_Management.Models.Dtos.TicketDtos;
+using Event_Management.Models.Dtos.UserDtos;
 using Event_Management.Models.Enums;
 
 namespace Event_Management.Models.Dtos.EventDtos
@@ -20,6 +22,8 @@ namespace Event_Management.Models.Dtos.EventDtos
 
         public IEnumerable<TicketDto>? Tickets { get; set; }
         public IEnumerable<ParticipantDto>? Participants { get; set; }
+        public IEnumerable<UserDto> SpeakersAndArtists { get; set; }
+        public IEnumerable<PromoCodeDto> PromoCodes { get; set; }
 
         public EventDto()
         {

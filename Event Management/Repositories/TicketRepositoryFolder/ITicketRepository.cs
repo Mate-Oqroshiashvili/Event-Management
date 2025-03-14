@@ -6,6 +6,7 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
     public interface ITicketRepository
     {
         Task<IEnumerable<TicketDto>> GetTicketsAsync();
+        Task<IEnumerable<TicketDto>> GetTicketsByEventIdAsync(int eventId);
         Task<TicketDto> GetTicketByIdAsync(int id);
         Task<TicketDto> AddTicketAsync(TicketCreateDto ticketCreateDto);
         Task<bool> UpdateTicketAsync(int id, TicketUpdateDto ticketUpdateDto);

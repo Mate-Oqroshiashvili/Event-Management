@@ -10,6 +10,8 @@
         public string Country { get; set; }  // Country Name
         public string PostalCode { get; set; }  // ZIP or Postal Code
         public int Capacity { get; set; }  // Max number of attendees the venue can hold
+        public int AvailableStaff { get; set; }  // Max number of employeed and available staff
+        public int BookedStaff { get; set; }  // Max number of bookable staff
         public string Description { get; set; }  // Additional details about the venue
         public string ImageUrl { get; set; }  // URL to venue image (optional)
         public bool IsIndoor { get; set; }  // True for indoor, False for outdoor venues

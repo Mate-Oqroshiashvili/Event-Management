@@ -28,10 +28,6 @@ namespace Event_Management.Validations.UserValidations
                 .Matches(@"[a-z]").WithMessage("Password must contain at least one lowercase letter.")
                 .Matches(@"\d").WithMessage("Password must contain at least one number.")
                 .Matches(@"[\W_]").WithMessage("Password must contain at least one special character.");
-
-            RuleFor(x => x.Role)
-                .Must(role => Enum.IsDefined(typeof(Role), role))
-                .WithMessage("Invalid role.");
         }
     }
 }

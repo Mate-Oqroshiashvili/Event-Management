@@ -12,6 +12,7 @@ namespace Event_Management.Data
         public DbSet<Location> Locations { get; set; }
         public DbSet<Organizer> Organizers { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<PromoCode> PromoCodes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -117,8 +118,21 @@ namespace Event_Management.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Purchase>()
+                .HasOne(p => p.PromoCode)
+                .WithMany() // No navigation property in PromoCode
+                .HasForeignKey(p => p.PromoCodeId)
+                .OnDelete(DeleteBehavior.SetNull); // If a PromoCode is deleted, don't delete purchases
+
+            modelBuilder.Entity<Purchase>()
                 .Property(p => p.TotalAmount)
                 .HasPrecision(18, 2);
+
+            // ---- PromoCode Configurations ----
+            modelBuilder.Entity<PromoCode>()
+                .HasOne(pc => pc.Event)
+                .WithMany(e => e.PromoCodes) // Add PromoCodes collection in Event model
+                .HasForeignKey(pc => pc.EventId)
+                .OnDelete(DeleteBehavior.Cascade); // Delete promo codes when an event is deleted
         }
     }
 }

@@ -18,6 +18,8 @@ namespace Event_Management.Models
 
         public IEnumerable<Ticket> Tickets { get; set; } = new List<Ticket>();
         public IEnumerable<Participant> Participants { get; set; } = new List<Participant>();
+        public IEnumerable<User> SpeakersAndArtists { get; set; } = new List<User>();
+        public IEnumerable<PromoCode> PromoCodes { get; set; } = new List<PromoCode>();
 
         public Event()
         {

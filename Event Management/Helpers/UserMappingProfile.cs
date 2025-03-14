@@ -28,7 +28,8 @@ namespace Event_Management.Helpers
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
                 .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
                 .ForMember(dest => dest.ProfilePicture, opt => opt.MapFrom(src => src.ProfilePicture))
-                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role));
+                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role))
+                .ForMember(dest => dest.UserType, opt => opt.MapFrom(src => src.UserType));
         }
     }
 }

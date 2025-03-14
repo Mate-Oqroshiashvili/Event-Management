@@ -9,6 +9,7 @@ namespace Event_Management.Models.Dtos.UserDtos
         public string? PhoneNumber { get; set; }
         public IFormFile? ProfilePicture { get; set; }
         public Role? Role { get; set; }
+        public UserType? UserType { get; set; }
 
         public UserUpdateDto()
         {

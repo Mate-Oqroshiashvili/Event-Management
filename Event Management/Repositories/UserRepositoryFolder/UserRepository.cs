@@ -59,6 +59,36 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             return userDto;
         }
 
+        public async Task<IEnumerable<UserDto>> GetSpeakers()
+        {
+            var speakers = await _context.Users
+                .Include(x => x.Participants)
+                .Include(x => x.Purchases)
+                .Include(x => x.Organizer)
+                .Include(x => x.Tickets)
+                .Where(x => x.UserType == Models.Enums.UserType.Speaker)
+                .ToListAsync();
+
+            var speakerDtos = _mapper.Map<IEnumerable<UserDto>>(speakers);
+
+            return speakerDtos;
+        }
+
+        public async Task<IEnumerable<UserDto>> GetArtists()
+        {
+            var artists = await _context.Users
+                .Include(x => x.Participants)
+                .Include(x => x.Purchases)
+                .Include(x => x.Organizer)
+                .Include(x => x.Tickets)
+                .Where(x => x.UserType == Models.Enums.UserType.Artist)
+                .ToListAsync();
+
+            var artistDtos = _mapper.Map<IEnumerable<UserDto>>(artists);
+
+            return artistDtos;
+        }
+
         public bool ValidatePassword(string passwordToVerify, string password)
         {
             if (passwordToVerify == null)
