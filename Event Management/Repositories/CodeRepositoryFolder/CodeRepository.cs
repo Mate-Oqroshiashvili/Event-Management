@@ -93,8 +93,12 @@ namespace Event_Management.Repositories.CodeRepositoryFolder
 
                     mailMessage.To.Add(email);
 
-                    string qrCodePath = Path.Combine("wwwroot", ticket.QRCodeImageUrl.TrimStart('/'));
-                    mailMessage.Attachments.Add(new Attachment(qrCodePath));
+                    // Update the path to point to the 'qrcodes' folder inside 'Uploads' directory
+                    string qrCodePath = Path.Combine("Uploads", "qrcodes", ticket.QRCodeImageUrl.TrimStart('/'));
+
+                    // Ensure the path is valid (if it's relative to your project directory)
+                    var fullPath = Path.GetFullPath(qrCodePath);
+                    mailMessage.Attachments.Add(new Attachment(fullPath));
 
                     await client.SendMailAsync(mailMessage);
                     return "Ticket sent successfully!";

@@ -2,7 +2,7 @@
 {
     public enum TicketStatus
     {
-        AVAILABLE,
-        SOLD_OUT
+        AVAILABLE = 1,
+        SOLD_OUT = 2
     }
 }

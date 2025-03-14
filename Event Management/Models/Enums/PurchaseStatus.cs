@@ -2,7 +2,7 @@
 {
     public enum PurchaseStatus
     {
-        PENDING,
-        COMPLETED
+        PENDING = 1,
+        COMPLETED = 2
     }
 }

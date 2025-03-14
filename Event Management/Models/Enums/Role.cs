@@ -2,9 +2,9 @@
 {
     public enum Role
     {
-        BASIC,
-        PARTICIPANT,
-        ORGANIZER,
-        ADMINISTRATOR
+        BASIC = 1,
+        PARTICIPANT = 2,
+        ORGANIZER = 3,
+        ADMINISTRATOR = 4
     }
 }

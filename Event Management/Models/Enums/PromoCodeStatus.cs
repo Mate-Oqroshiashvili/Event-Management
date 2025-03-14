@@ -2,7 +2,7 @@
 {
     public enum PromoCodeStatus
     {
-        Available,
-        OutOfStock
+        Available = 1,
+        OutOfStock = 2
     }
 }

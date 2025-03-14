@@ -2,8 +2,8 @@
 {
     public enum EventStatus
     {
-        DRAFT,
-        PUBLISHED,
-        COMPLETED
+        DRAFT = 1,
+        PUBLISHED = 2,
+        COMPLETED = 3
     }
 }

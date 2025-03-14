@@ -105,8 +105,15 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
             if (ticket.IsUsed)
                 return "Ticket has already been used"; // Error if ticket already used
 
+            if (ticket.User == null)
+                return "The owner of this ticket can't be identified";
+
+            if (ticket.Participant == null)
+                return "The owner of this ticket is not registered as participant";
+
             // Mark ticket as used
             ticket.IsUsed = true;
+            ticket.Participant.Attendance = true;
             await _context.SaveChangesAsync();
 
             return "Ticket validated successfully"; // Clear success message

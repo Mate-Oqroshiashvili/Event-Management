@@ -57,6 +57,11 @@ namespace Event_Management.Repositories.PurchaseRepositoryFolder
                 throw new InvalidOperationException("One or more tickets are not available for purchase.");
             }
 
+            if (tickets.Any(t => t.IsUsed == true))
+            {
+                throw new InvalidOperationException("One or more tickets have already been used.");
+            }
+
             var purchase = _mapper.Map<Purchase>(purchaseCreateDto);
             foreach (var ticket in tickets)
             {
