@@ -14,12 +14,14 @@ namespace Event_Management.Extensions
             services.AddDbContext<DataContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddAutoMapper(typeof(CommentMappingProfile));
             services.AddAutoMapper(typeof(EventMappingProfile));
             services.AddAutoMapper(typeof(LocationMappingProfile));
             services.AddAutoMapper(typeof(OrganizerMappingProfile));
             services.AddAutoMapper(typeof(ParticipantMappingProfile));
             services.AddAutoMapper(typeof(PromoCodeMappingProfile));
             services.AddAutoMapper(typeof(PurchaseMappingProfile));
+            services.AddAutoMapper(typeof(ReviewMappingProfile));
             services.AddAutoMapper(typeof(TicketMappingProfile));
             services.AddAutoMapper(typeof(UserMappingProfile));
 

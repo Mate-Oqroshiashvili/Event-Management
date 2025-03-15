@@ -60,8 +60,8 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
             var existingParticipant = await _context.Participants.FindAsync(id);
             if (existingParticipant == null) return false;
 
-            var participant = _mapper.Map(participantUpdateDto, existingParticipant);
-            _context.Participants.Update(participant);
+            _mapper.Map(participantUpdateDto, existingParticipant);
+
             await _context.SaveChangesAsync();
             return true;
         }

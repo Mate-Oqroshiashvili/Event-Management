@@ -4,6 +4,7 @@ using Event_Management.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Event_Management.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250314182401_AddedAndModifiedPropertiesInModelsAsWellAsFunctionalities")]
+    partial class AddedAndModifiedPropertiesInModelsAsWellAsFunctionalities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,36 +24,6 @@ namespace Event_Management.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Event_Management.Models.Comment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CommentContent")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("EventId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Comments");
-                });
 
             modelBuilder.Entity("Event_Management.Models.Event", b =>
                 {
@@ -69,10 +42,6 @@ namespace Event_Management.Migrations
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
-
-                    b.PrimitiveCollection<string>("Images")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("LocationId")
                         .HasColumnType("int");
@@ -324,33 +293,6 @@ namespace Event_Management.Migrations
                     b.ToTable("Purchases");
                 });
 
-            modelBuilder.Entity("Event_Management.Models.Review", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("EventId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StarCount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventId");
-
-                    b.HasIndex("UserId", "EventId")
-                        .IsUnique();
-
-                    b.ToTable("Reviews");
-                });
-
             modelBuilder.Entity("Event_Management.Models.Ticket", b =>
                 {
                     b.Property<int>("Id")
@@ -480,25 +422,6 @@ namespace Event_Management.Migrations
                     b.ToTable("LocationOrganizer");
                 });
 
-            modelBuilder.Entity("Event_Management.Models.Comment", b =>
-                {
-                    b.HasOne("Event_Management.Models.Event", "Event")
-                        .WithMany("Comments")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Event_Management.Models.User", "User")
-                        .WithMany("Comments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Event");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Event_Management.Models.Event", b =>
                 {
                     b.HasOne("Event_Management.Models.Location", "Location")
@@ -585,25 +508,6 @@ namespace Event_Management.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Event_Management.Models.Review", b =>
-                {
-                    b.HasOne("Event_Management.Models.Event", "Event")
-                        .WithMany("Reviews")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Event_Management.Models.User", "User")
-                        .WithMany("Reviews")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Event");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Event_Management.Models.Ticket", b =>
                 {
                     b.HasOne("Event_Management.Models.Event", "Event")
@@ -652,13 +556,9 @@ namespace Event_Management.Migrations
 
             modelBuilder.Entity("Event_Management.Models.Event", b =>
                 {
-                    b.Navigation("Comments");
-
                     b.Navigation("Participants");
 
                     b.Navigation("PromoCodes");
-
-                    b.Navigation("Reviews");
 
                     b.Navigation("SpeakersAndArtists");
 
@@ -687,15 +587,11 @@ namespace Event_Management.Migrations
 
             modelBuilder.Entity("Event_Management.Models.User", b =>
                 {
-                    b.Navigation("Comments");
-
                     b.Navigation("Organizer");
 
                     b.Navigation("Participants");
 
                     b.Navigation("Purchases");
-
-                    b.Navigation("Reviews");
 
                     b.Navigation("Tickets");
                 });

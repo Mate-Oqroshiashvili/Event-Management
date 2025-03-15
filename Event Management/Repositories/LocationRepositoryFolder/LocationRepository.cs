@@ -66,7 +66,6 @@ namespace Event_Management.Repositories.LocationRepositoryFolder
 
             var location = _mapper.Map(locationUpdateDto, existingLocation);
 
-            _context.Locations.Update(location);
             await _context.SaveChangesAsync();
             return true;
         }

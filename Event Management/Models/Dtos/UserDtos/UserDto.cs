@@ -20,9 +20,11 @@ namespace Event_Management.Models.Dtos.UserDtos
         public DateTime CodeExpiration { get; set; }
         public bool IsLoggedIn { get; set; } = false;
         public OrganizerDto Organizer { get; set; }
-        public List<TicketDto> Tickets { get; set; } = new List<TicketDto>();
-        public List<PurchaseDto> Purchases { get; set; } = new List<PurchaseDto>();
-        public List<ParticipantDto> Participants { get; set; } = new List<ParticipantDto>();
+        public IEnumerable<TicketDto> Tickets { get; set; }
+        public IEnumerable<PurchaseDto> Purchases { get; set; }
+        public IEnumerable<ParticipantDto> Participants { get; set; }
+        public IEnumerable<Review> Reviews { get; set; }
+        public IEnumerable<Comment> Comments { get; set; }
 
         public UserDto()
         {

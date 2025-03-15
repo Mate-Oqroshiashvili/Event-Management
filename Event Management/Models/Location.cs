@@ -17,7 +17,6 @@
         public bool IsIndoor { get; set; }  // True for indoor, False for outdoor venues
         public bool IsAccessible { get; set; }  // True if it has accessibility features
 
-
         // Navigation Property
         public IEnumerable<Event> Events { get; set; } = new List<Event>();  // List of events held at this location
         public IEnumerable<Organizer> Organizers { get; set; } = new List<Organizer>(); // Direct Many-to-Many

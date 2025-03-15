@@ -12,13 +12,17 @@ namespace Event_Management.Helpers
                 .ForMember(dest => dest.Organizer, opt => opt.MapFrom(src => src.Organizer))
                 .ForMember(dest => dest.Tickets, opt => opt.MapFrom(src => src.Tickets))
                 .ForMember(dest => dest.Purchases, opt => opt.MapFrom(src => src.Purchases))
-                .ForMember(dest => dest.Participants, opt => opt.MapFrom(src => src.Participants));
+                .ForMember(dest => dest.Participants, opt => opt.MapFrom(src => src.Participants))
+                .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Comments))
+                .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => src.Reviews));
 
             CreateMap<UserDto, User>()
                 .ForMember(dest => dest.Organizer, opt => opt.Ignore())
                 .ForMember(dest => dest.Tickets, opt => opt.Ignore())
                 .ForMember(dest => dest.Purchases, opt => opt.Ignore())
-                .ForMember(dest => dest.Participants, opt => opt.Ignore());
+                .ForMember(dest => dest.Participants, opt => opt.Ignore())
+                .ForMember(dest => dest.Comments, opt => opt.Ignore())
+                .ForMember(dest => dest.Reviews, opt => opt.Ignore());
 
             CreateMap<UserCreateDto, User>()
                 .ForMember(dest => dest.PasswordHash, opt => opt.Ignore());

@@ -21,9 +21,11 @@ namespace Event_Management.Models
 
 
         // Navigation Properties
-        public List<Ticket> Tickets { get; set; } = new List<Ticket>();
-        public List<Purchase> Purchases { get; set; } = new List<Purchase>();
-        public List<Participant> Participants { get; set; } = new List<Participant>();
+        public IEnumerable<Ticket> Tickets { get; set; } = new List<Ticket>();
+        public IEnumerable<Purchase> Purchases { get; set; } = new List<Purchase>();
+        public IEnumerable<Participant> Participants { get; set; } = new List<Participant>();
+        public IEnumerable<Review> Reviews { get; set; } = new List<Review>();
+        public IEnumerable<Comment> Comments { get; set; } = new List<Comment>();
 
         public User()
         {

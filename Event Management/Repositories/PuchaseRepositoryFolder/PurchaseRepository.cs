@@ -107,9 +107,8 @@ namespace Event_Management.Repositories.PurchaseRepositoryFolder
             var existingPurchase = await _context.Purchases.FirstOrDefaultAsync(p => p.Id == id);
             if (existingPurchase == null) return false;
 
-            var purchase = _mapper.Map(purchaseUpdateDto, existingPurchase);
+            _mapper.Map(purchaseUpdateDto, existingPurchase);
 
-            _context.Purchases.Update(existingPurchase);
             await _context.SaveChangesAsync();
 
             return true;

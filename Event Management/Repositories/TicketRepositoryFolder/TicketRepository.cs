@@ -95,9 +95,9 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
             }
         }
 
-        public async Task<string> ValidateTicketAsync(string qrCodeData)
+        public async Task<string> ValidateTicketAsync(int ticketId, string qrCodeData)
         {
-            var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.QRCodeData == qrCodeData);
+            var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId && t.QRCodeData == qrCodeData);
 
             if (ticket == null)
                 return "Invalid ticket"; // Specific error if ticket not found
@@ -124,8 +124,8 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
             var existingTicket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == id);
             if (existingTicket == null) return false;
 
-            var ticket = _mapper.Map(ticketUpdateDto, existingTicket);
-            _context.Tickets.Update(existingTicket);
+            _mapper.Map(ticketUpdateDto, existingTicket);
+
             await _context.SaveChangesAsync();
             return true;
         }

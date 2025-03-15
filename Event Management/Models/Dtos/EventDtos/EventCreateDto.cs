@@ -12,6 +12,7 @@ namespace Event_Management.Models.Dtos.EventDtos
         public EventStatus Status { get; set; }
         public int LocationId { get; set; }
         public int OrganizerId { get; set; }
+        public IEnumerable<IFormFile> Images { get; set; } = new List<IFormFile>();
 
         public EventCreateDto()
         {

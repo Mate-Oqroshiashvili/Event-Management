@@ -65,9 +65,8 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
             var existingOrganizer = await _context.Organizers.FirstOrDefaultAsync(o => o.Id == id);
             if (existingOrganizer == null) return false;
 
-            var organizer = _mapper.Map(organizerUpdateDto, existingOrganizer);
+            _mapper.Map(organizerUpdateDto, existingOrganizer);
 
-            _context.Organizers.Update(organizer);
             await _context.SaveChangesAsync();
             return true;
         }

@@ -19,7 +19,7 @@ namespace Event_Management.Models.Dtos.EventDtos
         public int Capacity { get; set; }
         public OrganizerDto Organizer { get; set; }
         public EventStatus Status { get; set; }
-
+        public IEnumerable<string> Images { get; set; }
         public IEnumerable<TicketDto>? Tickets { get; set; }
         public IEnumerable<ParticipantDto>? Participants { get; set; }
         public IEnumerable<UserDto> SpeakersAndArtists { get; set; }

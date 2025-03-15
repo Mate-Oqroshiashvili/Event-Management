@@ -62,7 +62,6 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             var existingEvent = await _context.Events.FirstOrDefaultAsync(x => x.Id == id);
             var @event = _mapper.Map(eventUpdateDto, existingEvent);
 
-            _context.Events.Update(@event!);
             await _context.SaveChangesAsync();
             return true;
         }

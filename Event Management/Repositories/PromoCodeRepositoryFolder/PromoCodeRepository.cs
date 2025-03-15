@@ -56,8 +56,8 @@ namespace Event_Management.Repositories.PromoCodeRepositoryFolder
             var existingPromoCode = await _context.PromoCodes.FindAsync(id);
             if (existingPromoCode == null) return false;
 
-            var promoCode = _mapper.Map(promoCodeUpdateDto, existingPromoCode);
-            _context.PromoCodes.Update(promoCode);
+            _mapper.Map(promoCodeUpdateDto, existingPromoCode);
+
             await _context.SaveChangesAsync();
             return true;
         }

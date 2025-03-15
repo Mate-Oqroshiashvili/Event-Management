@@ -26,8 +26,7 @@ namespace Event_Management.Helpers
                 .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
                 .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
-                .ForMember(dest => dest.QRCodeUrl, opt => opt.MapFrom(src => src.QRCodeUrl));
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status));
         }
     }
 }

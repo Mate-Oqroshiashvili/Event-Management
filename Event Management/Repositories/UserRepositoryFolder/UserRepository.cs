@@ -24,6 +24,8 @@ namespace Event_Management.Repositories.UserRepositoryFolder
                 .Include(x => x.Purchases)
                 .Include(x => x.Organizer)
                 .Include(x => x.Tickets)
+                .Include(x => x.Comments)
+                .Include(x => x.Reviews)
                 .ToListAsync();
 
             var userDtos = _mapper.Map<IEnumerable<UserDto>>(users);
@@ -38,6 +40,8 @@ namespace Event_Management.Repositories.UserRepositoryFolder
                 .Include(x => x.Purchases)
                 .Include(x => x.Organizer)
                 .Include(x => x.Tickets)
+                .Include(x => x.Comments)
+                .Include(x => x.Reviews)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             var userDto = _mapper.Map<UserDto>(user);
@@ -52,6 +56,8 @@ namespace Event_Management.Repositories.UserRepositoryFolder
                 .Include(x => x.Purchases)
                 .Include(x => x.Organizer)
                 .Include(x => x.Tickets)
+                .Include(x => x.Comments)
+                .Include(x => x.Reviews)
                 .FirstOrDefaultAsync(x => x.Email == email);
 
             var userDto = _mapper.Map<UserDto>(user);
@@ -66,6 +72,8 @@ namespace Event_Management.Repositories.UserRepositoryFolder
                 .Include(x => x.Purchases)
                 .Include(x => x.Organizer)
                 .Include(x => x.Tickets)
+                .Include(x => x.Comments)
+                .Include(x => x.Reviews)
                 .Where(x => x.UserType == Models.Enums.UserType.Speaker)
                 .ToListAsync();
 
@@ -81,6 +89,8 @@ namespace Event_Management.Repositories.UserRepositoryFolder
                 .Include(x => x.Purchases)
                 .Include(x => x.Organizer)
                 .Include(x => x.Tickets)
+                .Include(x => x.Comments)
+                .Include(x => x.Reviews)
                 .Where(x => x.UserType == Models.Enums.UserType.Artist)
                 .ToListAsync();
 
@@ -112,8 +122,8 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             var existingUser = await _context.Users.FindAsync(id);
             if (existingUser == null) return false;
 
-            var user = _mapper.Map(userUpdateDto, existingUser);
-            _context.Users.Update(user);
+            _mapper.Map(userUpdateDto, existingUser);
+
             await _context.SaveChangesAsync();
             return true;
         }

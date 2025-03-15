@@ -13,6 +13,8 @@ namespace Event_Management.Data
         public DbSet<Organizer> Organizers { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<PromoCode> PromoCodes { get; set; }
+        public DbSet<Review> Reviews { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -132,7 +134,37 @@ namespace Event_Management.Data
                 .HasOne(pc => pc.Event)
                 .WithMany(e => e.PromoCodes) // Add PromoCodes collection in Event model
                 .HasForeignKey(pc => pc.EventId)
-                .OnDelete(DeleteBehavior.Cascade); // Delete promo codes when an event is deleted
+                .OnDelete(DeleteBehavior.Cascade); // Delete promo codes when an event is deleted'
+
+            // ---- Review Configurations ----
+            modelBuilder.Entity<Review>()
+                .HasIndex(r => new { r.UserId, r.EventId })
+                .IsUnique();  // Ensures a user can review an event only once
+
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.User)
+                .WithMany(u => u.Reviews)
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent accidental deletion of user
+
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.Event)
+                .WithMany(e => e.Reviews)
+                .HasForeignKey(r => r.EventId)
+                .OnDelete(DeleteBehavior.Cascade); // If event is deleted, its reviews are deleted too
+
+            // ---- Comment Configurations ----
+            modelBuilder.Entity<Comment>()
+                .HasOne(c => c.User)
+                .WithMany(u => u.Comments)
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent accidental deletion of user
+
+            modelBuilder.Entity<Comment>()
+                .HasOne(c => c.Event)
+                .WithMany(e => e.Comments)
+                .HasForeignKey(c => c.EventId)
+                .OnDelete(DeleteBehavior.Cascade); // If event is deleted, its comments are deleted too
         }
     }
 }

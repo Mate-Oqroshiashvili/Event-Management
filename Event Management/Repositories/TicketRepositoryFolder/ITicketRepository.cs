@@ -9,7 +9,7 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
         Task<IEnumerable<TicketDto>> GetTicketsByEventIdAsync(int eventId);
         Task<TicketDto> GetTicketByIdAsync(int id);
         Task<TicketDto> AddTicketAsync(TicketCreateDto ticketCreateDto);
-        Task<string> ValidateTicketAsync(string qrCodeData);
+        Task<string> ValidateTicketAsync(int ticketId, string qrCodeData);
         Task<bool> UpdateTicketAsync(int id, TicketUpdateDto ticketUpdateDto);
         Task<bool> DeleteTicketAsync(int id);
     }

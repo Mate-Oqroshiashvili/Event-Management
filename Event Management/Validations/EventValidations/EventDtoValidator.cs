@@ -1,5 +1,6 @@
 ﻿using Event_Management.Models.Dtos.EventDtos;
 using FluentValidation;
+using System.Text.RegularExpressions;
 
 namespace Event_Management.Validations.EventValidations
 {
@@ -35,6 +36,16 @@ namespace Event_Management.Validations.EventValidations
 
             RuleFor(e => e.Organizer)
                 .NotNull().WithMessage("Organizer is required.");
+
+            RuleForEach(x => x.Images)
+                .NotEmpty().WithMessage("Image URL cannot be empty.")
+                .Must(BeAValidImageUrl).WithMessage("Invalid image URL format.");
+        }
+
+        private bool BeAValidImageUrl(string url)
+        {
+            var imageUrlPattern = @"^(https?:\/\/.*\.(?:png|jpg|jpeg|gif))$";
+            return Regex.IsMatch(url, imageUrlPattern, RegexOptions.IgnoreCase);
         }
     }
 }
