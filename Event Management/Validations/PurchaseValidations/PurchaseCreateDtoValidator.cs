@@ -7,12 +7,10 @@ namespace Event_Management.Validations.PurchaseValidations
     {
         public PurchaseCreateDtoValidator()
         {
-            RuleFor(x => x.TicketIds)
+            RuleFor(x => x.Tickets)
                 .NotEmpty().WithMessage("At least one ticket must be selected.")
-                .Must(ticketIds => ticketIds.All(id => id > 0))
-                .WithMessage("All ticket IDs must be greater than zero.")
-                .Must(ticketIds => ticketIds.Distinct().Count() == ticketIds.Count)
-                .WithMessage("Duplicate ticket IDs are not allowed.");
+                .Must(ticketIds => ticketIds.All(t => t.TicketId > 0))
+                .WithMessage("All ticket IDs must be greater than zero.");
 
             RuleFor(p => p.UserId)
                 .GreaterThan(0).WithMessage("User ID must be a positive integer.");

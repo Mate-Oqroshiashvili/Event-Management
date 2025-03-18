@@ -1,4 +1,5 @@
 ﻿using Event_Management.Models.Dtos.TicketDtos;
+using Event_Management.Models.Enums;
 using FluentValidation;
 
 namespace Event_Management.Validations.TicketValidations
@@ -11,9 +12,8 @@ namespace Event_Management.Validations.TicketValidations
                 .GreaterThan(0).WithMessage("Id must be greater than 0.");
 
             RuleFor(x => x.Type)
-                .NotEmpty().WithMessage("Type is required.")
-                .MaximumLength(100).WithMessage("Type cannot exceed 100 characters.")
-                .Matches(@"^[a-zA-Z0-9\s]+$").WithMessage("Type must contain only letters and numbers.");
+                .Must(ticketType => Enum.IsDefined(typeof(TicketType), ticketType))
+                .WithMessage("Invalid ticket type.");
 
             RuleFor(x => x.Price)
                 .GreaterThan(0).WithMessage("Price must be greater than 0.")

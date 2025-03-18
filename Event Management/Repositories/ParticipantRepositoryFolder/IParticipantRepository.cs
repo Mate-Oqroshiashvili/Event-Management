@@ -7,6 +7,7 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
     {
         Task<IEnumerable<ParticipantDto>> GetParticipantsAsync();
         Task<ParticipantDto> GetParticipantByIdAsync(int id);
+        Task<ParticipantDto> GetParticipantByUserIdAsync(int id);
         Task<ParticipantDto> AddParticipantAsync(ParticipantCreateDto participantCreateDto);
         Task<bool> UpdateParticipantAsync(int id, ParticipantUpdateDto participantUpdateDto);
         Task<bool> DeleteParticipantAsync(int id);

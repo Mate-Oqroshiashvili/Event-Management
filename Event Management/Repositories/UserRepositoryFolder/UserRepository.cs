@@ -2,6 +2,7 @@
 using Event_Management.Data;
 using Event_Management.Models;
 using Event_Management.Models.Dtos.UserDtos;
+using Event_Management.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Event_Management.Repositories.UserRepositoryFolder
@@ -74,7 +75,7 @@ namespace Event_Management.Repositories.UserRepositoryFolder
                 .Include(x => x.Tickets)
                 .Include(x => x.Comments)
                 .Include(x => x.Reviews)
-                .Where(x => x.UserType == Models.Enums.UserType.Speaker)
+                .Where(x => x.UserType == Models.Enums.UserType.SPEAKER)
                 .ToListAsync();
 
             var speakerDtos = _mapper.Map<IEnumerable<UserDto>>(speakers);
@@ -91,7 +92,7 @@ namespace Event_Management.Repositories.UserRepositoryFolder
                 .Include(x => x.Tickets)
                 .Include(x => x.Comments)
                 .Include(x => x.Reviews)
-                .Where(x => x.UserType == Models.Enums.UserType.Artist)
+                .Where(x => x.UserType == Models.Enums.UserType.ARTIST)
                 .ToListAsync();
 
             var artistDtos = _mapper.Map<IEnumerable<UserDto>>(artists);
@@ -128,14 +129,55 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             return true;
         }
 
-        public async Task<bool> DeleteUserAsync(int id)
+        public async Task<bool> UpdateUserTypeAsync(int id, UserType userType)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null) return false;
+            var existingUser = await _context.Users.FindAsync(id);
+            if (existingUser == null) return false;
 
-            _context.Users.Remove(user);
+            existingUser.UserType = userType;
+
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<bool> DeleteUserAsync(int id)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                var user = await _context.Users
+                    .Include(u => u.Purchases)
+                    .Include(u => u.Participants)
+                    .FirstOrDefaultAsync(u => u.Id == id);
+
+                if (user == null) return false;
+                if (user.Role == Role.ADMINISTRATOR) return false; // Prevent admin deletion
+
+                // Log or process related entities before deletion
+                if (user.Purchases.Any())
+                {
+                    Console.WriteLine($"Deleting user {id}: Removing {user.Purchases.Count()} purchases.");
+                }
+                if (user.Participants.Any())
+                {
+                    Console.WriteLine($"Deleting user {id}: Removing {user.Participants.Count()} participant records.");
+                }
+
+                // Remove user (cascades to Purchases & Participants)
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+
+                // Commit transaction
+                await transaction.CommitAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                Console.WriteLine($"Error deleting user {id}: {ex.Message}");
+                return false;
+            }
         }
     }
 }

@@ -2,8 +2,8 @@
 {
     public enum UserType
     {
-        Basic = 1,
-        Artist = 2,
-        Speaker = 3
+        BASIC = 1,
+        ARTIST = 2,
+        SPEAKER = 3
     }
 }

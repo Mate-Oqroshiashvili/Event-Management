@@ -15,6 +15,7 @@ namespace Event_Management.Data
         public DbSet<PromoCode> PromoCodes { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<UsedPromoCode> UsedPromoCodes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,7 +36,11 @@ namespace Event_Management.Data
                 .HasMany(u => u.Participants)
                 .WithOne(p => p.User)
                 .HasForeignKey(p => p.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<User>()
+                .Property(p => p.Balance)
+                .HasPrecision(18, 2);
 
             // ---- Organizer Configurations ----
             modelBuilder.Entity<Organizer>()
@@ -59,12 +64,6 @@ namespace Event_Management.Data
                 .HasMany(e => e.Tickets)
                 .WithOne(t => t.Event)
                 .HasForeignKey(t => t.EventId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Event>()
-                .HasMany(e => e.Participants)
-                .WithOne(p => p.Event)
-                .HasForeignKey(p => p.EventId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Event>()
@@ -98,19 +97,18 @@ namespace Event_Management.Data
 
             // ---- Participant Configurations ----
             modelBuilder.Entity<Participant>()
+                .HasOne(p => p.Event)
+                .WithMany(e => e.Participants)
+                .HasForeignKey(p => p.EventId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Participant>()
                 .Property(p => p.Attendance)
                 .HasDefaultValue(false);
 
             modelBuilder.Entity<Participant>()
                 .HasIndex(p => new { p.EventId, p.UserId })
                 .IsUnique(); // Ensure a user can only participate once per event
-
-            // ---- Location Configurations ----
-            modelBuilder.Entity<Location>()
-                .HasMany(l => l.Events)
-                .WithOne(e => e.Location)
-                .HasForeignKey(e => e.LocationId)
-                .OnDelete(DeleteBehavior.Restrict);
 
             // ---- Purchase Configurations ----
             modelBuilder.Entity<Purchase>()
@@ -123,18 +121,40 @@ namespace Event_Management.Data
                 .HasOne(p => p.PromoCode)
                 .WithMany() // No navigation property in PromoCode
                 .HasForeignKey(p => p.PromoCodeId)
-                .OnDelete(DeleteBehavior.SetNull); // If a PromoCode is deleted, don't delete purchases
+                .OnDelete(DeleteBehavior.Restrict); // If a PromoCode is deleted, don't delete purchases
 
             modelBuilder.Entity<Purchase>()
                 .Property(p => p.TotalAmount)
                 .HasPrecision(18, 2);
 
             // ---- PromoCode Configurations ----
+
+            // Unique Constraint for PromoCodeText (To prevent duplicates)
+            modelBuilder.Entity<PromoCode>()
+                .HasIndex(p => p.PromoCodeText)
+                .IsUnique();
+
             modelBuilder.Entity<PromoCode>()
                 .HasOne(pc => pc.Event)
                 .WithMany(e => e.PromoCodes) // Add PromoCodes collection in Event model
                 .HasForeignKey(pc => pc.EventId)
                 .OnDelete(DeleteBehavior.Cascade); // Delete promo codes when an event is deleted'
+
+            // Define Relationship: UsedPromoCode ↔ PromoCode
+            modelBuilder.Entity<UsedPromoCode>()
+                .HasOne(upc => upc.PromoCode)
+                .WithMany(pc => pc.UsedPromoCodes)
+                .HasForeignKey(upc => upc.PromoCodeId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent deleting PromoCode if used
+
+            // ---- UsedPromoCode Configurations ----
+
+            // Define Relationship: UsedPromoCode ↔ User
+            modelBuilder.Entity<UsedPromoCode>()
+                .HasOne(upc => upc.User)
+                .WithMany(u => u.UsedPromoCodes)
+                .HasForeignKey(upc => upc.UserId)
+                .OnDelete(DeleteBehavior.Cascade); // Deleting User removes UsedPromoCodes
 
             // ---- Review Configurations ----
             modelBuilder.Entity<Review>()

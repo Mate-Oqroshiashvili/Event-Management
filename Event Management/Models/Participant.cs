@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public int EventId { get; set; }
         public int UserId { get; set; }
-        public int TicketId { get; set; }
+        public int? TicketId { get; set; }
         public DateTime RegistrationDate { get; set; } = DateTime.UtcNow;
         public bool Attendance { get; set; } = false;
 

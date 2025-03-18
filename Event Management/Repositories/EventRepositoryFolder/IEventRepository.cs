@@ -10,6 +10,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
         Task<EventDto> GetEventByIdAsync(int id);
         Task<EventDto> AddEventAsync(EventCreateDto eventCreateDto);
         Task<bool> UpdateEventAsync(int id, EventUpdateDto eventUpdateDto);
+        Task<bool> RescheduleEventAsync(int id, DateTime newDate);
         Task<bool> DeleteEventAsync(int id);
     }
 }

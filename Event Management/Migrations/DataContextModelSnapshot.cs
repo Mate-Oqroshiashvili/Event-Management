@@ -235,7 +235,7 @@ namespace Event_Management.Migrations
                     b.Property<DateTime>("RegistrationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("TicketId")
+                    b.Property<int?>("TicketId")
                         .HasColumnType("int");
 
                     b.Property<int>("UserId")
@@ -244,7 +244,8 @@ namespace Event_Management.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("TicketId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[TicketId] IS NOT NULL");
 
                     b.HasIndex("UserId");
 
@@ -265,6 +266,9 @@ namespace Event_Management.Migrations
                     b.Property<int>("EventId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("PromoCodeAmount")
                         .HasColumnType("int");
 
@@ -273,7 +277,7 @@ namespace Event_Management.Migrations
 
                     b.Property<string>("PromoCodeText")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("SaleAmountInPercentages")
                         .HasColumnType("int");
@@ -281,6 +285,9 @@ namespace Event_Management.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EventId");
+
+                    b.HasIndex("PromoCodeText")
+                        .IsUnique();
 
                     b.ToTable("PromoCodes");
                 });
@@ -389,9 +396,8 @@ namespace Event_Management.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
@@ -407,6 +413,32 @@ namespace Event_Management.Migrations
                     b.ToTable("Tickets");
                 });
 
+            modelBuilder.Entity("Event_Management.Models.UsedPromoCode", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("PromoCodeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UsedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PromoCodeId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UsedPromoCodes");
+                });
+
             modelBuilder.Entity("Event_Management.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -414,6 +446,10 @@ namespace Event_Management.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Balance")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("CodeExpiration")
                         .HasColumnType("datetime2");
@@ -540,13 +576,12 @@ namespace Event_Management.Migrations
                     b.HasOne("Event_Management.Models.Ticket", "Ticket")
                         .WithOne("Participant")
                         .HasForeignKey("Event_Management.Models.Participant", "TicketId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Event_Management.Models.User", "User")
                         .WithMany("Participants")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Event");
@@ -572,7 +607,7 @@ namespace Event_Management.Migrations
                     b.HasOne("Event_Management.Models.PromoCode", "PromoCode")
                         .WithMany()
                         .HasForeignKey("PromoCodeId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Event_Management.Models.User", "User")
                         .WithMany("Purchases")
@@ -628,6 +663,25 @@ namespace Event_Management.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Event_Management.Models.UsedPromoCode", b =>
+                {
+                    b.HasOne("Event_Management.Models.PromoCode", "PromoCode")
+                        .WithMany("UsedPromoCodes")
+                        .HasForeignKey("PromoCodeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Event_Management.Models.User", "User")
+                        .WithMany("UsedPromoCodes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PromoCode");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Event_Management.Models.User", b =>
                 {
                     b.HasOne("Event_Management.Models.Event", null)
@@ -675,6 +729,11 @@ namespace Event_Management.Migrations
                     b.Navigation("Events");
                 });
 
+            modelBuilder.Entity("Event_Management.Models.PromoCode", b =>
+                {
+                    b.Navigation("UsedPromoCodes");
+                });
+
             modelBuilder.Entity("Event_Management.Models.Purchase", b =>
                 {
                     b.Navigation("Tickets");
@@ -698,6 +757,8 @@ namespace Event_Management.Migrations
                     b.Navigation("Reviews");
 
                     b.Navigation("Tickets");
+
+                    b.Navigation("UsedPromoCodes");
                 });
 #pragma warning restore 612, 618
         }

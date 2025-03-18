@@ -28,12 +28,13 @@ namespace Event_Management.Extensions
 
             services.AddSwaggerGen(option =>
             {
-                option.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme()
+                option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                 {
-                    Description = "enter authorization token using bearer scheme (bearer {token})",
-                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
                     Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
                 });
                 option.OperationFilter<SecurityRequirementsOperationFilter>();
             });

@@ -2,6 +2,7 @@
 using Event_Management.Data;
 using Event_Management.Models;
 using Event_Management.Models.Dtos.TicketDtos;
+using Event_Management.Models.Enums;
 using Event_Management.Repositories.ImageRepositoryFolder;
 using Microsoft.EntityFrameworkCore;
 using SkiaSharp;
@@ -81,7 +82,7 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
 
                 // Use the ImageRepository to handle QR code generation and storing
                 ticket.QRCodeImageUrl = await GenerateQRCodeImage(qrCodeData); // Async call
-                ticket.Status = Models.Enums.TicketStatus.AVAILABLE;
+                ticket.Status = TicketStatus.AVAILABLE;
                 ticket.ExpiryDate = ticket.Event.EndDate;
 
                 await _context.SaveChangesAsync(); // Save QRCodeImageUrl
@@ -97,26 +98,43 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
 
         public async Task<string> ValidateTicketAsync(int ticketId, string qrCodeData)
         {
-            var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId && t.QRCodeData == qrCodeData);
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var ticket = await _context.Tickets
+                .Include(x => x.Participant)
+                .Include(x => x.Purchase)
+                .Include(x => x.Event)
+                .Include(x => x.User)
+                .FirstOrDefaultAsync(t => t.Id == ticketId && t.QRCodeData == qrCodeData);
 
-            if (ticket == null)
-                return "Invalid ticket"; // Specific error if ticket not found
+                if (ticket == null)
+                    return "Invalid ticket"; // Specific error if ticket not found
 
-            if (ticket.IsUsed)
-                return "Ticket has already been used"; // Error if ticket already used
+                if (ticket.IsUsed)
+                    return "Ticket has already been used"; // Error if ticket already used
 
-            if (ticket.User == null)
-                return "The owner of this ticket can't be identified";
+                if (ticket.User == null)
+                    return "The owner of this ticket can't be identified";
 
-            if (ticket.Participant == null)
-                return "The owner of this ticket is not registered as participant";
+                if (ticket.Participant == null)
+                    return "The owner of this ticket is not registered as participant";
 
-            // Mark ticket as used
-            ticket.IsUsed = true;
-            ticket.Participant.Attendance = true;
-            await _context.SaveChangesAsync();
+                // Mark ticket as used
+                ticket.IsUsed = true;
+                ticket.Participant.Attendance = true;
 
-            return "Ticket validated successfully"; // Clear success message
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return "Ticket validated successfully"; // Clear success message
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                Console.WriteLine($"Error validating ticket: {ex.Message}");
+                return "An error occurred while validating the ticket";
+            }
         }
 
         public async Task<bool> UpdateTicketAsync(int id, TicketUpdateDto ticketUpdateDto)
@@ -125,6 +143,23 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
             if (existingTicket == null) return false;
 
             _mapper.Map(ticketUpdateDto, existingTicket);
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> UpdateTicketTypeAsync(int participantId, TicketType ticketType)
+        {
+            var existingParticipant = await _context.Participants
+                .Include(x => x.Event)
+                .Include(x => x.Ticket)
+                .Include(x => x.User)
+                .FirstOrDefaultAsync(x => x.Id == participantId);
+
+            if (existingParticipant == null || existingParticipant.Ticket == null)
+                return false;
+
+            existingParticipant.Ticket.Type = ticketType;
 
             await _context.SaveChangesAsync();
             return true;

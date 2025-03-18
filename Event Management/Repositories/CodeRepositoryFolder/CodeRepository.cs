@@ -110,5 +110,58 @@ namespace Event_Management.Repositories.CodeRepositoryFolder
                 throw;
             }
         }
+
+        private async Task SendEmailToNotifyAsync(string email, string subject, string body)
+        {
+            try
+            {
+                var userName = _configuration["EmailSettings:UserName"];
+                var password = _configuration["EmailSettings:Password"];
+
+                using (var client = new SmtpClient(_configuration["EmailSettings:SmtpServer"]))
+                {
+                    client.Port = int.Parse(_configuration["EmailSettings:Port"]!);
+                    client.Credentials = new NetworkCredential(userName, password);
+                    client.EnableSsl = true;
+
+                    MailMessage mailMessage = new MailMessage()
+                    {
+                        From = new MailAddress(_configuration["EmailSettings:From"]!),
+                        Subject = subject,
+                        Body = body,
+                        IsBodyHtml = true
+                    };
+
+                    mailMessage.To.Add(email);
+                    await client.SendMailAsync(mailMessage);
+                }
+            }
+            catch (SmtpException smtpEx)
+            {
+                Console.WriteLine($"SMTP Error: {smtpEx.StatusCode} - {smtpEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task SendEventCancellationNotification(string email, string eventTitle)
+        {
+            string subject = "Event Cancellation Notice";
+            string body = $"Dear attendee,<br><br>We regret to inform you that the event <b>{eventTitle}</b> has been canceled. We apologize for any inconvenience caused.<br><br>Best regards,<br>Event Management Team";
+
+            await SendEmailToNotifyAsync(email, subject, body);
+        }
+
+        public async Task SendEventRescheduleNotification(string email, string eventTitle, DateTime newDate)
+        {
+            string subject = "Event Reschedule Notice";
+            string body = $"Dear attendee,<br><br>The event <b>{eventTitle}</b> has been rescheduled to <b>{newDate:dddd, MMMM dd, yyyy at hh:mm tt}</b>. Please update your calendar accordingly.<br><br>Best regards,<br>Event Management Team";
+
+            await SendEmailToNotifyAsync(email, subject, body);
+        }
     }
 }

@@ -3,6 +3,7 @@
     public enum PurchaseStatus
     {
         PENDING = 1,
-        COMPLETED = 2
+        COMPLETED = 2,
+        REFUNDED = 3
     }
 }

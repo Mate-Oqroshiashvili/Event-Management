@@ -7,7 +7,7 @@ namespace Event_Management.Models
         public int Id { get; set; }
         public int EventId { get; set; }
         public int? PurchaseId { get; set; }
-        public string Type { get; set; }
+        public TicketType Type { get; set; }
         public decimal Price { get; set; }
         public int Quantity { get; set; }
         public TicketStatus Status { get; set; }

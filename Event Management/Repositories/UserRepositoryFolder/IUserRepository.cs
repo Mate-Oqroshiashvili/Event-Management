@@ -1,5 +1,6 @@
 ﻿using Event_Management.Models;
 using Event_Management.Models.Dtos.UserDtos;
+using Event_Management.Models.Enums;
 
 namespace Event_Management.Repositories.UserRepositoryFolder
 {
@@ -13,6 +14,7 @@ namespace Event_Management.Repositories.UserRepositoryFolder
         bool ValidatePassword(string passwordToVerify, string password);
         Task<UserDto> AddUserAsync(User user);
         Task<bool> UpdateUserAsync(int id, UserUpdateDto userUpdateDto);
+        Task<bool> UpdateUserTypeAsync(int id, UserType userType);
         Task<bool> DeleteUserAsync(int id);
     }
 }

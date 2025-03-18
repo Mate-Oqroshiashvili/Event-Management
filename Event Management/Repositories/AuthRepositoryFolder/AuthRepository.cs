@@ -25,7 +25,7 @@ namespace Event_Management.Repositories.AuthRepositoryFolder
             _userRepository = user;
         }
 
-        public async Task<User> Registration(UserCreateDto registerUserDto)
+        public async Task<UserDto> Registration(UserCreateDto registerUserDto)
         {
             var existingUser = await _userRepository.GetUserByEmailAsync(registerUserDto.Email);
             if (existingUser != null)
@@ -37,12 +37,14 @@ namespace Event_Management.Repositories.AuthRepositoryFolder
 
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(registerUserDto.Password);
             user.Role = Role.BASIC;
-            user.UserType = UserType.Basic;
+            user.UserType = UserType.BASIC;
             user.PasswordHash = passwordHash;
 
             await _userRepository.AddUserAsync(user);
 
-            return user;
+            var userDto = _mapper.Map<UserDto>(user);
+
+            return userDto;
         }
 
         public async Task<string> Authorization(LoginDto logInDto)
