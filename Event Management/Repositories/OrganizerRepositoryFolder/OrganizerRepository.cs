@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Event_Management.Data;
+using Event_Management.Exceptions;
 using Event_Management.Models;
 using Event_Management.Models.Dtos.OrganizerDtos;
 using Event_Management.Repositories.ImageRepositoryFolder;
@@ -58,6 +59,61 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
 
             var organizerDto = _mapper.Map<OrganizerDto>(organizer);
             return organizerDto;
+        }
+
+        public async Task<string> AddOrganizerOnLocationAsync(int organizerId, int locationId)
+        {
+            try
+            {
+                var organizer = await _context.Organizers
+                    .Include(o => o.Locations)
+                    .FirstOrDefaultAsync(o => o.Id == organizerId)
+                    ?? throw new NotFoundException("Organizer not found!");
+
+                var location = await _context.Locations
+                    .FirstOrDefaultAsync(l => l.Id == locationId)
+                    ?? throw new NotFoundException("Location not found!");
+
+                if (organizer.Locations.Any(l => l.Id == locationId))
+                    throw new BadRequestException("This organizer is already linked to the location.");
+
+                organizer.Locations.Add(location);
+                await _context.SaveChangesAsync();
+
+                return $"Organizer has been successfully added on this location - {location.Address}.";
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        public async Task<string> RemoveOrganizerFromLocationAsync(int organizerId, int locationId)
+        {
+            try
+            {
+                var organizer = await _context.Organizers
+                    .Include(o => o.Locations)
+                    .FirstOrDefaultAsync(o => o.Id == organizerId)
+                    ?? throw new NotFoundException("Organizer not found!");
+
+                var location = await _context.Locations
+                    .Include(l => l.Organizers)
+                    .FirstOrDefaultAsync(l => l.Id == locationId)
+                    ?? throw new NotFoundException("Location not found!");
+
+                if (!organizer.Locations.Any(l => l.Id == locationId))
+                    throw new BadRequestException("This organizer is not linked to the location.");
+
+                organizer.Locations.Remove(location);
+                await _context.SaveChangesAsync();
+
+                return $"Organizer has been successfully removed from this location - {location.Address}.";
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
         }
 
         public async Task<bool> UpdateOrganizerAsync(int id, OrganizerUpdateDto organizerUpdateDto)

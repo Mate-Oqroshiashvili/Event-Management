@@ -49,6 +49,21 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             return eventDto;
         }
 
+        public async Task<IEnumerable<EventDto>> GetEventsByOrganizerIdAsync(int organizerId)
+        {
+            var events = await _context.Events
+                .Where(e => e.OrganizerId == organizerId)
+                .Include(x => x.Participants)
+                .Include(x => x.Tickets)
+                .Include(x => x.Location)
+                .Include(x => x.Organizer)
+                .ToListAsync();
+
+            var eventDtos = _mapper.Map<IEnumerable<EventDto>>(events);
+
+            return eventDtos;
+        }
+
         public async Task<EventDto> AddEventAsync(EventCreateDto eventCreateDto)
         {
             var @event = _mapper.Map<Event>(eventCreateDto);

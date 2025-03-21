@@ -7,6 +7,7 @@ namespace Event_Management.Repositories.LocationRepositoryFolder
     {
         Task<IEnumerable<LocationDto>> GetLocationsAsync();
         Task<LocationDto> GetLocationByIdAsync(int id);
+        Task<IEnumerable<LocationDto>> GetLocationsByOrganizerIdAsync(int organizerId);
         Task<LocationDto> AddLocationAsync(LocationCreateDto locationCreateDto);
         Task<bool> UpdateLocationAsync(int id, LocationUpdateDto locationUpdateDto);
         Task<bool> DeleteLocationAsync(int id);

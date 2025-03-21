@@ -3,6 +3,7 @@ using Event_Management.Data;
 using Event_Management.Models;
 using Event_Management.Models.Dtos.UserDtos;
 using Event_Management.Models.Enums;
+using Event_Management.Repositories.ImageRepositoryFolder;
 using Microsoft.EntityFrameworkCore;
 
 namespace Event_Management.Repositories.UserRepositoryFolder
@@ -10,11 +11,13 @@ namespace Event_Management.Repositories.UserRepositoryFolder
     public class UserRepository : IUserRepository
     {
         private readonly DataContext _context;
+        private readonly IImageRepository _imageRepository;
         private readonly IMapper _mapper;
 
-        public UserRepository(DataContext context, IMapper mapper)
+        public UserRepository(DataContext context, IImageRepository imageRepository, IMapper mapper)
         {
             _context = context;
+            _imageRepository = imageRepository;
             _mapper = mapper;
         }
 
@@ -92,7 +95,7 @@ namespace Event_Management.Repositories.UserRepositoryFolder
                 .Include(x => x.Tickets)
                 .Include(x => x.Comments)
                 .Include(x => x.Reviews)
-                .Where(x => x.UserType == Models.Enums.UserType.ARTIST)
+                .Where(x => x.UserType == UserType.ARTIST)
                 .ToListAsync();
 
             var artistDtos = _mapper.Map<IEnumerable<UserDto>>(artists);
@@ -125,6 +128,12 @@ namespace Event_Management.Repositories.UserRepositoryFolder
 
             _mapper.Map(userUpdateDto, existingUser);
 
+            if (userUpdateDto.ProfilePicture != null) 
+            {
+                var imageSource = await _imageRepository.GenerateImageSource(userUpdateDto.ProfilePicture);
+                existingUser.ProfilePicture = imageSource;
+            }
+
             await _context.SaveChangesAsync();
             return true;
         }
@@ -135,6 +144,17 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             if (existingUser == null) return false;
 
             existingUser.UserType = userType;
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> UpdateUserPasswordAsync(int id, string password)
+        {
+            var existingUser = await _context.Users.FindAsync(id);
+            if (existingUser == null) return false;
+
+            existingUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
 
             await _context.SaveChangesAsync();
             return true;

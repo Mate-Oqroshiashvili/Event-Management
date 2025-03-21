@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Event_Management.Data;
+using Event_Management.Exceptions;
 using Event_Management.Models;
 using Event_Management.Models.Dtos.TicketDtos;
 using Event_Management.Models.Enums;
@@ -132,8 +133,7 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                Console.WriteLine($"Error validating ticket: {ex.Message}");
-                return "An error occurred while validating the ticket";
+                throw new BadRequestException($"Error validating ticket: {ex.Message}", ex.InnerException);
             }
         }
 

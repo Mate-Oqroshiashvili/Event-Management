@@ -11,7 +11,7 @@ var app = builder.Build();
 app.UseCustomStaticFiles();
 
 // Use CORS middleware
-app.UseCors("AllowAngularApp");
+app.UseCors("AllowAngular");
 
 app.UseCustomSwagger(app.Environment);
 

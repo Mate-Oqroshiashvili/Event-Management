@@ -15,6 +15,7 @@ namespace Event_Management.Repositories.UserRepositoryFolder
         Task<UserDto> AddUserAsync(User user);
         Task<bool> UpdateUserAsync(int id, UserUpdateDto userUpdateDto);
         Task<bool> UpdateUserTypeAsync(int id, UserType userType);
+        Task<bool> UpdateUserPasswordAsync(int id, string password);
         Task<bool> DeleteUserAsync(int id);
     }
 }

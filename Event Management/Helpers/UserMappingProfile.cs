@@ -14,6 +14,7 @@ namespace Event_Management.Helpers
                 .ForMember(dest => dest.Purchases, opt => opt.MapFrom(src => src.Purchases))
                 .ForMember(dest => dest.Participants, opt => opt.MapFrom(src => src.Participants))
                 .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Comments))
+                .ForMember(dest => dest.ProfilePictureUrl, opt => opt.MapFrom(src => src.ProfilePicture))
                 .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => src.Reviews));
 
             CreateMap<UserDto, User>()
@@ -31,7 +32,6 @@ namespace Event_Management.Helpers
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
                 .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
-                .ForMember(dest => dest.ProfilePicture, opt => opt.MapFrom(src => src.ProfilePicture))
                 .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role))
                 .ForMember(dest => dest.UserType, opt => opt.MapFrom(src => src.UserType));
         }

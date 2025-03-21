@@ -69,7 +69,7 @@ namespace Event_Management.Controllers
         }
 
         [HttpPost("register-user")]
-        public async Task<ActionResult<UserDto>> RegisterUser([FromBody] UserCreateDto userCreateDto)
+        public async Task<ActionResult<UserDto>> RegisterUser([FromForm] UserCreateDto userCreateDto)
         {
             try
             {
@@ -84,7 +84,7 @@ namespace Event_Management.Controllers
         }
 
         [HttpPost("login-user")]
-        public async Task<ActionResult<string>> LoginUser([FromBody] LoginDto loginDto)
+        public async Task<ActionResult<string>> LoginUser([FromForm] LoginDto loginDto)
         {
             try
             {
@@ -100,16 +100,29 @@ namespace Event_Management.Controllers
 
         [Authorize(Roles = "BASIC,ORGANIZER")]
         [HttpPatch("change-user-type/{userId}")]
-        public async Task<ActionResult<string>> ChangeUserType(int userId, [FromBody] UserUpdateDto userUpdateDto)
+        public async Task<ActionResult<string>> ChangeUserType(int userId, UserType userType)
         {
             try
             {
-                if (!Enum.IsDefined(typeof(UserType), userUpdateDto.UserType!))
-                    throw new BadRequestException("Invalid User type!");
-
-                var updated = await _userRepository.UpdateUserTypeAsync(userId, userUpdateDto.UserType!.Value);
+                var updated = await _userRepository.UpdateUserTypeAsync(userId, userType);
 
                 return !updated ? throw new NotFoundException("User not found!") : Ok(new { message = "UserType updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [Authorize(Roles = "BASIC,ORGANIZER")]
+        [HttpPatch("change-user-password/{userId}")]
+        public async Task<ActionResult<string>> ChangeUserPassword(int userId, [FromForm] ChangePasswordDto changePasswordDto)
+        {
+            try
+            {
+                var updated = await _userRepository.UpdateUserPasswordAsync(userId, changePasswordDto.Password);
+
+                return !updated ? throw new NotFoundException("User not found!") : Ok(new { message = "Password updated successfully." });
             }
             catch (Exception ex)
             {
@@ -136,6 +149,7 @@ namespace Event_Management.Controllers
             }
         }
 
+        [Authorize(Roles = "BASIC,ORGANIZER")]
         [HttpDelete("remove-user/{userId}")]
         public async Task<ActionResult<string>> RemoveUser(int userId)
         {

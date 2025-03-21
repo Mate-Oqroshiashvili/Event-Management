@@ -46,6 +46,19 @@ namespace Event_Management.Repositories.PurchaseRepositoryFolder
             return purchaseDto;
         }
 
+        public async Task<IEnumerable<PurchaseDto>> GetPurchasesByUserIdAsync(int userId)
+        {
+            var purchases = await _context.Purchases
+                .Where(p => p.UserId == userId)
+                .Include(x => x.Tickets)
+                .Include(x => x.User)
+                .ToListAsync();
+
+            var purchaseDtos = _mapper.Map<IEnumerable<PurchaseDto>>(purchases);
+
+            return purchaseDtos;
+        }
+
         public async Task<PurchaseDto> AddPurchaseAsync(PurchaseCreateDto purchaseCreateDto)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();

@@ -5,7 +5,6 @@ using Event_Management.Models.Enums;
 using Event_Management.Repositories.ParticipantRepositoryFolder;
 using Event_Management.Repositories.TicketRepositoryFolder;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Event_Management.Controllers
@@ -40,7 +39,7 @@ namespace Event_Management.Controllers
         }
 
         [HttpGet("get-participant-by-id/{participantId}")]
-        public async Task<ActionResult<UserDto>> GetParticipantById(int participantId)
+        public async Task<ActionResult<ParticipantDto>> GetParticipantById(int participantId)
         {
             try
             {
@@ -54,14 +53,14 @@ namespace Event_Management.Controllers
             }
         }
 
-        [HttpGet("get-participant-by-user-id/{userId}")]
-        public async Task<ActionResult<UserDto>> GetParticipantByUserId(int userId)
+        [HttpGet("get-participants-by-user-id/{userId}")]
+        public async Task<ActionResult<IEnumerable<ParticipantDto>>> GetParticipantByUserId(int userId)
         {
             try
             {
-                var participantDto = await _participantRepository.GetParticipantByUserIdAsync(userId);
+                var participantDtos = await _participantRepository.GetParticipantsByUserIdAsync(userId);
 
-                return participantDto == null ? throw new NotFoundException("Participant can't be found!") : Ok(new { participantDto });
+                return participantDtos == null ? throw new NotFoundException("Participant can't be found!") : Ok(new { participantDtos });
             }
             catch (Exception ex)
             {
@@ -69,6 +68,7 @@ namespace Event_Management.Controllers
             }
         }
 
+        [Authorize(Roles = "BASIC")]
         [HttpPost("register-user-as-participant")]
         public async Task<ActionResult<ParticipantDto>> AddParticipant(ParticipantCreateDto participantCreateDto)
         {
@@ -103,6 +103,7 @@ namespace Event_Management.Controllers
             }
         }
 
+        [Authorize(Roles = "PARTICIPANT")]
         [HttpDelete("request-the-refund/{participantId}")]
         public async Task<ActionResult<string>> RequestTheRefund(int participantId)
         {
@@ -112,7 +113,7 @@ namespace Event_Management.Controllers
 
                 return !deleted ? throw new NotFoundException("Participant not found or the ticket is already used!") : Ok(new { message = "Refund proccess executed successfully!" });
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 throw new BadRequestException(ex.Message, ex.InnerException);
             }

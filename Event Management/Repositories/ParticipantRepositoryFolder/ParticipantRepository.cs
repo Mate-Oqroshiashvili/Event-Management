@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Event_Management.Data;
+using Event_Management.Exceptions;
 using Event_Management.Models;
 using Event_Management.Models.Dtos.ParticipantDtos;
 using Event_Management.Models.Enums;
@@ -44,29 +45,46 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
             return participantDto;
         }
 
-        public async Task<ParticipantDto> GetParticipantByUserIdAsync(int id)
+        public async Task<IEnumerable<ParticipantDto>> GetParticipantsByUserIdAsync(int id)
         {
-            var participant = await _context.Participants
+            var participants = await _context.Participants
+                .Where(x => x.UserId == id)
                 .Include(x => x.Event)
                 .Include(x => x.Ticket)
                 .Include(x => x.User)
-                .FirstOrDefaultAsync(x => x.UserId == id);
+                .ToListAsync();
 
-            var participantDto = _mapper.Map<ParticipantDto>(participant);
+            var participantDtos = _mapper.Map<IEnumerable<ParticipantDto>>(participants);
 
-            return participantDto;
+            return participantDtos;
         }
 
         public async Task<ParticipantDto> AddParticipantAsync(ParticipantCreateDto participantCreateDto)
         {
-            var participant = _mapper.Map<Participant>(participantCreateDto);
+            try
+            {
+                var participant = _mapper.Map<Participant>(participantCreateDto);
 
-            await _context.Participants.AddAsync(participant);
-            await _context.SaveChangesAsync();
+                if (_context.Users.Find(participantCreateDto.UserId) == null)
+                    throw new NotFoundException($"User with ID {participantCreateDto.UserId} not found!");
 
-            var participantDto = _mapper.Map<ParticipantDto>(participant);
+                if (_context.Events.Find(participantCreateDto.EventId) == null)
+                    throw new NotFoundException($"Event with ID {participantCreateDto.EventId} not found!");
 
-            return participantDto;
+                if (_context.Tickets.Find(participantCreateDto.TicketId) == null)
+                    throw new NotFoundException($"Ticket with ID {participantCreateDto.TicketId} not found!");
+
+                await _context.Participants.AddAsync(participant);
+                await _context.SaveChangesAsync();
+
+                var participantDto = _mapper.Map<ParticipantDto>(participant);
+
+                return participantDto;
+            }
+            catch (Exception ex) 
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
         }
 
         public async Task<bool> UpdateParticipantAsync(int id, ParticipantUpdateDto participantUpdateDto)

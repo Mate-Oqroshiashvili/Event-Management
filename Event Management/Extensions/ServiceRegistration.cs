@@ -37,18 +37,6 @@ namespace Event_Management.Extensions
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
-            // CORS setup
-            services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAngularApp", policy =>
-                {
-                    policy.WithOrigins("http://localhost:4200")
-                          .AllowAnyMethod()
-                          .AllowAnyHeader()
-                          .AllowCredentials();
-                });
-            });
-
             // dependency service registration
             services.AddDependencyServices(configuration);
 

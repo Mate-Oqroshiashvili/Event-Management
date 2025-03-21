@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
@@ -28,13 +29,12 @@ namespace Event_Management.Extensions
 
             services.AddSwaggerGen(option =>
             {
-                option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                option.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme()
                 {
-                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
-                    Name = "Authorization",
+                    Description = "enter authorization token using bearer scheme (bearer {token})",
                     In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
                 });
                 option.OperationFilter<SecurityRequirementsOperationFilter>();
             });
@@ -44,6 +44,19 @@ namespace Event_Management.Extensions
             //    options.Configuration = configuration.GetConnectionString("Redis");
             //    options.InstanceName = "chat-application";
             //});
+
+            // CORS setup
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAngular", policy =>
+                {
+                    policy.WithOrigins("http://localhost:4200")
+                           .AllowAnyHeader()
+                           .AllowAnyMethod()
+                           .WithExposedHeaders("x-requested-with")
+                           .AllowCredentials();
+                });
+            });
         }
     }
 }

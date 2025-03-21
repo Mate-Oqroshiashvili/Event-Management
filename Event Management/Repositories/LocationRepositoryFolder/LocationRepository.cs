@@ -44,6 +44,19 @@ namespace Event_Management.Repositories.LocationRepositoryFolder
             return locationDto;
         }
 
+        public async Task<IEnumerable<LocationDto>> GetLocationsByOrganizerIdAsync(int organizerId)
+        {
+            var locations = await _context.Locations
+                .Where(l => l.Organizers.Any(o => o.Id == organizerId))
+                .Include(x => x.Events)
+                .Include(x => x.Organizers)
+                .ToListAsync();
+
+            var locationsDtos = _mapper.Map<IEnumerable<LocationDto>>(locations);
+
+            return locationsDtos;
+        }
+
         public async Task<LocationDto> AddLocationAsync(LocationCreateDto locationCreateDto)
         {
             var location = _mapper.Map<Location>(locationCreateDto);

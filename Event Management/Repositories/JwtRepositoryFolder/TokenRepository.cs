@@ -34,7 +34,7 @@ namespace Event_Management.Repositories.JwtRepositoryFolder
                     new Claim("user_type", user.UserType.ToString()),
                     new Claim(ClaimTypes.MobilePhone, user.PhoneNumber),
                 }),
-                Expires = DateTime.Now.AddHours(2),
+                Expires = DateTime.UtcNow.AddHours(2),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Audience = _configuration["Jwt:Audience"],
                 Issuer = _configuration["Jwt:Issuer"]
