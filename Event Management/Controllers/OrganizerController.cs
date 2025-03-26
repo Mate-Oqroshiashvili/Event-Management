@@ -66,6 +66,42 @@ namespace Event_Management.Controllers
         }
 
         [Authorize(Roles = "ORGANIZER")]
+        [HttpPatch("verify-organizer/{organizerId}")]
+        public async Task<ActionResult<string>> VerifyOrganizer(int organizerId, string emailCode, string smsCode)
+        {
+            try
+            {
+                var organizer = await _organizerRepository.GetOrganizerByIdAsync(organizerId);
+
+                if (organizer.User.EmailVerificationCode != emailCode || organizer.User.SmsVerificationCode != smsCode)
+                    throw new BadRequestException("Verification code is not correct!");
+
+                var verified = await _organizerRepository.VerifyOrganizerAsync(organizerId);
+                
+                return !verified ? throw new BadRequestException("Organizer verification process failed!") : Ok(new { message = "Organizer verified successfully!" });   
+            }
+            catch (Exception ex) 
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [HttpPut("send-codes/{userId}")]
+        public async Task<IActionResult> SendCodes(int userId)
+        {
+            try
+            {
+                var result = await _organizerRepository.SendCodes(userId);
+
+                return result == null ? throw new BadRequestException("verification codes sending process failed!") : Ok(new { result });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [Authorize(Roles = "ORGANIZER")]
         [HttpPost("add-organizer-on-specific-location/{organizerId}&{locationId}")]
         public async Task<ActionResult<string>> AddOrganizerOnSpecificLocation(int organizerId, int locationId)
         {

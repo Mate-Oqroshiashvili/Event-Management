@@ -1,0 +1,132 @@
+﻿using Event_Management.Exceptions;
+using Event_Management.Models.Dtos.PromoCodeDtos;
+using Event_Management.Repositories.PromoCodeRepositoryFolder;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Event_Management.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class PromoCodeController : ControllerBase
+    {
+        private readonly IPromoCodeRepository _promoCodeRepository;
+
+        public PromoCodeController(IPromoCodeRepository promoCodeRepository)
+        {
+            _promoCodeRepository = promoCodeRepository;
+        }
+
+        [Authorize(Roles = "ORGANIZER")]
+        [HttpGet("get-all-promo-codes")]
+        public async Task<ActionResult<IEnumerable<PromoCodeDto>>> GetAllPromoCodes()
+        {
+            try
+            {
+                var promoCodes = await _promoCodeRepository.GetPromoCodesAsync();
+
+                return promoCodes == null ? throw new NotFoundException("Promo codes not found!") : Ok(new { promoCodes});
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [Authorize(Roles = "ORGANIZER")]
+        [HttpGet("get-promo-code-by-id/{promoCodeId}")]
+        public async Task<ActionResult<PromoCodeDto>> GetPromoCodeById(int promoCodeId)
+        {
+            try
+            {
+                var promoCode = await _promoCodeRepository.GetPromoCodeByIdAsync(promoCodeId);
+
+                return promoCode == null ? throw new NotFoundException("Promo code not found!") : Ok(new { promoCode });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [HttpGet("get-promo-code-by-search-term/{searchTerm}")]
+        public async Task<ActionResult<PromoCodeDto>> GetPromoCodeBySearchTerm(string searchTerm)
+        {
+            try
+            {
+                var promoCode = await _promoCodeRepository.GetPromoCodeBySearchTermAsync(searchTerm);
+
+                return promoCode == null ? throw new NotFoundException("Promo code not found!") : Ok(new { promoCode });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [Authorize(Roles = "ORGANIZER")]
+        [HttpGet("get-promo-codes-by-event-id/{eventId}")]
+        public async Task<ActionResult<IEnumerable<PromoCodeDto>>> GetPromoCodesByEventId(int eventId)
+        {
+            try
+            {
+                var promoCodes = await _promoCodeRepository.GetPromoCodesByEventIdAsync(eventId);
+
+                return promoCodes == null ? throw new NotFoundException("Promo codes not found!") : Ok(new { promoCodes });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [Authorize(Roles = "ORGANIZER")]
+        [HttpPost("create-promo-code")]
+        public async Task<ActionResult<PromoCodeDto>> CreatePromoCode([FromForm] PromoCodeCreateDto promoCodeCreateDto)
+        {
+            try
+            {
+                var promoCode = await _promoCodeRepository.AddPromoCodeAsync(promoCodeCreateDto);
+
+                return promoCode == null ? throw new NotFoundException("Promo code creation process failed!") : Ok(new { promoCode });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [Authorize(Roles = "ORGANIZER")]
+        [HttpPut("update-promo-code/{promoCodeId}")]
+        public async Task<ActionResult<string>> UpdatePromoCode(int promoCodeId, [FromForm] PromoCodeUpdateDto promoCodeUpdateDto)
+        {
+            try
+            {
+                var isUpdated = await _promoCodeRepository.UpdatePromoCodeAsync(promoCodeId, promoCodeUpdateDto);
+
+                return !isUpdated ? throw new NotFoundException("Promo code update process failed!") : Ok(new { message = "Promo code updated successfully!" });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [Authorize(Roles = "ORGANIZER")]
+        [HttpDelete("remove-promo-code/{promoCodeId}")]
+        public async Task<ActionResult<string>> RemovePromoCode(int promoCodeId)
+        {
+            try
+            {
+                var isRemoved = await _promoCodeRepository.DeletePromoCodeAsync(promoCodeId);
+
+                return !isRemoved ? throw new NotFoundException("Promo code deletion process failed!") : Ok(new { message = "Promo code removed successfully!" });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+    }
+}

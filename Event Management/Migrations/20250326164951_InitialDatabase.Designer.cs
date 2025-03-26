@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Event_Management.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250321134254_ModifiedModels")]
-    partial class ModifiedModels
+    [Migration("20250326164951_InitialDatabase")]
+    partial class InitialDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -62,6 +62,9 @@ namespace Event_Management.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BookedStaff")
+                        .HasColumnType("int");
 
                     b.Property<int>("Capacity")
                         .HasColumnType("int");
@@ -120,9 +123,6 @@ namespace Event_Management.Migrations
                     b.Property<int>("BookedStaff")
                         .HasColumnType("int");
 
-                    b.Property<int>("Capacity")
-                        .HasColumnType("int");
-
                     b.Property<string>("City")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -145,6 +145,9 @@ namespace Event_Management.Migrations
                     b.Property<bool>("IsIndoor")
                         .HasColumnType("bit");
 
+                    b.Property<int>("MaxCapacity")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -152,6 +155,9 @@ namespace Event_Management.Migrations
                     b.Property<string>("PostalCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RemainingCapacity")
+                        .HasColumnType("int");
 
                     b.Property<string>("State")
                         .IsRequired()

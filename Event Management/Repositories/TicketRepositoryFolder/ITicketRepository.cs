@@ -8,6 +8,7 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
     {
         Task<IEnumerable<TicketDto>> GetTicketsAsync();
         Task<IEnumerable<TicketDto>> GetTicketsByEventIdAsync(int eventId);
+        Task<IEnumerable<TicketDto>> GetTicketsByUserIdAsync(int userId);
         Task<TicketDto> GetTicketByIdAsync(int id);
         Task<TicketDto> AddTicketAsync(TicketCreateDto ticketCreateDto);
         Task<string> ValidateTicketAsync(int ticketId, string qrCodeData);

@@ -42,9 +42,13 @@ namespace Event_Management.Validations.LocationValidations
                 .When(l => l.Country == "CA", ApplyConditionTo.CurrentValidator)
                 .Matches(@"^[A-Za-z]\d[A-Za-z] ?\d[A-Za-z]\d$").WithMessage("Invalid Canadian postal code format.");
 
-            RuleFor(l => l.Capacity)
-                .GreaterThan(0).WithMessage("Capacity must be greater than zero.")
-                .LessThan(100000).WithMessage("Capacity must be realistic (less than 100,000).");
+            RuleFor(l => l.MaxCapacity)
+                .GreaterThan(0).WithMessage("Maximum capacity must be greater than zero.")
+                .LessThan(20000).WithMessage("Maximum capacity must be realistic (less than 20,000).");
+
+            RuleFor(l => l.RemainingCapacity)
+                .GreaterThan(0).WithMessage("Remaining capacity must be greater than zero.")
+                .LessThan(20000).WithMessage("Remaining capacity must be realistic (less than 20,000).");
 
             RuleFor(l => l.AvailableStaff)
                 .GreaterThan(0).WithMessage("Number of available Staff must be greater than zero.")

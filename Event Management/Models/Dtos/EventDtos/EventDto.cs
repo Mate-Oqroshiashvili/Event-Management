@@ -15,15 +15,18 @@ namespace Event_Management.Models.Dtos.EventDtos
         public string Description { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public LocationDto Location { get; set; }
         public int Capacity { get; set; }
-        public OrganizerDto Organizer { get; set; }
         public EventStatus Status { get; set; }
+        public int BookedStaff { get; set; }
         public IEnumerable<string> Images { get; set; }
-        public IEnumerable<TicketDto>? Tickets { get; set; }
-        public IEnumerable<ParticipantDto>? Participants { get; set; }
+        public LocationDto Location { get; set; }
+        public OrganizerDto Organizer { get; set; }
+        public IEnumerable<TicketDto> Tickets { get; set; }
+        public IEnumerable<ParticipantDto> Participants { get; set; }
         public IEnumerable<UserDto> SpeakersAndArtists { get; set; }
         public IEnumerable<PromoCodeDto> PromoCodes { get; set; }
+        public IEnumerable<Review> Reviews { get; set; }
+        public IEnumerable<Comment> Comments { get; set; }
 
         public EventDto()
         {

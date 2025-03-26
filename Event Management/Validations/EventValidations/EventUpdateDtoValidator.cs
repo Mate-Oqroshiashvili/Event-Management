@@ -8,11 +8,9 @@ namespace Event_Management.Validations.EventValidations
         public EventUpdateDtoValidator() 
         {
             RuleFor(e => e.Title)
-                .NotEmpty().WithMessage("Title is required.")
                 .MaximumLength(100).WithMessage("Title must not exceed 100 characters.");
 
             RuleFor(e => e.Description)
-                .NotEmpty().WithMessage("Description is required.")
                 .MaximumLength(500).WithMessage("Description must not exceed 500 characters.");
 
             RuleFor(e => e.StartDate)
@@ -26,6 +24,9 @@ namespace Event_Management.Validations.EventValidations
 
             RuleFor(e => e.Status)
                 .IsInEnum().WithMessage("Invalid event status.");
+
+            RuleFor(e => e.BookedStaff)
+                .GreaterThan(0).WithMessage("Booked staff must be greater than zero.");
 
             RuleFor(e => e.LocationId)
                 .GreaterThan(0).WithMessage("Location ID must be a positive integer.");

@@ -11,11 +11,12 @@ namespace Event_Management.Models
         public DateTime EndDate { get; set; }
         public int Capacity { get; set; }
         public EventStatus Status { get; set; }
-        public Location Location { get; set; }
-        public Organizer Organizer { get; set; }
+        public int BookedStaff { get; set; }
         public int LocationId { get; set; }
         public int OrganizerId { get; set; }
-        public IEnumerable<string> Images { get; set; } 
+        public IEnumerable<string> Images { get; set; }  
+        public Location Location { get; set; } 
+        public Organizer Organizer { get; set; }
         public IEnumerable<Ticket> Tickets { get; set; } = new List<Ticket>();
         public IEnumerable<Participant> Participants { get; set; } = new List<Participant>();
         public IEnumerable<User> SpeakersAndArtists { get; set; } = new List<User>();

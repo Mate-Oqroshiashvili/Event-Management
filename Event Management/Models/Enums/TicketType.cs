@@ -4,7 +4,6 @@
     {
         BASIC = 1,
         VIP = 2,
-        EARLYBIRD = 3,
-        DIGITAL = 4
+        EARLYBIRD = 3
     }
 }

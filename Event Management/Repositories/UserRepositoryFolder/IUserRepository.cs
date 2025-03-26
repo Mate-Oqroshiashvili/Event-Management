@@ -13,6 +13,7 @@ namespace Event_Management.Repositories.UserRepositoryFolder
         Task<IEnumerable<UserDto>> GetSpeakers();
         bool ValidatePassword(string passwordToVerify, string password);
         Task<UserDto> AddUserAsync(User user);
+        Task<decimal> AddBalanceAsync(int userId, decimal balanceToDeposit);
         Task<bool> UpdateUserAsync(int id, UserUpdateDto userUpdateDto);
         Task<bool> UpdateUserTypeAsync(int id, UserType userType);
         Task<bool> UpdateUserPasswordAsync(int id, string password);

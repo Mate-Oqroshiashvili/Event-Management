@@ -11,6 +11,8 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
         Task<string> AddOrganizerOnLocationAsync(int organizerId, int locationId);
         Task<string> RemoveOrganizerFromLocationAsync(int organizerId, int locationId);
         Task<bool> UpdateOrganizerAsync(int id, OrganizerUpdateDto organizerUpdateDto);
+        Task<bool> VerifyOrganizerAsync(int id);
         Task<bool> DeleteOrganizerAsync(int id);
+        Task<string> SendCodes(int userId);
     }
 }

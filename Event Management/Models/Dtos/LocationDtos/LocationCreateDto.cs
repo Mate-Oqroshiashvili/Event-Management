@@ -8,7 +8,7 @@
         public string State { get; set; }
         public string Country { get; set; }
         public string PostalCode { get; set; }
-        public int Capacity { get; set; }
+        public int MaxCapacity { get; set; } // Max number of attendees the venue can hold
         public int AvailableStaff { get; set; }
         public string Description { get; set; }
         public IFormFile Image { get; set; }

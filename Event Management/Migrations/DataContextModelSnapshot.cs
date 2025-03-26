@@ -60,6 +60,9 @@ namespace Event_Management.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("BookedStaff")
+                        .HasColumnType("int");
+
                     b.Property<int>("Capacity")
                         .HasColumnType("int");
 
@@ -117,9 +120,6 @@ namespace Event_Management.Migrations
                     b.Property<int>("BookedStaff")
                         .HasColumnType("int");
 
-                    b.Property<int>("Capacity")
-                        .HasColumnType("int");
-
                     b.Property<string>("City")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -142,6 +142,9 @@ namespace Event_Management.Migrations
                     b.Property<bool>("IsIndoor")
                         .HasColumnType("bit");
 
+                    b.Property<int>("MaxCapacity")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -149,6 +152,9 @@ namespace Event_Management.Migrations
                     b.Property<string>("PostalCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RemainingCapacity")
+                        .HasColumnType("int");
 
                     b.Property<string>("State")
                         .IsRequired()

@@ -23,7 +23,8 @@ namespace Event_Management.Migrations
                     State = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Country = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Capacity = table.Column<int>(type: "int", nullable: false),
+                    MaxCapacity = table.Column<int>(type: "int", nullable: false),
+                    RemainingCapacity = table.Column<int>(type: "int", nullable: false),
                     AvailableStaff = table.Column<int>(type: "int", nullable: false),
                     BookedStaff = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -64,6 +65,7 @@ namespace Event_Management.Migrations
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Capacity = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
+                    BookedStaff = table.Column<int>(type: "int", nullable: false),
                     LocationId = table.Column<int>(type: "int", nullable: false),
                     OrganizerId = table.Column<int>(type: "int", nullable: false),
                     Images = table.Column<string>(type: "nvarchar(max)", nullable: false)

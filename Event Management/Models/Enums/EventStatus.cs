@@ -4,6 +4,7 @@
     {
         DRAFT = 1,
         PUBLISHED = 2,
-        COMPLETED = 3
+        COMPLETED = 3,
+        DELETED = 4
     }
 }

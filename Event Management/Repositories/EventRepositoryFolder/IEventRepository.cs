@@ -8,6 +8,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
     {
         Task<IEnumerable<EventDto>> GetEventsAsync();
         Task<EventDto> GetEventByIdAsync(int id);
+        Task<EventDto> GetEventBySearchtermAsync(string searchTerm);
         Task<IEnumerable<EventDto>> GetEventsByOrganizerIdAsync(int organizerId);
         Task<EventDto> AddEventAsync(EventCreateDto eventCreateDto);
         Task<bool> UpdateEventAsync(int id, EventUpdateDto eventUpdateDto);

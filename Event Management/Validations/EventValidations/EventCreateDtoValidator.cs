@@ -36,6 +36,9 @@ namespace Event_Management.Validations.EventValidations
             RuleFor(e => e.Status)
                 .IsInEnum().WithMessage("Invalid event status.");
 
+            RuleFor(e => e.BookedStaff)
+                .GreaterThan(0).WithMessage("Booked staff must be greater than zero.");
+
             RuleFor(e => e.LocationId)
                 .GreaterThan(0).WithMessage("Location ID must be a positive integer.");
 

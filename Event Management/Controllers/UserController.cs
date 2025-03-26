@@ -99,6 +99,27 @@ namespace Event_Management.Controllers
         }
 
         [Authorize(Roles = "BASIC,ORGANIZER")]
+        [HttpPatch("add-balance/{userId}")]
+        public async Task<ActionResult<string>> AddBalance(int userId, decimal balanceToDeposit)
+        {
+            try
+            {
+                var totalBalance = await _userRepository.AddBalanceAsync(userId, balanceToDeposit);
+
+                if (totalBalance <= 0)
+                {
+                    return BadRequest(new { message = "Something went wrong while depositing the balance!" });
+                }
+
+                return Ok(new { message = "Balance updated successfully.", newBalance = totalBalance });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [Authorize(Roles = "BASIC,ORGANIZER")]
         [HttpPatch("change-user-type/{userId}")]
         public async Task<ActionResult<string>> ChangeUserType(int userId, UserType userType)
         {

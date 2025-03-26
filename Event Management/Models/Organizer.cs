@@ -17,7 +17,7 @@
         public User User { get; set; }
 
         // Navigation Property
-        public IEnumerable<Event> Events { get; set; } = new List<Event>();  // List of events organized by this entity
+        public List<Event> Events { get; set; } = new List<Event>();  // List of events organized by this entity
         public List<Location> Locations { get; set; } = new List<Location>(); // Direct Many-to-Many
 
         public Organizer()

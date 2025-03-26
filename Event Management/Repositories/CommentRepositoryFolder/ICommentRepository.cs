@@ -7,8 +7,10 @@ namespace Event_Management.Repositories.CommentRepositoryFolder
     {
         Task<IEnumerable<Comment>> GetCommentsAsync();
         Task<Comment> GetCommentByIdAsync(int id);
+        Task<IEnumerable<Comment>> GetCommentsByEventIdAsync(int eventId);
+        Task<IEnumerable<Comment>> GetCommentsByUserIdAsync(int userId);
         Task<Comment> AddCommentAsync(CommentCreateDto commentCreateDto);
-        Task<bool> UpdateCommentAsync(int id, CommentUpdateDto commentUpdateDto);
-        Task<bool> DeleteCommentAsync(int id);
+        Task<bool> UpdateCommentAsync(int CommentId, int userId, CommentUpdateDto commentUpdateDto);
+        Task<bool> DeleteCommentAsync(int id, int userId);
     }
 }

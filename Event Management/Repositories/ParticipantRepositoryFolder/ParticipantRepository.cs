@@ -65,14 +65,31 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
             {
                 var participant = _mapper.Map<Participant>(participantCreateDto);
 
-                if (_context.Users.Find(participantCreateDto.UserId) == null)
-                    throw new NotFoundException($"User with ID {participantCreateDto.UserId} not found!");
+                participant.Ticket = await _context.Tickets
+                    .Include(x => x.Participant)
+                    .Include(x => x.Purchase)
+                    .Include(x => x.Event)
+                    .Include(x => x.User)
+                    .FirstOrDefaultAsync(x => x.Id == participantCreateDto.TicketId)
+                    ?? throw new NotFoundException($"Ticket with ID {participantCreateDto.TicketId} not found!");
 
-                if (_context.Events.Find(participantCreateDto.EventId) == null)
-                    throw new NotFoundException($"Event with ID {participantCreateDto.EventId} not found!");
+                participant.Event = await _context.Events
+                    .Include(x => x.Participants)
+                    .Include(x => x.Tickets)
+                    .Include(x => x.Location)
+                    .Include(x => x.Organizer)
+                    .FirstOrDefaultAsync(x => x.Id ==participantCreateDto.EventId)
+                    ?? throw new NotFoundException($"Event with ID {participantCreateDto.EventId} not found!");
 
-                if (_context.Tickets.Find(participantCreateDto.TicketId) == null)
-                    throw new NotFoundException($"Ticket with ID {participantCreateDto.TicketId} not found!");
+                participant.User = await _context.Users
+                    .Include(x => x.Participants)
+                    .Include(x => x.Purchases)
+                    .Include(x => x.Organizer)
+                    .Include(x => x.Tickets)
+                    .Include(x => x.Comments)
+                    .Include(x => x.Reviews)
+                    .FirstOrDefaultAsync(x => x.Id == participantCreateDto.UserId)
+                    ?? throw new NotFoundException($"User with ID {participantCreateDto.UserId} not found!");
 
                 await _context.Participants.AddAsync(participant);
                 await _context.SaveChangesAsync();

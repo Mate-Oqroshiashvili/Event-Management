@@ -6,6 +6,8 @@ namespace Event_Management.Repositories.PromoCodeRepositoryFolder
     {
         Task<IEnumerable<PromoCodeDto>> GetPromoCodesAsync();
         Task<PromoCodeDto> GetPromoCodeByIdAsync(int id);
+        Task<PromoCodeDto> GetPromoCodeBySearchTermAsync(string searchTerm);
+        Task<IEnumerable<PromoCodeDto>> GetPromoCodesByEventIdAsync(int eventId);
         Task<PromoCodeDto> AddPromoCodeAsync(PromoCodeCreateDto promoCodeCreateDto);
         Task<bool> UpdatePromoCodeAsync(int id, PromoCodeUpdateDto promoCodeUpdateDto);
         Task<bool> DeletePromoCodeAsync(int id);

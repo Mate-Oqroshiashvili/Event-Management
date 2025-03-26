@@ -37,6 +37,7 @@ namespace Event_Management.Repositories.LocationRepositoryFolder
             var location = await _context.Locations
                 .Include(x => x.Events)
                 .Include(x => x.Organizers)
+                    .ThenInclude(x => x.Locations)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             var locationDto = _mapper.Map<LocationDto>(location);
@@ -61,6 +62,7 @@ namespace Event_Management.Repositories.LocationRepositoryFolder
         {
             var location = _mapper.Map<Location>(locationCreateDto);
 
+            location.RemainingCapacity = locationCreateDto.MaxCapacity;
             var imageUrl = await _imageRepository.GenerateImageSource(locationCreateDto.Image);
             location.ImageUrl = imageUrl;
 

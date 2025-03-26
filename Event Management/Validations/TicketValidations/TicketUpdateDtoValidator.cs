@@ -8,10 +8,6 @@ namespace Event_Management.Validations.TicketValidations
     {
         public TicketUpdateDtoValidator()
         {
-            RuleFor(x => x.Type)
-                .Must(ticketType => Enum.IsDefined(typeof(TicketType), ticketType))
-                .WithMessage("Invalid ticket type.");
-
             RuleFor(x => x.Price)
                 .GreaterThan(0).WithMessage("Price must be greater than 0.")
                 .LessThanOrEqualTo(10000).WithMessage("Price cannot exceed 10,000.");

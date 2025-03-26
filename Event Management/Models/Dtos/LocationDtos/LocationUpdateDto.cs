@@ -8,7 +8,8 @@
         public string? State { get; set; }
         public string? Country { get; set; }
         public string? PostalCode { get; set; }
-        public int? Capacity { get; set; }
+        public int? MaxCapacity { get; set; } // Max number of attendees the venue can hold
+        public int? RemainingCapacity { get; set; }
         public int AvailableStaff { get; set; }
         public int BookedStaff { get; set; }
         public string? Description { get; set; }

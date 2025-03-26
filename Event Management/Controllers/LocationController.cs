@@ -1,6 +1,7 @@
 ﻿using Event_Management.Exceptions;
 using Event_Management.Models.Dtos.LocationDtos;
 using Event_Management.Repositories.LocationRepositoryFolder;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Event_Management.Controllers
@@ -61,6 +62,7 @@ namespace Event_Management.Controllers
             }
         }
 
+        [Authorize(Roles = "ADMINISTRATOR")]
         [HttpPost("add-location")]
         public async Task<ActionResult<LocationDto>> AddLocation([FromForm] LocationCreateDto locationCreateDto)
         {

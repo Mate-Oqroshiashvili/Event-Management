@@ -3,6 +3,7 @@ using Event_Management.Models.Dtos.ParticipantDtos;
 using Event_Management.Models.Dtos.PurchaseDtos;
 using Event_Management.Models.Dtos.TicketDtos;
 using Event_Management.Models.Enums;
+using System.Text.Json.Serialization;
 
 namespace Event_Management.Models.Dtos.UserDtos
 {
@@ -19,12 +20,14 @@ namespace Event_Management.Models.Dtos.UserDtos
         public string? SmsVerificationCode { get; set; }
         public DateTime CodeExpiration { get; set; }
         public bool IsLoggedIn { get; set; } = false;
+        [JsonIgnore]
         public OrganizerDto Organizer { get; set; }
         public IEnumerable<TicketDto> Tickets { get; set; }
         public IEnumerable<PurchaseDto> Purchases { get; set; }
         public IEnumerable<ParticipantDto> Participants { get; set; }
         public IEnumerable<Review> Reviews { get; set; }
         public IEnumerable<Comment> Comments { get; set; }
+        public IEnumerable<UsedPromoCode> UsedPromoCodes { get; set; }
 
         public UserDto()
         {

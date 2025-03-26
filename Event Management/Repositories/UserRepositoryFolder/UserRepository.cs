@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Event_Management.Data;
+using Event_Management.Exceptions;
 using Event_Management.Models;
 using Event_Management.Models.Dtos.UserDtos;
 using Event_Management.Models.Enums;
@@ -30,6 +31,7 @@ namespace Event_Management.Repositories.UserRepositoryFolder
                 .Include(x => x.Tickets)
                 .Include(x => x.Comments)
                 .Include(x => x.Reviews)
+                .Include(x => x.UsedPromoCodes)
                 .ToListAsync();
 
             var userDtos = _mapper.Map<IEnumerable<UserDto>>(users);
@@ -46,6 +48,7 @@ namespace Event_Management.Repositories.UserRepositoryFolder
                 .Include(x => x.Tickets)
                 .Include(x => x.Comments)
                 .Include(x => x.Reviews)
+                .Include(x => x.UsedPromoCodes)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             var userDto = _mapper.Map<UserDto>(user);
@@ -62,6 +65,7 @@ namespace Event_Management.Repositories.UserRepositoryFolder
                 .Include(x => x.Tickets)
                 .Include(x => x.Comments)
                 .Include(x => x.Reviews)
+                .Include(x => x.UsedPromoCodes)
                 .FirstOrDefaultAsync(x => x.Email == email);
 
             var userDto = _mapper.Map<UserDto>(user);
@@ -78,7 +82,8 @@ namespace Event_Management.Repositories.UserRepositoryFolder
                 .Include(x => x.Tickets)
                 .Include(x => x.Comments)
                 .Include(x => x.Reviews)
-                .Where(x => x.UserType == Models.Enums.UserType.SPEAKER)
+                .Include(x => x.UsedPromoCodes)
+                .Where(x => x.UserType == UserType.SPEAKER)
                 .ToListAsync();
 
             var speakerDtos = _mapper.Map<IEnumerable<UserDto>>(speakers);
@@ -95,6 +100,7 @@ namespace Event_Management.Repositories.UserRepositoryFolder
                 .Include(x => x.Tickets)
                 .Include(x => x.Comments)
                 .Include(x => x.Reviews)
+                .Include(x => x.UsedPromoCodes)
                 .Where(x => x.UserType == UserType.ARTIST)
                 .ToListAsync();
 
@@ -119,6 +125,19 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             var userDto = _mapper.Map<UserDto>(user);
 
             return userDto;
+        }
+
+        public async Task<decimal> AddBalanceAsync(int userId, decimal balanceToDeposit)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(x => x.Id == userId)
+                ?? throw new NotFoundException("User not found!");
+
+            user.Balance += balanceToDeposit;
+
+            await _context.SaveChangesAsync();
+
+            return user.Balance;
         }
 
         public async Task<bool> UpdateUserAsync(int id, UserUpdateDto userUpdateDto)

@@ -11,12 +11,12 @@ namespace Event_Management.Helpers
             CreateMap<Organizer, OrganizerDto>()
                 .ForMember(dest => dest.Events, opt => opt.MapFrom(src => src.Events))
                 .ForMember(dest => dest.Locations, opt => opt.MapFrom(src => src.Locations))
-                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
+                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User)).ReverseMap();
 
-            CreateMap<OrganizerDto, Organizer>()
-                .ForMember(dest => dest.Events, opt => opt.Ignore())
-                .ForMember(dest => dest.Locations, opt => opt.Ignore())
-                .ForMember(dest => dest.User, opt => opt.Ignore());
+            //CreateMap<OrganizerDto, Organizer>()
+            //    .ForMember(dest => dest.Events, opt => opt.Ignore())
+            //    .ForMember(dest => dest.Locations, opt => opt.Ignore())
+            //    .ForMember(dest => dest.User, opt => opt.Ignore());
 
             CreateMap<OrganizerCreateDto, Organizer>();
 
