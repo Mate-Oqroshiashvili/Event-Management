@@ -47,6 +47,7 @@ namespace Event_Management.Controllers
             }
         }
 
+        [Authorize(Roles = "ORGANIZER")]
         [HttpGet("get-locations-by-organizer-id/{organizerId}")]
         public async Task<ActionResult<IEnumerable<LocationDto>>> GetLocationsByOrganizerId(int organizerId)
         {
@@ -78,6 +79,7 @@ namespace Event_Management.Controllers
             }
         }
 
+        [Authorize(Roles = "ADMINISTRATOR")]
         [HttpPut("update-location/{locationId}")]
         public async Task<ActionResult<string>> UpdateLocation(int locationId, [FromForm] LocationUpdateDto locationUpdateDto)
         {
@@ -93,6 +95,7 @@ namespace Event_Management.Controllers
             }
         }
 
+        [Authorize(Roles = "ADMINISTRATOR")]
         [HttpDelete("remove-location/{locationId}")]
         public async Task<ActionResult<string>> RemoveLocation(int locationId)
         {

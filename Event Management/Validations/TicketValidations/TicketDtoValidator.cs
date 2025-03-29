@@ -36,15 +36,6 @@ namespace Event_Management.Validations.TicketValidations
 
             RuleFor(x => x.Event)
                 .NotNull().WithMessage("Event information is required.");
-
-            RuleFor(x => x.User)
-                .NotNull().WithMessage("User information is required.");
-
-            RuleFor(x => x.Purchase)
-                .NotNull().WithMessage("Purchase information is required.");
-
-            RuleFor(x => x.Participant)
-                .NotNull().WithMessage("Participant information is required.");
         }
 
         private bool BeAValidUrl(string url)

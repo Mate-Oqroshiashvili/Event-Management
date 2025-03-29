@@ -4,39 +4,40 @@ using Event_Management.Exceptions;
 using Event_Management.Models;
 using Event_Management.Models.Dtos.TicketDtos;
 using Event_Management.Models.Enums;
-using Event_Management.Repositories.ImageRepositoryFolder;
+using Event_Management.Repositories.ParticipantRepositoryFolder;
 using Microsoft.EntityFrameworkCore;
-using QRCoder;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using ZXing;
+using ZXing.Common;
+using ZXing.ImageSharp;
+using ZXing.QrCode;
 
 namespace Event_Management.Repositories.TicketRepositoryFolder
 {
     public class TicketRepository : ITicketRepository
     {
         private readonly DataContext _context;
-        private readonly IImageRepository _imageRepository;
+        private readonly IParticipantRepository _participantRepository;
         private readonly IMapper _mapper;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IWebHostEnvironment _environment;
 
-        public TicketRepository(DataContext context, IImageRepository imageRepository, IMapper mapper, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment environment)
+        public TicketRepository(DataContext context, IParticipantRepository participantRepository, IMapper mapper)
         {
             _context = context;
-            _imageRepository = imageRepository;
+            _participantRepository = participantRepository;
             _mapper = mapper;
-            _httpContextAccessor = httpContextAccessor;
-            _environment = environment;
         }
 
         public async Task<IEnumerable<TicketDto>> GetTicketsAsync()
         {
             var tickets = await _context.Tickets
-                .Include(x => x.Participant)
-                .Include(x => x.Purchase)
-                .Include(x => x.User)
-                .Include(x => x.Event)
-                    .ThenInclude(x => x.Organizer)
-                .Include(x => x.Event)
-                    .ThenInclude(x => x.Location)
+                .Include(t => t.Participants)
+                .Include(t => t.Purchases)
+                .Include(t => t.Users)
+                .Include(t => t.Event)
+                    .ThenInclude(e => e.Organizer)
+                .Include(t => t.Event)
+                    .ThenInclude(e => e.Location)
                 .ToListAsync();
 
             var ticketDtos = _mapper.Map<IEnumerable<TicketDto>>(tickets);
@@ -47,10 +48,10 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
         public async Task<IEnumerable<TicketDto>> GetTicketsByEventIdAsync(int eventId)
         {
             var tickets = await _context.Tickets
-                .Include(x => x.Participant)
-                .Include(x => x.Purchase)
+                .Include(x => x.Participants)
+                .Include(x => x.Purchases)
                 .Include(x => x.Event)
-                .Include(x => x.User)
+                .Include(x => x.Users)
                 .Where(x => x.EventId == eventId && x.Event.Status != EventStatus.DELETED && x.Status != TicketStatus.CANCELED)
                 .ToListAsync();
 
@@ -64,11 +65,11 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
             try
             {
                 var tickets = await _context.Tickets
-                    .Include(x => x.Participant)
-                    .Include(x => x.Purchase)
+                    .Include(x => x.Participants)
+                    .Include(x => x.Purchases)
                     .Include(x => x.Event)
-                    .Include(x => x.User)
-                    .Where(x => x.User!.Id == userId)
+                    .Include(x => x.Users)
+                    .Where(x => x.Users!.Any(u => u.Id == userId))
                     .ToListAsync()
                     ?? throw new NotFoundException("User does not have any tickets!");
 
@@ -85,10 +86,10 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
         public async Task<TicketDto> GetTicketByIdAsync(int id)
         {
             var ticket = await _context.Tickets
-                .Include(x => x.Participant)
-                .Include(x => x.Purchase)
+                .Include(x => x.Participants)
+                .Include(x => x.Purchases)
                 .Include(x => x.Event)
-                .Include(x => x.User)
+                .Include(x => x.Users)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             var ticketDto = _mapper.Map<TicketDto>(ticket);
@@ -98,109 +99,136 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
 
         public async Task<TicketDto> AddTicketAsync(TicketCreateDto ticketCreateDto)
         {
-            try
-            {
-                if (ticketCreateDto == null)
-                {
-                    throw new BadRequestException("Information for ticket creation cannot be null.");
-                }
+            if (ticketCreateDto == null)
+                throw new BadRequestException("Information for ticket creation cannot be null.");
 
-                var ticket = _mapper.Map<Ticket>(ticketCreateDto) ?? throw new BadRequestException("Mapping failed: Ticket object is null.");
+            var ticket = _mapper.Map<Ticket>(ticketCreateDto)
+                ?? throw new BadRequestException("Mapping failed: Ticket object is null.");
 
-                ticket.Event = await _context.Events
-                    .Include(x => x.Participants)
-                        .ThenInclude(x => x.Ticket)
-                    .Include(x => x.Participants)
-                        .ThenInclude(x => x.User)
-                    .Include(x => x.Tickets)
-                        .ThenInclude(x => x.User)
-                    .Include(x => x.Tickets)
-                        .ThenInclude(x => x.Participant)
-                    .Include(x => x.Tickets)
-                        .ThenInclude(x => x.Purchase)
-                    .Include(e => e.Location)
-                        .ThenInclude(l => l.Events)
-                    .Include(x => x.Location)
-                    .Include(x => x.Organizer)
-                        .ThenInclude(x => x.User)
-                    .Include(x => x.Organizer)
-                    .Include(x => x.Organizer)
-                    .Include(x => x.Location)
-                    .Include(x => x.SpeakersAndArtists)
-                    .Include(x => x.PromoCodes)
-                    .Include(x => x.Reviews)
-                    .Include(x => x.Comments)
-                    .FirstOrDefaultAsync(x => x.Id == ticketCreateDto.EventId)
-                    ?? throw new BadRequestException("Event not found.");
+            // Fetch the associated event with necessary relationships
+            ticket.Event = await _context.Events
+                .Include(e => e.Participants)
+                    .ThenInclude(p => p.Ticket)
+                .Include(e => e.Participants)
+                    .ThenInclude(p => p.User)
+                .Include(e => e.Tickets)
+                    .ThenInclude(t => t.Users)
+                .Include(e => e.Tickets)
+                    .ThenInclude(t => t.Participants)
+                .Include(e => e.Tickets)
+                    .ThenInclude(t => t.Purchases)
+                .Include(e => e.Location)
+                .Include(e => e.Organizer)
+                    .ThenInclude(o => o.User)
+                .Include(e => e.SpeakersAndArtists)
+                .Include(e => e.PromoCodes)
+                .Include(e => e.Reviews)
+                .Include(e => e.Comments)
+                .FirstOrDefaultAsync(e => e.Id == ticketCreateDto.EventId)
+                ?? throw new BadRequestException("Event not found.");
 
-                ticket.QRCodeData = "PENDING";
-                ticket.QRCodeImageUrl = "PENDING";
+            if (ticket.Event.StartDate <= DateTime.UtcNow + TimeSpan.FromHours(1) &&
+                ticket.Event.StartDate > DateTime.UtcNow)
+                throw new BadRequestException("You cannot add new tickets within one hour before the event starts.");
 
-                if (ticket.Quantity > ticket.Event.Capacity)
-                    throw new BadRequestException($"Ticket quantity should not exceed the maximum event capacity! Event's maximum capacity is {ticket.Event.Capacity}.");
+            ticket.QRCodeData = "PENDING";
+            ticket.QRCodeImageUrl = "PENDING";
 
-                await _context.Tickets.AddAsync(ticket);
-                await _context.SaveChangesAsync(); // Ensure ticket.Id is assigned
+            if (ticket.Quantity > ticket.Event.Capacity)
+                throw new BadRequestException($"Ticket quantity should not exceed the event's max capacity of {ticket.Event.Capacity}.");
 
-                // Generate QR Code after Id is available
-                var purchaseId = ticket.PurchaseId?.ToString() ?? "N/A"; // More concise null handling
-                var qrCodeData = $"{ticket.Id}-{ticket.EventId}-{purchaseId}";
+            ticket.Users.Add(ticket.Event.Organizer.User);
 
-                ticket.QRCodeData = qrCodeData;
+            await _context.Tickets.AddAsync(ticket);
+            await _context.SaveChangesAsync(); // Ensure ticket.Id is assigned
 
-                // Use the ImageRepository to handle QR code generation and storing
-                ticket.QRCodeImageUrl = await GenerateQRCodeImage(qrCodeData) ?? throw new BadRequestException("QR Code generation failed.");
-                Console.Write(ticket.QRCodeData);
-                ticket.Status = TicketStatus.AVAILABLE;
-                ticket.ExpiryDate = ticket.Event?.EndDate ?? throw new BadRequestException("Event EndDate is required.");
+            ticket.Status = TicketStatus.AVAILABLE;
+            ticket.ExpiryDate = ticket.Event?.EndDate
+                ?? throw new BadRequestException("Event EndDate is required.");
 
-                await _context.SaveChangesAsync(); // Save QRCodeImageUrl
+            await _context.SaveChangesAsync(); // Save QRCodeImageUrl
 
-                return _mapper.Map<TicketDto>(ticket);
-            }
-            catch (Exception ex)
-            {
-                throw new BadRequestException($"Error adding ticket: {ex.Message}");
-            }
+            return _mapper.Map<TicketDto>(ticket);
         }
 
-        public async Task<string> ValidateTicketAsync(int ticketId, string qrCodeData)
+        public async Task<string> ValidateTicketByQRCodeImage(IFormFile uploadedQrCodeImage)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
+                // Decode the QR code from the image
+                string qrCodeData = DecodeQRCode(uploadedQrCodeImage);
+
+                Console.WriteLine($"Decoded QR Code Data: {qrCodeData}");
+
+                if (string.IsNullOrEmpty(qrCodeData))
+                {
+                    return "Invalid QR code or image.";
+                }
+
+                // Parse the QR code data (which should be in the format TicketId_EventId_PurchaseIds_ParticipantId_RandomGuid)
+                var qrParts = qrCodeData.Split('_');
+                if (qrParts.Length != 5)
+                {
+                    return "Invalid QR code format.";
+                }
+
+                int ticketId = int.Parse(qrParts[0]);
+                int eventId = int.Parse(qrParts[1]);
+                var purchaseId = int.Parse(qrParts[2]);
+                int participantId = int.Parse(qrParts[3]);
+                string randomGuid = qrParts[4];
+
                 var ticket = await _context.Tickets
-                .Include(x => x.Participant)
-                .Include(x => x.Purchase)
-                .Include(x => x.Event)
-                .Include(x => x.User)
-                .FirstOrDefaultAsync(t => t.Id == ticketId && t.QRCodeData == qrCodeData);
+                    .Include(x => x.Participants)
+                    .Include(x => x.Purchases)
+                    .Include(x => x.Event)
+                    .FirstOrDefaultAsync(x => x.Id == ticketId);
 
                 if (ticket == null)
-                    return "Invalid ticket"; // Specific error if ticket not found
+                {
+                    return "Ticket not found.";
+                }
 
-                if (ticket.IsUsed)
-                    return "Ticket has already been used"; // Error if ticket already used
+                if (ticket.Event.Id != eventId)
+                {
+                    return "Event ID mismatch.";
+                }
 
-                if (ticket.User == null)
-                    return "The owner of this ticket can't be identified";
+                if (!ticket.Purchases.Any(x => x.Id == purchaseId))
+                {
+                    return "Invalid purchase IDs.";
+                }
 
-                if (ticket.Participant == null)
-                    return "The owner of this ticket is not registered as participant";
+                // Validate the participant
+                var participant = await _participantRepository.GetParticipantByIdAsync(participantId);
+                if (participant == null || participant.Ticket.Id != ticketId)
+                {
+                    return "Invalid participant.";
+                }
 
-                // Mark ticket as used
-                ticket.IsUsed = true;
-                ticket.Participant.Attendance = true;
+                if (ticket.Event.StartDate > DateTime.UtcNow)
+                    throw new BadRequestException("Event has not started yet!");
+
+                if (ticket.Event.EndDate < DateTime.UtcNow)
+                    throw new BadRequestException("Event already finished!");
+
+                if (ticket.Participants.Find(x => x.Id == participantId)!.IsUsed &&
+                   ticket.Participants.Find(x => x.Id == participantId)!.Attendance)
+                    throw new BadRequestException("Ticket is already validated");
+
+                ticket.Participants.Find(x => x.Id == participantId)!.IsUsed = true;
+                ticket.Participants.Find(x => x.Id == participantId)!.Attendance = true;
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                return "Ticket validated successfully"; // Clear success message
+                return "Ticket validated successfully.";
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                throw new BadRequestException($"Error validating ticket: {ex.Message}", ex.InnerException);
+                throw new BadRequestException(ex.Message, ex.InnerException);
             }
         }
 
@@ -245,45 +273,30 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
             return true;
         }
 
-        private async Task<string> GenerateQRCodeImage(string qrText)
+        // Method to decode QR code from an image
+        public string DecodeQRCode(IFormFile file)
         {
             try
             {
-                // Generate QR code
-                using QRCodeGenerator qrGenerator = new QRCodeGenerator();
-                using QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrText, QRCodeGenerator.ECCLevel.Q);
-                using PngByteQRCode qrCode = new PngByteQRCode(qrCodeData);
+                if (file == null || file.Length == 0)
+                    throw new BadRequestException("Invalid file");
 
-                // Get QR code as byte array
-                byte[] qrCodeBytes = qrCode.GetGraphic(20);
+                using var memoryStream = new MemoryStream();
+                file.CopyTo(memoryStream);
+                var byteArray = memoryStream.ToArray();
 
-                // Define the QR Codes folder inside "Uploads"
-                string uploadsFolder = Path.Combine(_environment.ContentRootPath, "Uploads", "QRCodes");
+                using var image = Image.Load<Rgba32>(byteArray);
+                var luminanceSource = new ImageSharpLuminanceSource<Rgba32>(image);
+                var bitmap = new BinaryBitmap(new HybridBinarizer(luminanceSource));
+                var reader = new QRCodeReader();
+                var result = reader.decode(bitmap);
 
-                // Ensure the directory exists
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-
-                // Generate unique file name for the QR code
-                string fileName = $"{Guid.NewGuid()}.png";
-                string filePath = Path.Combine(uploadsFolder, fileName);
-
-                // Save QR code image
-                await File.WriteAllBytesAsync(filePath, qrCodeBytes);
-
-                // Get the request details for full URL
-                var request = _httpContextAccessor.HttpContext!.Request;
-                string baseUrl = $"{request.Scheme}://{request.Host}";
-
-                // Return the complete URL
-                return $"{baseUrl}/Uploads/QRCodes/{fileName}";
+                return result?.Text ?? throw new Exception("QR code not found.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error generating QR code: {ex.Message}");
-                return string.Empty; // Return an empty string if QR code generation fails
+                Console.WriteLine($"Error decoding QR code: {ex.Message}");
+                throw new BadRequestException("Failed to decode QR code", ex);
             }
         }
     }

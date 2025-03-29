@@ -13,13 +13,12 @@ namespace Event_Management.Models
         public TicketStatus Status { get; set; }
         public string QRCodeData { get; set; }  // QR Code String
         public string QRCodeImageUrl { get; set; }  // Image URL
-        public bool IsUsed { get; set; } = false; // Track if QR is scanned
         public DateTime ExpiryDate { get; set; } // QR Expiration date
 
         public Event Event { get; set; }
-        public User? User { get; set; }
-        public Purchase? Purchase { get; set; }
-        public Participant? Participant { get; set; }
+        public List<User> Users { get; set; } = new List<User>();
+        public List<Purchase> Purchases { get; set; } = new List<Purchase>();
+        public List<Participant> Participants { get; set; } = new List<Participant>();
 
         public Ticket()
         {

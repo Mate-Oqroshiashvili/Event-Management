@@ -7,7 +7,6 @@ using Event_Management.Models.Enums;
 using Event_Management.Repositories.CodeRepositoryFolder;
 using Event_Management.Repositories.ImageRepositoryFolder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace Event_Management.Repositories.EventRepositoryFolder
 {
@@ -26,146 +25,239 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<EventDto>> GetEventsAsync()
+        public async Task<IEnumerable<EventDto>> GetPublishedEventsAsync()
         {
-            var events = await _context.Events
-                    .Where(x => x.Status != EventStatus.DELETED && x.Status != EventStatus.DRAFT && x.Status != EventStatus.COMPLETED)
+            try
+            {
+                var events = await _context.Events
+                    .Where(x => x.Status == EventStatus.PUBLISHED)
                     .Include(x => x.Participants)
-                        .ThenInclude(x => x.Ticket)
                     .Include(x => x.Participants)
-                        .ThenInclude(x => x.User)
                     .Include(x => x.Tickets)
-                        .ThenInclude(x => x.User)
                     .Include(x => x.Tickets)
-                        .ThenInclude(x => x.Participant)
                     .Include(x => x.Tickets)
-                        .ThenInclude(x => x.Purchase)
                     .Include(e => e.Location)
-                        .ThenInclude(l => l.Events)
                     .Include(x => x.Location)
-                        .ThenInclude(x => x.Organizers)
                     .Include(x => x.Organizer)
-                        .ThenInclude(x => x.User)
                     .Include(x => x.Organizer)
-                        .ThenInclude(x => x.Locations)
                     .Include(x => x.Organizer)
-                        .ThenInclude(x => x.Events)
                     .Include(x => x.Location)
                     .Include(x => x.SpeakersAndArtists)
                     .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
                     .Include(x => x.Comments)
-                    .ToListAsync();
+                    .ToListAsync() ?? throw new NotFoundException("Events not found!");
 
-            var eventDtos = _mapper.Map<IEnumerable<EventDto>>(events);
+                var eventDtos = _mapper.Map<IEnumerable<EventDto>>(events);
 
-            return eventDtos;
+                return eventDtos;
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        public async Task<IEnumerable<EventDto>> GetDraftedEventsAsync()
+        {
+            try
+            {
+                var events = await _context.Events
+                    .Where(x => x.Status == EventStatus.DRAFT)
+                    .Include(x => x.Participants)
+                    .Include(x => x.Participants)
+                    .Include(x => x.Tickets)
+                    .Include(x => x.Tickets)
+                    .Include(x => x.Tickets)
+                    .Include(e => e.Location)
+                    .Include(x => x.Location)
+                    .Include(x => x.Organizer)
+                    .Include(x => x.Organizer)
+                    .Include(x => x.Organizer)
+                    .Include(x => x.Location)
+                    .Include(x => x.SpeakersAndArtists)
+                    .Include(x => x.PromoCodes)
+                    .Include(x => x.Reviews)
+                    .Include(x => x.Comments)
+                    .ToListAsync() ?? throw new NotFoundException("Events not found!");
+
+                var eventDtos = _mapper.Map<IEnumerable<EventDto>>(events);
+
+                return eventDtos;
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        public async Task<IEnumerable<EventDto>> GetCompletedEventsAsync()
+        {
+            try
+            {
+                var events = await _context.Events
+                    .Where(x => x.Status == EventStatus.COMPLETED)
+                    .Include(x => x.Participants)
+                    .Include(x => x.Participants)
+                    .Include(x => x.Tickets)
+                    .Include(x => x.Tickets)
+                    .Include(x => x.Tickets)
+                    .Include(e => e.Location)
+                    .Include(x => x.Location)
+                    .Include(x => x.Organizer)
+                    .Include(x => x.Organizer)
+                    .Include(x => x.Organizer)
+                    .Include(x => x.Location)
+                    .Include(x => x.SpeakersAndArtists)
+                    .Include(x => x.PromoCodes)
+                    .Include(x => x.Reviews)
+                    .Include(x => x.Comments)
+                    .ToListAsync() ?? throw new NotFoundException("Events not found!");
+
+                var eventDtos = _mapper.Map<IEnumerable<EventDto>>(events);
+
+                return eventDtos;
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        public async Task<IEnumerable<EventDto>> GetDeletedEventsAsync()
+        {
+            try
+            {
+                var events = await _context.Events
+                    .Where(x => x.Status == EventStatus.COMPLETED)
+                    .Include(x => x.Participants)
+                    .Include(x => x.Participants)
+                    .Include(x => x.Tickets)
+                    .Include(x => x.Tickets)
+                    .Include(x => x.Tickets)
+                    .Include(e => e.Location)
+                    .Include(x => x.Location)
+                    .Include(x => x.Organizer)
+                    .Include(x => x.Organizer)
+                    .Include(x => x.Organizer)
+                    .Include(x => x.Location)
+                    .Include(x => x.SpeakersAndArtists)
+                    .Include(x => x.PromoCodes)
+                    .Include(x => x.Reviews)
+                    .Include(x => x.Comments)
+                    .ToListAsync() ?? throw new NotFoundException("Events not found!");
+
+                var eventDtos = _mapper.Map<IEnumerable<EventDto>>(events);
+
+                return eventDtos;
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
         }
 
         public async Task<EventDto> GetEventByIdAsync(int id)
         {
-            var @event = await _context.Events
+            try
+            {
+                var @event = await _context.Events
                     .Include(x => x.Participants)
-                        .ThenInclude(x => x.Ticket)
                     .Include(x => x.Participants)
-                        .ThenInclude(x => x.User)
                     .Include(x => x.Tickets)
-                        .ThenInclude(x => x.User)
                     .Include(x => x.Tickets)
-                        .ThenInclude(x => x.Participant)
                     .Include(x => x.Tickets)
-                        .ThenInclude(x => x.Purchase)
                     .Include(e => e.Location)
-                        .ThenInclude(l => l.Events)
                     .Include(x => x.Location)
-                        .ThenInclude(x => x.Organizers)
                     .Include(x => x.Organizer)
-                        .ThenInclude(x => x.User)
                     .Include(x => x.Organizer)
-                        .ThenInclude(x => x.Locations)
                     .Include(x => x.Organizer)
-                        .ThenInclude(x => x.Events)
                     .Include(x => x.Location)
                     .Include(x => x.SpeakersAndArtists)
                     .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
                     .Include(x => x.Comments)
-                    .FirstOrDefaultAsync(x => x.Id == id && x.Status != EventStatus.DELETED);
+                    .FirstOrDefaultAsync(x => x.Id == id && x.Status == EventStatus.PUBLISHED)
+                    ?? throw new NotFoundException("Event not found!");
 
-            var eventDto = _mapper.Map<EventDto>(@event);
+                var eventDto = _mapper.Map<EventDto>(@event);
 
-            return eventDto;
+                return eventDto;
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
         }
 
         public async Task<EventDto> GetEventBySearchtermAsync(string searchTerm)
         {
-            var @event = await _context.Events
+            try
+            {
+                var @event = await _context.Events
                     .Include(x => x.Participants)
-                        .ThenInclude(x => x.Ticket)
                     .Include(x => x.Participants)
-                        .ThenInclude(x => x.User)
                     .Include(x => x.Tickets)
-                        .ThenInclude(x => x.User)
                     .Include(x => x.Tickets)
-                        .ThenInclude(x => x.Participant)
                     .Include(x => x.Tickets)
-                        .ThenInclude(x => x.Purchase)
                     .Include(e => e.Location)
-                        .ThenInclude(l => l.Events)
                     .Include(x => x.Location)
-                        .ThenInclude(x => x.Organizers)
                     .Include(x => x.Organizer)
-                        .ThenInclude(x => x.User)
                     .Include(x => x.Organizer)
-                        .ThenInclude(x => x.Locations)
                     .Include(x => x.Organizer)
-                        .ThenInclude(x => x.Events)
                     .Include(x => x.Location)
                     .Include(x => x.SpeakersAndArtists)
                     .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
                     .Include(x => x.Comments)
-                    .FirstOrDefaultAsync(x => x.Title == searchTerm || x.Description.Contains(searchTerm) && x.Status != EventStatus.DELETED && x.Status != EventStatus.DRAFT);
+                    .FirstOrDefaultAsync(x => x.Title == searchTerm || x.Description.Contains(searchTerm) &&
+                                         x.Status != EventStatus.DELETED && x.Status != EventStatus.DRAFT)
+                    ?? throw new NotFoundException($"Event can't be found with search term - {searchTerm}");
 
-            var eventDto = _mapper.Map<EventDto>(@event);
+                var eventDto = _mapper.Map<EventDto>(@event);
 
-            return eventDto;
+                return eventDto;
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
         }
 
         public async Task<IEnumerable<EventDto>> GetEventsByOrganizerIdAsync(int organizerId)
         {
-            var events = await _context.Events
+            try
+            {
+                if (!_context.Organizers.Any(x => x.Id == organizerId))
+                    throw new NotFoundException("Organizer not found!");
+
+                var events = await _context.Events
                     .Where(e => e.OrganizerId == organizerId)
                     .Include(x => x.Participants)
-                        .ThenInclude(x => x.Ticket)
                     .Include(x => x.Participants)
-                        .ThenInclude(x => x.User)
                     .Include(x => x.Tickets)
-                        .ThenInclude(x => x.User)
                     .Include(x => x.Tickets)
-                        .ThenInclude(x => x.Participant)
                     .Include(x => x.Tickets)
-                        .ThenInclude(x => x.Purchase)
                     .Include(e => e.Location)
-                        .ThenInclude(l => l.Events)
                     .Include(x => x.Location)
-                        .ThenInclude(x => x.Organizers)
                     .Include(x => x.Organizer)
-                        .ThenInclude(x => x.User)
                     .Include(x => x.Organizer)
-                        .ThenInclude(x => x.Locations)
                     .Include(x => x.Organizer)
-                        .ThenInclude(x => x.Events)
                     .Include(x => x.Location)
                     .Include(x => x.SpeakersAndArtists)
                     .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
                     .Include(x => x.Comments)
-                    .ToListAsync();
+                    .ToListAsync() ?? throw new NotFoundException("Organizer does not have any events planed.");
 
-            var eventDtos = _mapper.Map<IEnumerable<EventDto>>(events);
+                var eventDtos = _mapper.Map<IEnumerable<EventDto>>(events);
 
-            return eventDtos;
+                return eventDtos;
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
         }
 
         public async Task<EventDto> AddEventAsync(EventCreateDto eventCreateDto)
@@ -235,8 +327,9 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                 @event.BookedStaff = (int)Math.Floor(@event.Location.AvailableStaff / ratio);
                 @event.Location.AvailableStaff -= @event.BookedStaff;
                 @event.Location.BookedStaff += @event.BookedStaff;
+                @event.Status = EventStatus.DRAFT;
 
-                await _context.Events.AddAsync(@event); 
+                await _context.Events.AddAsync(@event);
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
@@ -324,11 +417,11 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                     .Include(x => x.Participants)
                         .ThenInclude(x => x.User)
                     .Include(x => x.Tickets)
-                        .ThenInclude(x => x.User)
+                        .ThenInclude(x => x.Users)
                     .Include(x => x.Tickets)
-                        .ThenInclude(x => x.Participant)
+                        .ThenInclude(x => x.Participants)
                     .Include(x => x.Tickets)
-                        .ThenInclude(x => x.Purchase)
+                        .ThenInclude(x => x.Purchases)
                     .FirstOrDefaultAsync(e => e.Id == id);
 
                 if (@event == null) return false;
@@ -343,10 +436,45 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                 if (!@event.Organizer.IsVerified)
                     throw new BadRequestException("Organizer is not verified!");
 
+                if (newDate < DateTime.UtcNow)
+                    throw new BadRequestException("Event should be planned in the future!");
+
                 // Update the event date
                 var duration = @event.EndDate - @event.StartDate;
                 @event.StartDate = newDate;
                 @event.EndDate = newDate + duration;
+                @event.Status = EventStatus.DRAFT;
+
+                if (!@event.Location.Organizers.Any(o => o.Id == @event.Organizer.Id))
+                {
+                    @event.Location.Organizers.Add(@event.Organizer);
+                }
+
+                if (!@event.Organizer.Locations.Any(l => l.Id == @event.Location.Id))
+                {
+                    @event.Organizer.Locations.Add(@event.Location);
+                }
+
+                if (!@event.Organizer.Events.Any(l => l.Id == @event.Id))
+                {
+                    @event.Organizer.Events.Add(@event);
+                }
+
+                if (!@event.Location.Events.Any(e => e.Id == @event.Id))
+                {
+                    @event.Location.Events.Add(@event);
+                }
+
+                if (@event.Capacity <= 0)
+                    throw new BadRequestException("Event capacity must be greater than zero!");
+
+                if (@event.Capacity > @event.Location.RemainingCapacity)
+                    throw new BadRequestException("Event capacity exceeds location’s maximum capacity!");
+
+                @event.Location.RemainingCapacity -= @event.Capacity;
+                @event.Location.AvailableStaff -= @event.BookedStaff;
+                @event.Location.BookedStaff += @event.BookedStaff;
+
                 _context.Events.Update(@event);
 
                 // Notify participants (pseudo-code, replace with real email service)
@@ -360,10 +488,32 @@ namespace Event_Management.Repositories.EventRepositoryFolder
 
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                throw;
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        public async Task<bool> PublishTheEvent(int eventId)
+        {
+            try
+            {
+                var @event = await _context.Events.FindAsync(eventId);
+                if (@event == null) return false;
+
+                if (@event.StartDate < DateTime.UtcNow)
+                    throw new BadRequestException("Event can't be published because it's start date is overdue!");
+
+                @event.Status = EventStatus.PUBLISHED;
+                _context.Events.Update(@event);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
             }
         }
 
@@ -379,11 +529,11 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                     .Include(x => x.Participants)
                         .ThenInclude(x => x.User)
                     .Include(x => x.Tickets)
-                        .ThenInclude(x => x.User)
+                        .ThenInclude(x => x.Users)
                     .Include(x => x.Tickets)
-                        .ThenInclude(x => x.Participant)
+                        .ThenInclude(x => x.Participants)
                     .Include(x => x.Tickets)
-                        .ThenInclude(x => x.Purchase)
+                        .ThenInclude(x => x.Purchases)
                     .Include(x => x.PromoCodes)
                     .FirstOrDefaultAsync(e => e.Id == id);
 
@@ -405,12 +555,6 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                 if (!@event.Organizer.IsVerified)
                     throw new BadRequestException("Organizer is not verified!");
 
-                // Notify participants about event cancellation
-                foreach (var participant in @event.Participants)
-                {
-                    await _codeRepository.SendEventCancellationNotification(participant.User.Email, @event.Title);
-                }
-
                 @event.Status = EventStatus.DELETED;
 
                 _context.Events.Update(@event);
@@ -420,16 +564,20 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                 {
                     ticket.Status = TicketStatus.CANCELED;
 
-                    if (ticket.Purchase != null)
+                    if (ticket.Purchases != null)
                     {
-                        ticket.Purchase.Status = PurchaseStatus.REFUNDED;
-                        ticket.Purchase.User.Balance += ticket.Purchase.TotalAmount;
+                        foreach (var purchase in ticket.Purchases)
+                        {
+                            purchase.Status = PurchaseStatus.REFUNDED;
+                            purchase.User.Balance += purchase.TotalAmount;
+                        }
                     }
                 }
                 _context.Tickets.UpdateRange(@event.Tickets);
-                _context.Purchases.UpdateRange(@event.Tickets.Where(t => t.Purchase != null).Select(t => t.Purchase!));
+                _context.Purchases.UpdateRange(@event.Tickets.Where(t => t.Purchases != null).SelectMany(t => t.Purchases!));
 
-                @event.Organizer.Events.Remove(@event);
+                //// Because of the soft deletion
+                //@event.Organizer.Events.Remove(@event);
 
                 // Restore location capacity and staff
                 @event.Location.RemainingCapacity += @event.Capacity;
@@ -437,7 +585,9 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                 @event.Location.BookedStaff -= @event.BookedStaff;
 
                 _context.Locations.Update(@event.Location);
-                @event.Location.Events.Remove(@event);
+
+                //// Because of the soft deletion
+                //@event.Location.Events.Remove(@event);
 
                 // Remove participants
                 _context.Participants.RemoveRange(@event.Participants);
@@ -445,6 +595,15 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                 foreach (var promoCode in @event.PromoCodes)
                 {
                     _context.PromoCodes.Remove(promoCode);
+                }
+
+                // Notify participants about event cancellation
+                if (@event.Status == EventStatus.DELETED)
+                {
+                    foreach (var participant in @event.Participants)
+                    {
+                        await _codeRepository.SendEventCancellationNotification(participant.User.Email, @event.Title);
+                    }
                 }
 
                 //// Delete the event or leave it as it is for the soft deletion

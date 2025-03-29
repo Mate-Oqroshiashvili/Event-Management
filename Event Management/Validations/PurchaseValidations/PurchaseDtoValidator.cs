@@ -10,9 +10,6 @@ namespace Event_Management.Validations.PurchaseValidations
             RuleFor(p => p.Id)
                 .GreaterThan(0).WithMessage("Purchase ID must be a positive integer.");
 
-            RuleFor(p => p.Quantity)
-                .GreaterThan(0).WithMessage("Quantity must be at least 1.");
-
             RuleFor(p => p.TotalAmount)
                 .GreaterThan(0).WithMessage("Total amount must be greater than zero.");
 

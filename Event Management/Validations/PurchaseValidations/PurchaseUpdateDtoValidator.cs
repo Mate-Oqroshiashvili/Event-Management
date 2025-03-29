@@ -14,9 +14,6 @@ namespace Event_Management.Validations.PurchaseValidations
                 .Must(ticketIds => ticketIds.Distinct().Count() == ticketIds.Count)
                 .WithMessage("Duplicate ticket IDs are not allowed.");
 
-            RuleFor(p => p.Quantity)
-                .GreaterThan(0).WithMessage("Quantity must be at least 1.");
-
             RuleFor(p => p.Status)
                 .IsInEnum().WithMessage("Invalid purchase status.");
         }

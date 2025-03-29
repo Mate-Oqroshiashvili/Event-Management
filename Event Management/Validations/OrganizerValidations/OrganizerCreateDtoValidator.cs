@@ -10,21 +10,6 @@ namespace Event_Management.Validations.OrganizerValidations
 
         public OrganizerCreateDtoValidator()
         {
-            RuleFor(o => o.Name)
-                .NotEmpty().WithMessage("Organizer name is required.")
-                .MaximumLength(100).WithMessage("Organizer name must not exceed 100 characters.")
-                .Must(name => name.Trim() == name).WithMessage("Organizer name should not have leading or trailing spaces.");
-
-            RuleFor(o => o.Email)
-                .NotEmpty().WithMessage("Email is required.")
-                .EmailAddress().WithMessage("Invalid email format.")
-                .Must(email => !email.EndsWith("@tempmail.com") && !email.EndsWith("@trashmail.com"))
-                .WithMessage("Temporary email addresses are not allowed.");
-
-            RuleFor(o => o.PhoneNumber)
-                .NotEmpty().WithMessage("Phone number is required.")
-                .Matches(@"^\+?[1-9]\d{6,14}$").WithMessage("Invalid phone number format. Must include country code.");
-
             RuleFor(o => o.Description)
                 .MaximumLength(500).WithMessage("Description must not exceed 500 characters.")
                 .Must(desc => !desc.Contains("spam") && !desc.Contains("free") && !desc.Contains("discount"))

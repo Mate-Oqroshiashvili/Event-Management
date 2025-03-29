@@ -1,4 +1,8 @@
-﻿using Event_Management.Models.Dtos.TicketDtos;
+﻿using Event_Management.Data;
+using Event_Management.Exceptions;
+using Event_Management.Models.Dtos.TicketDtos;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System.Net;
 using System.Net.Mail;
 using Twilio;
@@ -9,11 +13,15 @@ namespace Event_Management.Repositories.CodeRepositoryFolder
 {
     public class CodeRepository : ICodeRepository
     {
+        private readonly DataContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IMemoryCache _cache;
 
-        public CodeRepository(IConfiguration configuration)
+        public CodeRepository(DataContext dataContext, IConfiguration configuration, IMemoryCache cache)
         {
+            _context = dataContext;
             _configuration = configuration;
+            _cache = cache;
         }
 
         public async Task<string> SendToEmail(string email, string text)
@@ -93,13 +101,30 @@ namespace Event_Management.Repositories.CodeRepositoryFolder
 
                     mailMessage.To.Add(email);
 
-                    // Update the path to point to the 'qrcodes' folder inside 'Uploads' directory
-                    string qrCodePath = Path.Combine("Uploads", "qrcodes", ticket.QRCodeImageUrl.TrimStart('/'));
+                    // Strip out the base URL part and ensure relative path is correct
+                    string relativeQRCodePath = ticket.QRCodeImageUrl.Replace("https://localhost:7056/", "").TrimStart('/');
 
-                    // Ensure the path is valid (if it's relative to your project directory)
-                    var fullPath = Path.GetFullPath(qrCodePath);
-                    mailMessage.Attachments.Add(new Attachment(fullPath));
+                    // Ensure there is no duplicate "Uploads/QRCodes" part
+                    if (relativeQRCodePath.StartsWith("Uploads/QRCodes", StringComparison.OrdinalIgnoreCase))
+                    {
+                        relativeQRCodePath = relativeQRCodePath.Substring("Uploads/QRCodes".Length).TrimStart('/');
+                    }
 
+                    // Construct the local file path
+                    string basePath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "qrcodes");
+                    string qrCodePath = Path.Combine(basePath, relativeQRCodePath);
+
+                    // Check if the file exists before adding it as an attachment
+                    if (File.Exists(qrCodePath))
+                    {
+                        mailMessage.Attachments.Add(new Attachment(qrCodePath));
+                    }
+                    else
+                    {
+                        throw new FileNotFoundException($"QR Code image not found: {qrCodePath}");
+                    }
+
+                    // Send the email
                     await client.SendMailAsync(mailMessage);
                     return "Ticket sent successfully!";
                 }
@@ -162,6 +187,54 @@ namespace Event_Management.Repositories.CodeRepositoryFolder
             string body = $"Dear attendee,<br><br>The event <b>{eventTitle}</b> has been rescheduled to <b>{newDate:dddd, MMMM dd, yyyy at hh:mm tt}</b>. Please update your calendar accordingly.<br><br>Best regards,<br>Event Management Team";
 
             await SendEmailToNotifyAsync(email, subject, body);
+        }
+
+        public async Task<string> SendCodes(int orgnizerId)
+        {
+            try
+            {
+                var organizer = await _context.Organizers
+                    .Include(x => x.User)
+                    .FirstOrDefaultAsync(x => x.Id == orgnizerId)
+                    ?? throw new NotFoundException($"Organizer with the Id {orgnizerId} not found!");
+
+                var rng = new Random();
+                var emailCode = rng.Next(100000, 999999).ToString();
+                var smsCode = rng.Next(100000, 999999).ToString();
+
+                organizer.User.EmailVerificationCode = emailCode;
+                organizer.User.SmsVerificationCode = smsCode;
+                organizer.User.CodeExpiration = DateTime.UtcNow.AddMinutes(10);
+
+                await _context.SaveChangesAsync();
+
+                await SendToEmail(organizer.Email, $"Your email verification code is {emailCode}");
+                await SendToPhone(organizer.PhoneNumber, $"Your SMS verification code is {smsCode}");
+
+                return "Verification codes sent successfully.";
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        public async Task<string> SendCodes(string email, string phoneNumber)
+        {
+            var emailCode = new Random().Next(100000, 999999).ToString();
+            var smsCode = new Random().Next(100000, 999999).ToString();
+
+            _cache.Set(email, $"{emailCode},{smsCode}", TimeSpan.FromMinutes(10)); // Auto-expires ✅
+
+            await SendToEmail(email, $"Your email verification code is {emailCode}");
+            await SendToPhone(phoneNumber, $"Your SMS verification code is {smsCode}");
+
+            return "Verification codes sent successfully!";
+        }
+
+        public string GetCodes(string email)
+        {
+            return _cache.TryGetValue(email, out string? codes) ? codes! : string.Empty;
         }
     }
 }

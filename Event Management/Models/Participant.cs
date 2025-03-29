@@ -6,11 +6,14 @@
         public int EventId { get; set; }
         public int UserId { get; set; }
         public int? TicketId { get; set; }
+        public int? PurchaseId { get; set; }
         public DateTime RegistrationDate { get; set; } = DateTime.UtcNow;
         public bool Attendance { get; set; } = false;
+        public bool IsUsed { get; set; } = false; // Track if QR is scanned
 
         public Event Event { get; set; }
         public Ticket Ticket { get; set; }
+        public Purchase Purchase { get; set; }
         public User User { get; set; }
 
         public Participant()

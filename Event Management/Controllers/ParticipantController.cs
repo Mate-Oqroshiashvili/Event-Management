@@ -104,12 +104,12 @@ namespace Event_Management.Controllers
         }
 
         [Authorize(Roles = "PARTICIPANT")]
-        [HttpDelete("request-the-refund/{participantId}")]
-        public async Task<ActionResult<string>> RequestTheRefund(int participantId)
+        [HttpDelete("request-the-refund/{participantId}&{purchaseId}")]
+        public async Task<ActionResult<string>> RequestTheRefund(int participantId, int purchaseId)
         {
             try
             {
-                var deleted = await _participantRepository.DeleteParticipantAsync(participantId);
+                var deleted = await _participantRepository.DeleteParticipantAsync(participantId, purchaseId);
 
                 return !deleted ? throw new NotFoundException("Participant not found or the ticket is already used!") : Ok(new { message = "Refund proccess executed successfully!" });
             }

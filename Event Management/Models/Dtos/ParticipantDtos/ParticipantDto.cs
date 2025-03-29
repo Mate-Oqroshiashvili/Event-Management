@@ -9,8 +9,10 @@ namespace Event_Management.Models.Dtos.ParticipantDtos
         public int Id { get; set; }
         public DateTime RegistrationDate { get; set; }
         public bool Attendance { get; set; }
+        public bool IsUsed { get; set; } = false; // Track if QR is scanned
         public EventDto Event { get; set; }
         public TicketDto Ticket { get; set; }
+        public Purchase Purchase { get; set; }
         public UserDto User { get; set; }
 
         public ParticipantDto()

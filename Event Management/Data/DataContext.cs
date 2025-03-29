@@ -74,22 +74,34 @@ namespace Event_Management.Data
 
             // ---- Ticket Configurations ----
             modelBuilder.Entity<Ticket>()
+                .HasMany(t => t.Users)
+                .WithMany(u => u.Tickets)
+                .UsingEntity<Dictionary<string, object>>(
+                    "TicketUser",
+                    j => j.HasOne<User>().WithMany().HasForeignKey("UserId"),
+                    j => j.HasOne<Ticket>().WithMany().HasForeignKey("TicketId")
+                );
+
+            modelBuilder.Entity<Ticket>()
                 .HasOne(t => t.Event)
                 .WithMany(e => e.Tickets)
                 .HasForeignKey(t => t.EventId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Ticket>()
-                .HasOne(t => t.Purchase)
-                .WithMany(p => p.Tickets) // Change to one-to-many
-                .HasForeignKey(t => t.PurchaseId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasMany(t => t.Purchases)
+                .WithMany(p => p.Tickets)
+                .UsingEntity<Dictionary<string, object>>(
+                    "TicketPurchase",
+                    j => j.HasOne<Purchase>().WithMany().HasForeignKey("PurchaseId"),
+                    j => j.HasOne<Ticket>().WithMany().HasForeignKey("TicketId")
+                );
 
             modelBuilder.Entity<Ticket>()
-                .HasOne(t => t.Participant)
+                .HasMany(t => t.Participants)
                 .WithOne(p => p.Ticket)
-                .HasForeignKey<Participant>(p => p.TicketId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .HasForeignKey(p => p.TicketId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Ticket>()
                 .Property(t => t.Price)
@@ -103,12 +115,18 @@ namespace Event_Management.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Participant>()
+                .HasOne(p => p.Purchase) // A participant belongs to one purchase
+                .WithMany(p => p.Participants) // A purchase can have many participants
+                .HasForeignKey(p => p.PurchaseId) // Foreign key
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Participant>()
                 .Property(p => p.Attendance)
                 .HasDefaultValue(false);
 
             modelBuilder.Entity<Participant>()
-                .HasIndex(p => new { p.EventId, p.UserId })
-                .IsUnique(); // Ensure a user can only participate once per event
+                .HasIndex(p => new { p.EventId, p.UserId, p.TicketId, p.Id }) // or p.PurchaseId if using PurchaseId
+                .IsUnique(); // Ensure a user can only participate once per event and can have one ticket only once
 
             // ---- Purchase Configurations ----
             modelBuilder.Entity<Purchase>()

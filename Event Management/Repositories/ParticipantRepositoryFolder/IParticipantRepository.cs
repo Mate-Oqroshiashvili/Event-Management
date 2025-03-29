@@ -10,6 +10,6 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
         Task<IEnumerable<ParticipantDto>> GetParticipantsByUserIdAsync(int id);
         Task<ParticipantDto> AddParticipantAsync(ParticipantCreateDto participantCreateDto);
         Task<bool> UpdateParticipantAsync(int id, ParticipantUpdateDto participantUpdateDto);
-        Task<bool> DeleteParticipantAsync(int id);
+        Task<bool> DeleteParticipantAsync(int participantId, int purchaseId);
     }
 }

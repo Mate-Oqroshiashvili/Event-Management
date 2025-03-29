@@ -16,9 +16,9 @@ namespace Event_Management.Models.Dtos.TicketDtos
         public string QRCodeData { get; set; }  // QR Code String
         public string QRCodeImageUrl { get; set; }  // Image URL
         public EventDto Event { get; set; }
-        public UserDto User { get; set; }
-        public PurchaseDto Purchase { get; set; }
-        public ParticipantDto Participant { get; set; }
+        public List<UserDto> Users { get; set; }
+        public List<PurchaseDto> Purchases { get; set; }
+        public List<ParticipantDto> Participants { get; set; }
 
         public TicketDto()
         {

@@ -69,6 +69,8 @@ namespace Event_Management.Repositories.PromoCodeRepositoryFolder
         {
             var promoCode = _mapper.Map<PromoCode>(promoCodeCreateDto);
 
+            promoCode.PromoCodeStatus = PromoCodeStatus.Available;
+
             promoCode.Event = await _context.Events
                     .Include(x => x.Participants)
                     .Include(x => x.Tickets)
@@ -89,6 +91,9 @@ namespace Event_Management.Repositories.PromoCodeRepositoryFolder
         {
             var existingPromoCode = await _context.PromoCodes.FindAsync(id);
             if (existingPromoCode == null) return false;
+
+            if(promoCodeUpdateDto.PromoCodeAmount <= 0)
+                existingPromoCode.PromoCodeStatus = PromoCodeStatus.OutOfStock;
 
             _mapper.Map(promoCodeUpdateDto, existingPromoCode);
 

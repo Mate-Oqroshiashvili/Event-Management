@@ -94,12 +94,12 @@ namespace Event_Management.Controllers
         }
 
         [Authorize(Roles = "ORGANIZER")]
-        [HttpPost("validate-ticket/{ticketId}")]
-        public async Task<ActionResult<string>> ValidateTicket(int ticketId, string qrCodeData)
+        [HttpPost("validate-ticket")]
+        public async Task<ActionResult<string>> ValidateTicket(IFormFile qrCodeImage)
         {
             try
             {
-                var result = await _ticketRepository.ValidateTicketAsync(ticketId, qrCodeData);
+                var result = await _ticketRepository.ValidateTicketByQRCodeImage(qrCodeImage);
 
                 return result == null ? throw new NotFoundException("Ticket validation process failed!") : Ok(new { result });
             }

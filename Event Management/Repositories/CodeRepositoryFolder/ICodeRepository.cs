@@ -9,5 +9,8 @@ namespace Event_Management.Repositories.CodeRepositoryFolder
         Task<string> SendTicketToEmail(string email, TicketDto ticket);
         Task SendEventCancellationNotification(string email, string eventTitle);
         Task SendEventRescheduleNotification(string email, string eventTitle, DateTime newDate);
+        Task<string> SendCodes(int userId);
+        Task<string> SendCodes(string email, string phoneNumber);
+        string GetCodes(string email);
     }
 }

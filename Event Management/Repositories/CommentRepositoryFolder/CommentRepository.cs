@@ -67,10 +67,13 @@ namespace Event_Management.Repositories.CommentRepositoryFolder
 
         public async Task<bool> UpdateCommentAsync(int commentId, int userId, CommentUpdateDto commentUpdateDto)
         {
-            var existingComment = await _context.Comments.FindAsync(commentId);
+            var existingComment = await _context.Comments
+                .Include(x => x.User)
+                .FirstOrDefaultAsync(x => x.Id == commentId);
+
             if (existingComment == null) return false;
 
-            if (existingComment.UserId == userId)
+            if (existingComment.UserId != userId)
                 throw new BadRequestException("You don't have permission to update the comment");
 
             _mapper.Map(commentUpdateDto, existingComment);
@@ -81,10 +84,13 @@ namespace Event_Management.Repositories.CommentRepositoryFolder
 
         public async Task<bool> DeleteCommentAsync(int id, int userId)
         {
-            var comment = await _context.Comments.FindAsync(id);
+            var comment = await _context.Comments
+                .Include(x => x.User)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             if (comment == null) return false;
 
-            if (comment.UserId == userId)
+            if (comment.UserId != userId)
                 throw new BadRequestException("You don't have permission to delete the comment");
 
             _context.Comments.Remove(comment);

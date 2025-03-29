@@ -1,6 +1,7 @@
 ﻿using Event_Management.Exceptions;
 using Event_Management.Models.Dtos.EventDtos;
 using Event_Management.Repositories.EventRepositoryFolder;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Event_Management.Controllers
@@ -16,12 +17,60 @@ namespace Event_Management.Controllers
             _eventRepository = eventRepository;
         }
 
-        [HttpGet("get-all-events")]
-        public async Task<ActionResult<IEnumerable<EventDto>>> GetAllEvents()
+        [HttpGet("get-published-events")]
+        public async Task<ActionResult<IEnumerable<EventDto>>> GetPublishedEvents()
         {
             try
             {
-                var events = await _eventRepository.GetEventsAsync();
+                var events = await _eventRepository.GetPublishedEventsAsync();
+
+                return events == null ? throw new NotFoundException("Events not found!") : Ok(new { events });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [Authorize(Roles = "ORGANIZER")]
+        [HttpGet("get-drafted-events")]
+        public async Task<ActionResult<IEnumerable<EventDto>>> GetDraftedEvents()
+        {
+            try
+            {
+                var events = await _eventRepository.GetDraftedEventsAsync();
+
+                return events == null ? throw new NotFoundException("Events not found!") : Ok(new { events });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [Authorize(Roles = "ORGANIZER")]
+        [HttpGet("get-completed-events")]
+        public async Task<ActionResult<IEnumerable<EventDto>>> GetCompletedEvents()
+        {
+            try
+            {
+                var events = await _eventRepository.GetCompletedEventsAsync();
+
+                return events == null ? throw new NotFoundException("Events not found!") : Ok(new { events });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [Authorize(Roles = "ORGANIZER")]
+        [HttpGet("get-deleted-events")]
+        public async Task<ActionResult<IEnumerable<EventDto>>> GetDeletedEvents()
+        {
+            try
+            {
+                var events = await _eventRepository.GetDeletedEventsAsync();
 
                 return events == null ? throw new NotFoundException("Events not found!") : Ok(new { events });
             }
@@ -114,6 +163,21 @@ namespace Event_Management.Controllers
                 var @event = await _eventRepository.RescheduleEventAsync(eventId, dateTime);
 
                 return !@event ? throw new NotFoundException("Event not found!") : Ok(new { message = "Event rescheduled successfully!" });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [HttpPatch("publish-event/{eventId}")]
+        public async Task<ActionResult<string>> PublishEvent(int eventId)
+        {
+            try
+            {
+                var @event = await _eventRepository.PublishTheEvent(eventId);
+
+                return !@event ? throw new NotFoundException("Event can't be published!") : Ok(new { message = "Event published successfully!" });
             }
             catch (Exception ex)
             {

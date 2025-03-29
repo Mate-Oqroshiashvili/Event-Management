@@ -238,6 +238,12 @@ namespace Event_Management.Migrations
                     b.Property<int>("EventId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("PurchaseId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("RegistrationDate")
                         .HasColumnType("datetime2");
 
@@ -249,14 +255,15 @@ namespace Event_Management.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TicketId")
-                        .IsUnique()
-                        .HasFilter("[TicketId] IS NOT NULL");
+                    b.HasIndex("PurchaseId");
+
+                    b.HasIndex("TicketId");
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("EventId", "UserId")
-                        .IsUnique();
+                    b.HasIndex("EventId", "UserId", "TicketId", "Id")
+                        .IsUnique()
+                        .HasFilter("[TicketId] IS NOT NULL");
 
                     b.ToTable("Participants");
                 });
@@ -311,9 +318,6 @@ namespace Event_Management.Migrations
 
                     b.Property<DateTime>("PurchaseDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -378,9 +382,6 @@ namespace Event_Management.Migrations
                     b.Property<DateTime>("ExpiryDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsUsed")
-                        .HasColumnType("bit");
-
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
@@ -405,16 +406,9 @@ namespace Event_Management.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("EventId");
-
-                    b.HasIndex("PurchaseId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Tickets");
                 });
@@ -522,6 +516,36 @@ namespace Event_Management.Migrations
                     b.ToTable("LocationOrganizer");
                 });
 
+            modelBuilder.Entity("TicketPurchase", b =>
+                {
+                    b.Property<int>("PurchaseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TicketId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PurchaseId", "TicketId");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("TicketPurchase");
+                });
+
+            modelBuilder.Entity("TicketUser", b =>
+                {
+                    b.Property<int>("TicketId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("TicketId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TicketUser");
+                });
+
             modelBuilder.Entity("Event_Management.Models.Comment", b =>
                 {
                     b.HasOne("Event_Management.Models.Event", "Event")
@@ -579,10 +603,15 @@ namespace Event_Management.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Event_Management.Models.Purchase", "Purchase")
+                        .WithMany("Participants")
+                        .HasForeignKey("PurchaseId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Event_Management.Models.Ticket", "Ticket")
-                        .WithOne("Participant")
-                        .HasForeignKey("Event_Management.Models.Participant", "TicketId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .WithMany("Participants")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Event_Management.Models.User", "User")
                         .WithMany("Participants")
@@ -591,6 +620,8 @@ namespace Event_Management.Migrations
                         .IsRequired();
 
                     b.Navigation("Event");
+
+                    b.Navigation("Purchase");
 
                     b.Navigation("Ticket");
 
@@ -653,20 +684,7 @@ namespace Event_Management.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Event_Management.Models.Purchase", "Purchase")
-                        .WithMany("Tickets")
-                        .HasForeignKey("PurchaseId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Event_Management.Models.User", "User")
-                        .WithMany("Tickets")
-                        .HasForeignKey("UserId");
-
                     b.Navigation("Event");
-
-                    b.Navigation("Purchase");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Event_Management.Models.UsedPromoCode", b =>
@@ -710,6 +728,36 @@ namespace Event_Management.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("TicketPurchase", b =>
+                {
+                    b.HasOne("Event_Management.Models.Purchase", null)
+                        .WithMany()
+                        .HasForeignKey("PurchaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Event_Management.Models.Ticket", null)
+                        .WithMany()
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TicketUser", b =>
+                {
+                    b.HasOne("Event_Management.Models.Ticket", null)
+                        .WithMany()
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Event_Management.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Event_Management.Models.Event", b =>
                 {
                     b.Navigation("Comments");
@@ -742,12 +790,12 @@ namespace Event_Management.Migrations
 
             modelBuilder.Entity("Event_Management.Models.Purchase", b =>
                 {
-                    b.Navigation("Tickets");
+                    b.Navigation("Participants");
                 });
 
             modelBuilder.Entity("Event_Management.Models.Ticket", b =>
                 {
-                    b.Navigation("Participant");
+                    b.Navigation("Participants");
                 });
 
             modelBuilder.Entity("Event_Management.Models.User", b =>
@@ -761,8 +809,6 @@ namespace Event_Management.Migrations
                     b.Navigation("Purchases");
 
                     b.Navigation("Reviews");
-
-                    b.Navigation("Tickets");
 
                     b.Navigation("UsedPromoCodes");
                 });

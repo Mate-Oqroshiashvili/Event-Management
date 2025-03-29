@@ -13,14 +13,12 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
     {
         private readonly DataContext _context;
         private readonly IImageRepository _imageRepository;
-        private readonly ICodeRepository _codeRepository;
         private readonly IMapper _mapper;
 
-        public OrganizerRepository(DataContext context, IImageRepository imageRepository, ICodeRepository codeRepository, IMapper mapper)
+        public OrganizerRepository(DataContext context, IImageRepository imageRepository, IMapper mapper)
         {
             _context = context;
             _imageRepository = imageRepository;
-            _codeRepository = codeRepository;
             _mapper = mapper;
         }
 
@@ -67,6 +65,10 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
                 .Include(x => x.UsedPromoCodes)
                 .FirstOrDefaultAsync(u => u.Id == organizerCreateDto.UserId) 
                 ?? throw new NotFoundException("User not found!");
+
+            organizer.Name = organizer.User.Name;
+            organizer.Email = organizer.User.Email;
+            organizer.PhoneNumber = organizer.User.PhoneNumber;
 
             var logoUrl = await _imageRepository.GenerateImageSource(organizerCreateDto.Logo);
             organizer.LogoUrl = logoUrl;
@@ -132,6 +134,9 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
                 if (!organizer.Locations.Any(l => l.Id == locationId))
                     throw new BadRequestException("This organizer is not linked to the location.");
 
+                if (location.Events.Any(x => x.OrganizerId == organizerId))
+                    throw new BadRequestException("Location can't be removed from organizer's locations list, there is the event planned on this location!");
+
                 if (!organizer.IsVerified)
                     throw new BadRequestException("Organizer is not verified!");
 
@@ -182,34 +187,6 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
             _context.Organizers.Remove(organizer);
             await _context.SaveChangesAsync();
             return true;
-        }
-
-        public async Task<string> SendCodes(int userId)
-        {
-            try
-            {
-                var user = await _context.Users.FindAsync(userId)
-                    ?? throw new NotFoundException($"User with the Id {userId} not found!");
-
-                var rng = new Random();
-                var emailCode = rng.Next(100000, 999999).ToString();
-                var smsCode = rng.Next(100000, 999999).ToString();
-
-                user.EmailVerificationCode = emailCode;
-                user.SmsVerificationCode = smsCode;
-                user.CodeExpiration = DateTime.UtcNow.AddMinutes(10);
-
-                await _context.SaveChangesAsync();
-
-                await _codeRepository.SendToEmail(user.Email, $"Your email verification code is {emailCode}");
-                await _codeRepository.SendToPhone(user.PhoneNumber, $"Your SMS verification code is {smsCode}");
-
-                return "Verification codes sent successfully.";
-            }
-            catch (Exception ex)
-            {
-                throw new BadRequestException(ex.Message, ex.InnerException);
-            }
         }
     }
 }

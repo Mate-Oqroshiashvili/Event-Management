@@ -21,7 +21,7 @@ namespace Event_Management.Models
         public Organizer? Organizer { get; set; }
 
         // Navigation Properties
-        public IEnumerable<Ticket> Tickets { get; set; } = new List<Ticket>();
+        public List<Ticket> Tickets { get; set; } = new List<Ticket>();
         public IEnumerable<Purchase> Purchases { get; set; } = new List<Purchase>();
         public IEnumerable<Participant> Participants { get; set; } = new List<Participant>();
         public IEnumerable<Review> Reviews { get; set; } = new List<Review>();

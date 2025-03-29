@@ -1,6 +1,6 @@
 ﻿using Event_Management.Exceptions;
 using Event_Management.Models.Dtos.OrganizerDtos;
-using Event_Management.Models.Dtos.UserDtos;
+using Event_Management.Repositories.CodeRepositoryFolder;
 using Event_Management.Repositories.OrganizerRepositoryFolder;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +12,12 @@ namespace Event_Management.Controllers
     public class OrganizerController : ControllerBase
     {
         private readonly IOrganizerRepository _organizerRepository;
+        private readonly ICodeRepository _codeRepository;
 
-        public OrganizerController(IOrganizerRepository organizerRepository)
+        public OrganizerController(IOrganizerRepository organizerRepository, ICodeRepository codeRepository)
         {
             _organizerRepository = organizerRepository;
+            _codeRepository = codeRepository;
         }
 
         [Authorize(Roles = "ADMINISTRATOR")]
@@ -34,6 +36,7 @@ namespace Event_Management.Controllers
             }
         }
 
+        [Authorize(Roles = "ORGANIZER")]
         [HttpGet("get-organizer-by-id/{organizerId}")]
         public async Task<ActionResult<OrganizerDto>> GetOrganizerById(int organizerId)
         {
@@ -57,7 +60,23 @@ namespace Event_Management.Controllers
             {
                 var organizerDto = await _organizerRepository.AddOrganizerAsync(organizerCreateDto);
 
-                return organizerDto == null ? throw new NotFoundException("Organizer registration failed!") : Ok(new {organizerDto});
+                return organizerDto == null ? throw new NotFoundException("Organizer registration failed!") : Ok(new { organizerDto });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [Authorize(Roles = "ORGANIZER")]
+        [HttpPost("send-verification-codes-for-organizer/{organizerId}")]
+        public async Task<IActionResult> SendCodes(int organizerId)
+        {
+            try
+            {
+                var result = await _codeRepository.SendCodes(organizerId);
+
+                return result == null ? throw new BadRequestException("verification codes sending process failed!") : Ok(new { result });
             }
             catch (Exception ex)
             {
@@ -77,23 +96,8 @@ namespace Event_Management.Controllers
                     throw new BadRequestException("Verification code is not correct!");
 
                 var verified = await _organizerRepository.VerifyOrganizerAsync(organizerId);
-                
-                return !verified ? throw new BadRequestException("Organizer verification process failed!") : Ok(new { message = "Organizer verified successfully!" });   
-            }
-            catch (Exception ex) 
-            {
-                throw new BadRequestException(ex.Message, ex.InnerException);
-            }
-        }
 
-        [HttpPut("send-codes/{userId}")]
-        public async Task<IActionResult> SendCodes(int userId)
-        {
-            try
-            {
-                var result = await _organizerRepository.SendCodes(userId);
-
-                return result == null ? throw new BadRequestException("verification codes sending process failed!") : Ok(new { result });
+                return !verified ? throw new BadRequestException("Organizer verification process failed!") : Ok(new { message = "Organizer verified successfully!" });
             }
             catch (Exception ex)
             {

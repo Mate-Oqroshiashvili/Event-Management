@@ -33,12 +33,6 @@ namespace Event_Management.Validations.EventValidations
                 .GreaterThan(0).WithMessage("Capacity must be greater than zero.")
                 .LessThanOrEqualTo(_maxCapacity).WithMessage($"Capacity must not exceed {_maxCapacity} attendees.");
 
-            RuleFor(e => e.Status)
-                .IsInEnum().WithMessage("Invalid event status.");
-
-            RuleFor(e => e.BookedStaff)
-                .GreaterThan(0).WithMessage("Booked staff must be greater than zero.");
-
             RuleFor(e => e.LocationId)
                 .GreaterThan(0).WithMessage("Location ID must be a positive integer.");
 

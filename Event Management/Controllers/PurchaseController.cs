@@ -1,4 +1,5 @@
 ﻿using Event_Management.Exceptions;
+using Event_Management.Models;
 using Event_Management.Models.Dtos.PurchaseDtos;
 using Event_Management.Repositories.PurchaseRepositoryFolder;
 using Microsoft.AspNetCore.Mvc;
@@ -54,6 +55,21 @@ namespace Event_Management.Controllers
                 var purchases = await _purchaseRepository.GetPurchasesByUserIdAsync(userId);
 
                 return purchases == null ? throw new NotFoundException("Purchases not found!") : Ok(new { purchases });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [HttpPost("purchase-ticket")]
+        public async Task<ActionResult<PurchaseDto>> PurchaseTicket([FromBody] PurchaseCreateDto purchaseCreateDto)
+        {
+            try
+            {
+                var purchaseDto = await _purchaseRepository.AddPurchaseAsync(purchaseCreateDto);
+
+                return purchaseDto == null ? throw new NotFoundException("Purchase process failed!") : Ok(new { purchaseDto });
             }
             catch (Exception ex)
             {

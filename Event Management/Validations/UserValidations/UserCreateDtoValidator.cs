@@ -28,6 +28,14 @@ namespace Event_Management.Validations.UserValidations
                 .Matches(@"[a-z]").WithMessage("Password must contain at least one lowercase letter.")
                 .Matches(@"\d").WithMessage("Password must contain at least one number.")
                 .Matches(@"[\W_]").WithMessage("Password must contain at least one special character.");
+
+            RuleFor(x => x.EmailCode)
+                .Length(6).WithMessage("Email verification code must be 6 characters.")
+                .Matches("^[0-9]{6}$").WithMessage("Email verification code must contain only numbers.");
+
+            RuleFor(x => x.PhoneNumberCode)
+                .Length(6).WithMessage("SMS verification code must be 6 characters.")
+                .Matches("^[0-9]{6}$").WithMessage("SMS verification code must contain only numbers.");
         }
     }
 }

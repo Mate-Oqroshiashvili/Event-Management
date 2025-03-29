@@ -66,10 +66,10 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
                 var participant = _mapper.Map<Participant>(participantCreateDto);
 
                 participant.Ticket = await _context.Tickets
-                    .Include(x => x.Participant)
-                    .Include(x => x.Purchase)
+                    .Include(x => x.Participants)
+                    .Include(x => x.Purchases)
                     .Include(x => x.Event)
-                    .Include(x => x.User)
+                    .Include(x => x.Users)
                     .FirstOrDefaultAsync(x => x.Id == participantCreateDto.TicketId)
                     ?? throw new NotFoundException($"Ticket with ID {participantCreateDto.TicketId} not found!");
 
@@ -78,7 +78,7 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
                     .Include(x => x.Tickets)
                     .Include(x => x.Location)
                     .Include(x => x.Organizer)
-                    .FirstOrDefaultAsync(x => x.Id ==participantCreateDto.EventId)
+                    .FirstOrDefaultAsync(x => x.Id == participantCreateDto.EventId)
                     ?? throw new NotFoundException($"Event with ID {participantCreateDto.EventId} not found!");
 
                 participant.User = await _context.Users
@@ -98,7 +98,7 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
 
                 return participantDto;
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 throw new BadRequestException(ex.Message, ex.InnerException);
             }
@@ -116,67 +116,67 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
         }
 
         // refund logic
-        public async Task<bool> DeleteParticipantAsync(int id)
+        public async Task<bool> DeleteParticipantAsync(int participantId, int purchaseId)
         {
             var participant = await _context.Participants
-                .Include(x => x.Event)
-                .Include(x => x.Ticket)
-                .Include(x => x.User)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .Include(p => p.Ticket)
+                .ThenInclude(t => t.Purchases)
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(p => p.Id == participantId);
 
-            if (participant == null || participant.Ticket?.IsUsed == true) return false;
+            if (participant == null || participant.IsUsed) return false;
 
             using var transaction = await _context.Database.BeginTransactionAsync();
 
             try
             {
-                var ticket = participant.Ticket;
-                var purchase = ticket?.Purchase;
-                var user = participant.User;
+                var ticket = participant.Ticket ?? throw new NotFoundException("Ticket not found!");
+                var user = participant.User ?? throw new NotFoundException("User not found!");
 
-                if (ticket != null)
+                // Ensure the purchase exists and is associated with this participant's ticket
+                var purchase = await _context.Purchases
+                    .Include(p => p.Tickets)
+                    .FirstOrDefaultAsync(p => p.Id == purchaseId && p.Tickets.Any(t => t.Id == participant.TicketId) && p.Participants.Any(x => x.Id == participantId)) ?? throw new NotFoundException("The provided purchase does not belong to this participant.");
+
+                // Refund the user before deleting anything
+                decimal refundAmount = ticket.Price;
+
+                // Apply promo code discount if used in this purchase
+                if (purchase.isPromoCodeUsed && purchase.PromoCode != null)
                 {
-                    // Restore ticket quantity
+                    refundAmount -= (refundAmount * purchase.PromoCode.SaleAmountInPercentages) / 100;
+                }
+
+                user.Balance += refundAmount;
+
+                // Remove the participant first
+                _context.Participants.Remove(participant);
+                await _context.SaveChangesAsync(); // Ensure participant removal reflects in the next check
+
+                // Check if there are any participants left for this purchase
+                bool hasRemainingParticipants = await _context.Participants
+                    .AnyAsync(p => p.PurchaseId == purchaseId);
+
+                if (!hasRemainingParticipants)
+                {
+                    _context.Purchases.Remove(purchase);
+                }
+                else
+                {
+                    // Restore ticket quantity if applicable
                     if (ticket.Quantity < int.MaxValue) ticket.Quantity += 1;
 
                     // Update ticket status if it was sold out
                     if (ticket.Status == TicketStatus.SOLD_OUT) ticket.Status = TicketStatus.AVAILABLE;
-
-                    // Check if there are remaining participants using the ticket
-                    var remainingParticipants = await _context.Participants
-                        .Where(p => p.TicketId == ticket.Id && p.Id != participant.Id)
-                        .ToListAsync();
-
-                    if (!remainingParticipants.Any()) ticket.Participant = null;
                 }
 
-                // Process Refund (Only if there's a valid purchase)
-                if (purchase != null)
+                // Check if the user has any other participants left
+                bool hasOtherParticipants = await _context.Participants.AnyAsync(p => p.UserId == user.Id);
+                if (!hasOtherParticipants && user.Role != Role.ORGANIZER && user.Role != Role.ADMINISTRATOR)
                 {
-                    if (ticket == null)
-                        throw new Exception($"There is no associated ticket on specific participant - {participant.User.Name}");
-
-                    var remainingTickets = await _context.Tickets
-                        .Where(t => t.PurchaseId == purchase.Id && t.Id != ticket.Id)
-                        .ToListAsync();
-
-                    decimal refundAmount = ticket.Price; // Base refund amount
-
-                    // Handle promo code discount if used
-                    if (purchase.isPromoCodeUsed && purchase.PromoCode != null)
-                    {
-                        refundAmount -= (refundAmount * purchase.PromoCode.SaleAmountInPercentages) / 100;
-                    }
-
-                    // Refund to user balance
-                    user.Balance += refundAmount;
-
-                    // If no tickets left in the purchase, delete purchase
-                    if (remainingTickets.Count == 0) _context.Purchases.Remove(purchase);
+                    user.Role = Role.BASIC;
                 }
 
-                // Remove participant
-                _context.Participants.Remove(participant);
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 

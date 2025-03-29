@@ -3,6 +3,7 @@ using Event_Management.Models.Dtos.LoginDtos;
 using Event_Management.Models.Dtos.UserDtos;
 using Event_Management.Models.Enums;
 using Event_Management.Repositories.AuthRepositoryFolder;
+using Event_Management.Repositories.CodeRepositoryFolder;
 using Event_Management.Repositories.UserRepositoryFolder;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,11 +16,13 @@ namespace Event_Management.Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly IAuthRepository _authRepository;
+        private readonly ICodeRepository _codeRepository;
 
-        public UserController(IUserRepository userRepository, IAuthRepository authRepository)
+        public UserController(IUserRepository userRepository, IAuthRepository authRepository, ICodeRepository codeRepository)
         {
             _userRepository = userRepository;
             _authRepository = authRepository;
+            _codeRepository = codeRepository;
         }
 
         [Authorize(Roles = "ADMINISTRATOR")]
@@ -68,11 +71,39 @@ namespace Event_Management.Controllers
             }
         }
 
+        [HttpPost("send-codes")]
+        public async Task<ActionResult<string>> SendCodes(string email, string phoneNumber)
+        {
+            try
+            {
+                var result = await _codeRepository.SendCodes(email, phoneNumber);
+
+                if (string.IsNullOrEmpty(result))
+                    throw new BadRequestException("Verification codes sending process failed!");
+
+                return Ok("Verification codes sent successfully!");
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
         [HttpPost("register-user")]
         public async Task<ActionResult<UserDto>> RegisterUser([FromForm] UserCreateDto userCreateDto)
         {
             try
             {
+                string storedCodes = _codeRepository.GetCodes(userCreateDto.Email);
+
+                if (string.IsNullOrEmpty(storedCodes))
+                    throw new BadRequestException("Verification codes expired or never sent!");
+
+                bool isVerified = $"{userCreateDto.EmailCode},{userCreateDto.PhoneNumberCode}" == storedCodes;
+
+                if (!isVerified)
+                    throw new BadRequestException("Verification failed!");
+
                 var userDto = await _authRepository.Registration(userCreateDto);
 
                 return userDto == null ? throw new NotFoundException("User registration failed!") : Ok(new { userDto });
@@ -98,7 +129,7 @@ namespace Event_Management.Controllers
             }
         }
 
-        [Authorize(Roles = "BASIC,ORGANIZER")]
+        [Authorize(Roles = "BASIC,PARTICIPANT,ORGANIZER")]
         [HttpPatch("add-balance/{userId}")]
         public async Task<ActionResult<string>> AddBalance(int userId, decimal balanceToDeposit)
         {

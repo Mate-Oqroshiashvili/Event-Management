@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Event_Management.Models;
 using Event_Management.Models.Dtos.PromoCodeDtos;
 
 namespace Event_Management.Helpers
@@ -7,9 +8,9 @@ namespace Event_Management.Helpers
     {
         public PromoCodeMappingProfile() 
         {
-            CreateMap<PromoCodeMappingProfile, PromoCodeCreateDto>().ReverseMap();
-            CreateMap<PromoCodeMappingProfile, PromoCodeDto>().ReverseMap();
-            CreateMap<PromoCodeMappingProfile, PromoCodeUpdateDto>().ReverseMap();
+            CreateMap<PromoCode, PromoCodeCreateDto>().ReverseMap();
+            CreateMap<PromoCode, PromoCodeDto>().ReverseMap();
+            CreateMap<PromoCode, PromoCodeUpdateDto>().ReverseMap();
         }
     }
 }

@@ -21,15 +21,11 @@ namespace Event_Management.Helpers
                 .ForMember(dest => dest.PromoCodes, opt => opt.MapFrom(src => src.PromoCodes))
                 .ReverseMap();
 
-            CreateMap<Location, LocationDto>()
-                .ForMember(dest => dest.Events, opt => opt.MapFrom(src => src.Events))
-                .ForMember(dest => dest.Organizers, opt => opt.MapFrom(src => src.Organizers))
-                .ReverseMap();
+            CreateMap<EventCreateDto, Event>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.Images, opt => opt.Ignore());
 
-            CreateMap<Organizer, OrganizerDto>()
-                .ForMember(dest => dest.Events, opt => opt.MapFrom(src => src.Events))
-                .ForMember(dest => dest.Locations, opt => opt.MapFrom(src => src.Locations))
-                .ReverseMap();
+            CreateMap<EventUpdateDto, Event>();
         }
     }
 }

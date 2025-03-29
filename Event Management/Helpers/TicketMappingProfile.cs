@@ -10,9 +10,9 @@ namespace Event_Management.Helpers
         {
             CreateMap<Ticket, TicketDto>()
                 .ForMember(dest => dest.Event, opt => opt.MapFrom(src => src.Event))
-                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))
-                .ForMember(dest => dest.Purchase, opt => opt.MapFrom(src => src.Purchase))
-                .ForMember(dest => dest.Participant, opt => opt.MapFrom(src => src.Participant));
+                .ForMember(dest => dest.Users, opt => opt.MapFrom(src => src.Users))
+                .ForMember(dest => dest.Purchases, opt => opt.MapFrom(src => src.Purchases))
+                .ForMember(dest => dest.Participants, opt => opt.MapFrom(src => src.Participants));
 
             CreateMap<TicketDto, Ticket>();
                 //.ForMember(dest => dest.Event, opt => opt.Ignore())

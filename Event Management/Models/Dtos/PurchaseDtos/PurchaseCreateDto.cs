@@ -8,9 +8,6 @@ namespace Event_Management.Models.Dtos.PurchaseDtos
         public List<TicketPurchaseRequest> Tickets { get; set; } = new();
         public int UserId { get; set; }
         public string? PromoCodeText { get; set; }
-        public int Quantity { get; set; }
-        public DateTime PurchaseDate { get; set; }
-        public PurchaseStatus Status { get; set; }
 
         public PurchaseCreateDto()
         {

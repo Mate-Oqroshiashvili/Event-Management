@@ -2,6 +2,7 @@
 using Event_Management.Data;
 using Event_Management.Models;
 using Event_Management.Models.Dtos.LocationDtos;
+using Event_Management.Models.Enums;
 using Event_Management.Repositories.ImageRepositoryFolder;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +24,7 @@ namespace Event_Management.Repositories.LocationRepositoryFolder
         public async Task<IEnumerable<LocationDto>> GetLocationsAsync()
         {
             var locations = await _context.Locations
-                .Include(x => x.Events)
+                .Include(x => x.Events.Where(e => e.Status != EventStatus.DELETED && e.Status != EventStatus.DRAFT))
                 .Include(x => x.Organizers)
                 .ToListAsync();
 
@@ -35,7 +36,7 @@ namespace Event_Management.Repositories.LocationRepositoryFolder
         public async Task<LocationDto> GetLocationByIdAsync(int id)
         {
             var location = await _context.Locations
-                .Include(x => x.Events)
+                .Include(x => x.Events.Where(e => e.Status != EventStatus.DELETED && e.Status != EventStatus.DRAFT))
                 .Include(x => x.Organizers)
                     .ThenInclude(x => x.Locations)
                 .FirstOrDefaultAsync(x => x.Id == id);
@@ -51,6 +52,7 @@ namespace Event_Management.Repositories.LocationRepositoryFolder
                 .Where(l => l.Organizers.Any(o => o.Id == organizerId))
                 .Include(x => x.Events)
                 .Include(x => x.Organizers)
+                    .ThenInclude(x => x.User)
                 .ToListAsync();
 
             var locationsDtos = _mapper.Map<IEnumerable<LocationDto>>(locations);
