@@ -157,6 +157,17 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             return true;
         }
 
+        public async Task<bool> UpdateLoginStatus(int id)
+        {
+            var existingUser = await _context.Users.FindAsync(id);
+            if (existingUser == null) return false;
+
+            existingUser.IsLoggedIn = false;
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<bool> UpdateUserTypeAsync(int id, UserType userType)
         {
             var existingUser = await _context.Users.FindAsync(id);

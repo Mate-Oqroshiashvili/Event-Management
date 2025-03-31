@@ -1,5 +1,4 @@
 ﻿using Event_Management.Models.Dtos.TicketDtos;
-using Event_Management.Models.Enums;
 
 namespace Event_Management.Models.Dtos.PurchaseDtos
 {
@@ -11,7 +10,7 @@ namespace Event_Management.Models.Dtos.PurchaseDtos
 
         public PurchaseCreateDto()
         {
-            
+
         }
     }
 }

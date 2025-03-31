@@ -110,6 +110,7 @@ namespace Event_Management.Controllers
             }
         }
 
+        [Authorize(Roles = "ORGANIZER")]
         [HttpGet("get-events-by-organizer-id/{organizerId}")]
         public async Task<ActionResult<IEnumerable<EventDto>>> GetEventsByOrganizerId(int organizerId)
         {
@@ -125,6 +126,7 @@ namespace Event_Management.Controllers
             }
         }
 
+        [Authorize(Roles = "ORGANIZER")]
         [HttpPost("add-event")]
         public async Task<ActionResult<EventDto>> AddEvent([FromForm] EventCreateDto eventCreateDto)
         {
@@ -140,6 +142,39 @@ namespace Event_Management.Controllers
             }
         }
 
+        [Authorize(Roles = "ORGANIZER")]
+        [HttpPost("add-speaker-or-artist-on-event/{eventId}&{userId}")]
+        public async Task<ActionResult<EventDto>> AddSpeakerOrArtistOnEvent(int eventId, int userId)
+        {
+            try
+            {
+                var userDto = await _eventRepository.AddSpeakerOrArtistOnEventAsync(eventId, userId);
+
+                return userDto == null ? throw new NotFoundException("Speaker/Artist addition failed!") : Ok(new { userDto });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [Authorize(Roles = "ORGANIZER")]
+        [HttpDelete("remove-speaker-or-artist-from-event/{eventId}&{userId}")]
+        public async Task<ActionResult<EventDto>> FromSpeakerFromArtistOnEvent(int eventId, int userId)
+        {
+            try
+            {
+                var result = await _eventRepository.RemoveSpeakerOrArtistFromEventAsync(eventId, userId);
+
+                return result == null ? throw new NotFoundException("Speaker/Artist removing process failed!") : Ok(new { result });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [Authorize(Roles = "ORGANIZER")]
         [HttpPut("update-event/{eventId}")]
         public async Task<ActionResult<string>> UpdateEvent(int eventId, [FromForm] EventUpdateDto eventUpdateDto)
         {
@@ -155,6 +190,7 @@ namespace Event_Management.Controllers
             }
         }
 
+        [Authorize(Roles = "ORGANIZER")]
         [HttpPut("reschedule-event/{eventId}")]
         public async Task<ActionResult<string>> RescheduleEvent(int eventId, DateTime dateTime)
         {
@@ -170,6 +206,7 @@ namespace Event_Management.Controllers
             }
         }
 
+        [Authorize(Roles = "ORGANIZER")]
         [HttpPatch("publish-event/{eventId}")]
         public async Task<ActionResult<string>> PublishEvent(int eventId)
         {
@@ -185,6 +222,7 @@ namespace Event_Management.Controllers
             }
         }
 
+        [Authorize(Roles = "ORGANIZER")]
         [HttpDelete("remove-event/{eventId}")]
         public async Task<ActionResult<string>> RemoveEvent(int eventId)
         {

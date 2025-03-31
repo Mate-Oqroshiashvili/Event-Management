@@ -18,42 +18,86 @@ namespace Event_Management.Repositories.CommentRepositoryFolder
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Comment>> GetCommentsAsync()
+        public async Task<IEnumerable<CommentDto>> GetCommentsAsync()
         {
-            return await _context.Comments
-                .Include(x => x.Event)
-                .Include(x => x.User)
-                .ToListAsync();
+            try
+            {
+                var comments = await _context.Comments
+                    .Include(x => x.Event)
+                    .Include(x => x.User)
+                    .ToListAsync() ?? throw new NotFoundException("No comment found!");
+
+                var commentDtos = _mapper.Map<IEnumerable<CommentDto>>(comments);
+
+                return commentDtos;
+            }
+            catch (Exception ex) 
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
         }
 
-        public async Task<Comment> GetCommentByIdAsync(int id)
+        public async Task<CommentDto> GetCommentByIdAsync(int id)
         {
-            return await _context.Comments
-                .Include(x => x.Event)
-                .Include(x => x.User)
-                .FirstOrDefaultAsync(x => x.Id == id)
-                ?? throw new NotFoundException("Comment not found!");
+            try
+            {
+                var comment = await _context.Comments
+                    .Include(x => x.Event)
+                    .Include(x => x.User)
+                    .FirstOrDefaultAsync(x => x.Id == id)
+                    ?? throw new NotFoundException("Comment not found!");
+
+                var commentDto = _mapper.Map<CommentDto>(comment);
+
+                return commentDto;
+            }
+            catch (Exception ex) 
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
         }
 
-        public async Task<IEnumerable<Comment>> GetCommentsByEventIdAsync(int eventId)
+        public async Task<IEnumerable<CommentDto>> GetCommentsByEventIdAsync(int eventId)
         {
-            return await _context.Comments
+            try
+            {
+                var comments = await _context.Comments
                 .Where(c => c.EventId == eventId)
                 .Include(x => x.Event)
                 .Include(x => x.User)
-                .ToListAsync();
+                .ToListAsync() ?? throw new NotFoundException("No comment found!");
+                
+                var commentDtos = _mapper.Map<IEnumerable<CommentDto>>(comments);
+
+                return commentDtos;
+            }
+            catch (Exception ex) 
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
         }
 
-        public async Task<IEnumerable<Comment>> GetCommentsByUserIdAsync(int userId)
+        public async Task<IEnumerable<CommentDto>> GetCommentsByUserIdAsync(int userId)
         {
-            return await _context.Comments
+            try
+            {
+                var comments = await _context.Comments
                 .Where(c => c.UserId == userId)
                 .Include(x => x.Event)
                 .Include(x => x.User)
-                .ToListAsync();
+                .ToListAsync() ?? throw new NotFoundException("No comment found!");
+
+                var commentDtos = _mapper.Map<IEnumerable<CommentDto>>(comments);
+
+                return commentDtos;
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
         }
 
-        public async Task<Comment> AddCommentAsync(CommentCreateDto commentCreateDto)
+        public async Task<CommentDto> AddCommentAsync(CommentCreateDto commentCreateDto)
         {
             var comment = _mapper.Map<Comment>(commentCreateDto);
             comment.UserId = commentCreateDto.UserId;
@@ -62,7 +106,9 @@ namespace Event_Management.Repositories.CommentRepositoryFolder
             await _context.Comments.AddAsync(comment);
             await _context.SaveChangesAsync();
 
-            return comment;
+            var commentDto = _mapper.Map<CommentDto>(comment);
+
+            return commentDto;
         }
 
         public async Task<bool> UpdateCommentAsync(int commentId, int userId, CommentUpdateDto commentUpdateDto)

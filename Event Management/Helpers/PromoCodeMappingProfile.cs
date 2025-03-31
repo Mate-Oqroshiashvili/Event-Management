@@ -11,6 +11,7 @@ namespace Event_Management.Helpers
             CreateMap<PromoCode, PromoCodeCreateDto>().ReverseMap();
             CreateMap<PromoCode, PromoCodeDto>().ReverseMap();
             CreateMap<PromoCode, PromoCodeUpdateDto>().ReverseMap();
+            CreateMap<UsedPromoCode, UsedPromoCodeDto>().ReverseMap();
         }
     }
 }

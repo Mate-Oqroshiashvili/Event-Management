@@ -3,6 +3,7 @@ using Event_Management.Data;
 using Event_Management.Exceptions;
 using Event_Management.Models;
 using Event_Management.Models.Dtos.EventDtos;
+using Event_Management.Models.Dtos.UserDtos;
 using Event_Management.Models.Enums;
 using Event_Management.Repositories.CodeRepositoryFolder;
 using Event_Management.Repositories.ImageRepositoryFolder;
@@ -129,7 +130,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             try
             {
                 var events = await _context.Events
-                    .Where(x => x.Status == EventStatus.COMPLETED)
+                    .Where(x => x.Status == EventStatus.DELETED)
                     .Include(x => x.Participants)
                     .Include(x => x.Participants)
                     .Include(x => x.Tickets)
@@ -324,22 +325,79 @@ namespace Event_Management.Repositories.EventRepositoryFolder
 
                 @event.Location.RemainingCapacity -= @event.Capacity;
                 var ratio = @event.Capacity == 0 ? 1 : (double)@event.Location.MaxCapacity / @event.Capacity;
-                @event.BookedStaff = (int)Math.Floor(@event.Location.AvailableStaff / ratio);
+                @event.BookedStaff = (int)Math.Floor((@event.Location.AvailableStaff + @event.Location.BookedStaff) / ratio);
                 @event.Location.AvailableStaff -= @event.BookedStaff;
                 @event.Location.BookedStaff += @event.BookedStaff;
                 @event.Status = EventStatus.DRAFT;
 
                 await _context.Events.AddAsync(@event);
                 await _context.SaveChangesAsync();
+
+                var savedEvent = await _context.Events.FindAsync(@event.Id);
+                var dto = _mapper.Map<EventDto>(savedEvent);
+
                 await transaction.CommitAsync();
 
-                var savedEvent = await GetEventByIdAsync(@event.Id);
-
-                return savedEvent;
+                return dto;
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        public async Task<UserDto> AddSpeakerOrArtistOnEventAsync(int eventId, int userId)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                var @event = await _context.Events.FindAsync(eventId) ?? throw new NotFoundException("Event not found!");
+                var user = await _context.Users.FindAsync(userId) ?? throw new NotFoundException("User not found!");
+
+                if (user.UserType != UserType.SPEAKER || user.UserType != UserType.ARTIST)
+                    throw new BadRequestException("User is neither speaker, nor artist. User should be artist or speaker to be added on event as one!");
+
+                if (@event.SpeakersAndArtists.Any(x => x.Id == userId))
+                    throw new BadRequestException("User is already added on event as speaker or an artist!");
+
+                @event.SpeakersAndArtists.Add(user);
+                await _context.SaveChangesAsync();
+
+                var dto = _mapper.Map<UserDto>(user);
+
+                await transaction.CommitAsync();
+
+                return dto;
+            }
+            catch (Exception ex) 
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        public async Task<string> RemoveSpeakerOrArtistFromEventAsync(int eventId, int userId)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                var @event = await _context.Events.FindAsync(eventId) ?? throw new NotFoundException("Event not found!");
+                var user = await _context.Users.FindAsync(userId) ?? throw new NotFoundException("User not found!");
+
+                if (!@event.SpeakersAndArtists.Any(x => x.Id == userId))
+                    throw new BadRequestException("User not found on event as speaker or an artist!");
+
+                @event.SpeakersAndArtists.Remove(user);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                return "User got successfully removed from the event!";
+            }
+            catch (Exception ex)
+            {
                 throw new BadRequestException(ex.Message, ex.InnerException);
             }
         }
@@ -385,7 +443,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                     existingEvent.Location.RemainingCapacity -= capacityDifference;
 
                     var ratio = eventUpdateDto.Capacity == 0 ? 1 : (double)existingEvent.Location.MaxCapacity / eventUpdateDto.Capacity.Value;
-                    int newBookedStaff = (int)Math.Floor(existingEvent.Location.AvailableStaff / ratio);
+                    int newBookedStaff = (int)Math.Floor((existingEvent.Location.AvailableStaff + existingEvent.Location.BookedStaff) / ratio);
 
                     int bookedStaffDifference = newBookedStaff - existingEvent.BookedStaff;
 
@@ -499,13 +557,29 @@ namespace Event_Management.Repositories.EventRepositoryFolder
         {
             try
             {
-                var @event = await _context.Events.FindAsync(eventId);
+                var @event = await _context.Events
+                    .Include(x => x.Location)
+                    .FirstOrDefaultAsync(x => x.Id == eventId);
                 if (@event == null) return false;
 
                 if (@event.StartDate < DateTime.UtcNow)
                     throw new BadRequestException("Event can't be published because it's start date is overdue!");
 
+                if (@event.Status == EventStatus.PUBLISHED)
+                    throw new BadRequestException("Event is already published!");
+
+                if (@event.Status == EventStatus.COMPLETED)
+                    throw new BadRequestException("Event is already completed!");
+
+                if (@event.Status == EventStatus.DELETED)
+                {
+                    @event.Location.RemainingCapacity -= @event.Capacity;
+                    @event.Location.AvailableStaff -= @event.BookedStaff;
+                    @event.Location.BookedStaff += @event.BookedStaff;
+                }
+
                 @event.Status = EventStatus.PUBLISHED;
+
                 _context.Events.Update(@event);
                 await _context.SaveChangesAsync();
 
@@ -538,6 +612,12 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                     .FirstOrDefaultAsync(e => e.Id == id);
 
                 if (@event == null) return false;
+
+                if (@event.Status == EventStatus.COMPLETED)
+                    throw new BadRequestException("Event is already completed. It can't be deleted!");
+
+                if (@event.Status == EventStatus.DELETED)
+                    throw new BadRequestException("Event is already deleted!");
 
                 @event.Organizer = await _context.Organizers
                     .Include(x => x.Events)

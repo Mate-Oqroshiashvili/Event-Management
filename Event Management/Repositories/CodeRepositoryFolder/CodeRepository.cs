@@ -219,7 +219,7 @@ namespace Event_Management.Repositories.CodeRepositoryFolder
             }
         }
 
-        public async Task<string> SendCodes(string email, string phoneNumber)
+        public async Task<bool> SendCodes(string email, string phoneNumber)
         {
             var emailCode = new Random().Next(100000, 999999).ToString();
             var smsCode = new Random().Next(100000, 999999).ToString();
@@ -229,7 +229,7 @@ namespace Event_Management.Repositories.CodeRepositoryFolder
             await SendToEmail(email, $"Your email verification code is {emailCode}");
             await SendToPhone(phoneNumber, $"Your SMS verification code is {smsCode}");
 
-            return "Verification codes sent successfully!";
+            return true;
         }
 
         public string GetCodes(string email)

@@ -1,7 +1,7 @@
 ﻿using Event_Management.Models.Dtos.LocationDtos;
 using Event_Management.Models.Dtos.OrganizerDtos;
-using Event_Management.Models.Dtos.ParticipantDtos;
-using Event_Management.Models.Dtos.PromoCodeDtos;
+using Event_Management.Models.Dtos.ReviewDtos;
+using Event_Management.Models.Dtos.CommentDtos;
 using Event_Management.Models.Dtos.TicketDtos;
 using Event_Management.Models.Dtos.UserDtos;
 using Event_Management.Models.Enums;
@@ -22,15 +22,15 @@ namespace Event_Management.Models.Dtos.EventDtos
         public LocationDto Location { get; set; }
         public OrganizerDto Organizer { get; set; }
         public IEnumerable<TicketDto> Tickets { get; set; }
-        public IEnumerable<ParticipantDto> Participants { get; set; }
+        //public IEnumerable<ParticipantDto> Participants { get; set; }
         public IEnumerable<UserDto> SpeakersAndArtists { get; set; }
-        public IEnumerable<PromoCodeDto> PromoCodes { get; set; }
-        public IEnumerable<Review> Reviews { get; set; }
-        public IEnumerable<Comment> Comments { get; set; }
+        //public IEnumerable<PromoCodeDto> PromoCodes { get; set; }
+        public IEnumerable<ReviewDto> Reviews { get; set; }
+        public IEnumerable<CommentDto> Comments { get; set; }
 
         public EventDto()
         {
-            
+
         }
     }
 }

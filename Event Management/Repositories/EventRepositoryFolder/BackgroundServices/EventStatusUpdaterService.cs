@@ -30,6 +30,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder.BackgroundServices
                         var utcNow = DateTime.UtcNow;
                         var eventsToUpdate = await dbContext.Events
                             .Where(e => e.EndDate < utcNow && e.Status == EventStatus.PUBLISHED && e.Status != EventStatus.COMPLETED)
+                            .Include(e => e.Location)
                             .ToListAsync(stoppingToken);
 
                         if (eventsToUpdate.Count != 0)
@@ -37,6 +38,12 @@ namespace Event_Management.Repositories.EventRepositoryFolder.BackgroundServices
                             foreach (var ev in eventsToUpdate)
                             {
                                 ev.Status = EventStatus.COMPLETED;
+                                if (ev.Location != null)
+                                {
+                                    ev.Location.RemainingCapacity += ev.Capacity;
+                                    ev.Location.AvailableStaff += ev.BookedStaff;
+                                    ev.Location.BookedStaff -= ev.BookedStaff;
+                                }
                             }
 
                             await dbContext.SaveChangesAsync(stoppingToken);

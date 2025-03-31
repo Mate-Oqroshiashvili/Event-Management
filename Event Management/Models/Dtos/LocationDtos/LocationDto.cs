@@ -20,8 +20,8 @@ namespace Event_Management.Models.Dtos.LocationDtos
         public string ImageUrl { get; set; }
         public bool IsIndoor { get; set; }
         public bool IsAccessible { get; set; }
-        public List<EventDto> Events { get; set; }
-        public List<OrganizerDto> Organizers { get; set; }
+        //public List<EventDto> Events { get; set; }
+        //public List<OrganizerDto> Organizers { get; set; }
 
         public LocationDto()
         {

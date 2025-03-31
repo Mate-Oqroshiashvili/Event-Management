@@ -4,6 +4,7 @@ using Event_Management.Exceptions;
 using Event_Management.Models;
 using Event_Management.Models.Dtos.ReviewDtos;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Event_Management.Repositories.ReviewRepositoryFolder
 {
@@ -18,51 +19,104 @@ namespace Event_Management.Repositories.ReviewRepositoryFolder
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Review>> GetReviewsAsync()
+        public async Task<IEnumerable<ReviewDto>> GetReviewsAsync()
         {
-            return await _context.Reviews
-                .Include(x => x.Event)
-                .Include(x => x.User)
-                .ToListAsync();
+            try
+            {
+                var reviews = await _context.Reviews
+                    .Include(x => x.Event)
+                    .Include(x => x.User)
+                    .ToListAsync() ?? throw new NotFoundException("No review found!");
+
+                var reviewDtos = _mapper.Map<IEnumerable<ReviewDto>>(reviews);
+
+                return reviewDtos;
+            }
+            catch (Exception ex) 
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
         }
 
-        public async Task<Review> GetReviewByIdAsync(int id)
+        public async Task<ReviewDto> GetReviewByIdAsync(int id)
         {
-            return await _context.Reviews
-                .Include(x => x.Event)
-                .Include(x => x.User)
-                .FirstOrDefaultAsync(x => x.Id == id)
-                ?? throw new NotFoundException("Review not found!");
+            try
+            {
+                var review = await _context.Reviews
+                    .Include(x => x.Event)
+                    .Include(x => x.User)
+                    .FirstOrDefaultAsync(x => x.Id == id)
+                    ?? throw new NotFoundException("Review not found!");
+
+                var reviewDto = _mapper.Map<ReviewDto>(review);
+
+                return reviewDto;
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
         }
 
-        public async Task<IEnumerable<Review>> GetReviewsByEventIdAsync(int eventId)
+        public async Task<IEnumerable<ReviewDto>> GetReviewsByEventIdAsync(int eventId)
         {
-            return await _context.Reviews
-                .Where(r => r.EventId == eventId)
-                .Include(x => x.Event)
-                .Include(x => x.User)
-                .ToListAsync();
+            try
+            {
+                var reviews = await _context.Reviews
+                    .Where(r => r.EventId == eventId)
+                    .Include(x => x.Event)
+                    .Include(x => x.User)
+                    .ToListAsync() ?? throw new NotFoundException("No review found!");
+
+                var reviewDtos = _mapper.Map<IEnumerable<ReviewDto>>(reviews);
+
+                return reviewDtos;
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
         }
 
-        public async Task<IEnumerable<Review>> GetReviewsByUserIdAsync(int userId)
+        public async Task<IEnumerable<ReviewDto>> GetReviewsByUserIdAsync(int userId)
         {
-            return await _context.Reviews
+            try
+            {
+                var reviews = await _context.Reviews
                 .Where(r => r.UserId == userId)
                 .Include(x => x.Event)
                 .Include(x => x.User)
-                .ToListAsync();
+                .ToListAsync() ?? throw new NotFoundException("No review found!");
+
+                var reviewDtos = _mapper.Map<IEnumerable<ReviewDto>>(reviews);
+
+                return reviewDtos;
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
         }
 
-        public async Task<Review> AddReviewAsync(ReviewCreateDto reviewCreateDto)
+        public async Task<ReviewDto> AddReviewAsync(ReviewCreateDto reviewCreateDto)
         {
-            var review = _mapper.Map<Review>(reviewCreateDto);
-            review.UserId = reviewCreateDto.UserId;
-            review.EventId = reviewCreateDto.EventId;
+            try
+            {
+                var review = _mapper.Map<Review>(reviewCreateDto);
+                review.UserId = reviewCreateDto.UserId;
+                review.EventId = reviewCreateDto.EventId;
 
-            await _context.Reviews.AddAsync(review);
-            await _context.SaveChangesAsync();
+                await _context.Reviews.AddAsync(review);
+                await _context.SaveChangesAsync();
 
-            return review;
+                var reviewDto = _mapper.Map<ReviewDto>(review);
+
+                return reviewDto;
+            }
+            catch (Exception ex) 
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
         }
 
         public async Task<bool> UpdateReviewAsync(int reviewId, int userId, ReviewUpdateDto reviewUpdateDto)

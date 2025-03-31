@@ -25,8 +25,8 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
         public async Task<IEnumerable<OrganizerDto>> GetOrganizersAsync()
         {
             var organizers = await _context.Organizers
-                .Include(x => x.Events)
-                .Include(x => x.Locations)
+                //.Include(x => x.Events)
+                //.Include(x => x.Locations)
                 .Include(x => x.User)
                 .ToListAsync();
 
@@ -38,8 +38,8 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
         public async Task<OrganizerDto> GetOrganizerByIdAsync(int id)
         {
             var organizer = await _context.Organizers
-                .Include(x => x.Events)
-                .Include(x => x.Locations)
+                //.Include(x => x.Events)
+                //.Include(x => x.Locations)
                 .Include(x => x.User)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -55,10 +55,10 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
             organizer.User = await _context.Users
                 .Include(x => x.Participants)
                 .Include(x => x.Purchases)
-                .Include(x => x.Organizer)
-                    .ThenInclude(x => x!.Events)
-                .Include(x => x.Organizer)
-                    .ThenInclude(x => x!.Locations)
+                //.Include(x => x.Organizer)
+                //    .ThenInclude(x => x!.Events)
+                //.Include(x => x.Organizer)
+                //    .ThenInclude(x => x!.Locations)
                 .Include(x => x.Tickets)
                 .Include(x => x.Comments)
                 .Include(x => x.Reviews)

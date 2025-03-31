@@ -78,10 +78,10 @@ namespace Event_Management.Controllers
             {
                 var result = await _codeRepository.SendCodes(email, phoneNumber);
 
-                if (string.IsNullOrEmpty(result))
+                if (!result)
                     throw new BadRequestException("Verification codes sending process failed!");
 
-                return Ok("Verification codes sent successfully!");
+                return Ok(new { result, message = "Verification codes sent successfully!" });
             }
             catch (Exception ex)
             {
@@ -90,7 +90,7 @@ namespace Event_Management.Controllers
         }
 
         [HttpPost("register-user")]
-        public async Task<ActionResult<UserDto>> RegisterUser([FromForm] UserCreateDto userCreateDto)
+        public async Task<ActionResult<UserDto>> RegisterUser([FromBody] UserCreateDto userCreateDto)
         {
             try
             {
@@ -115,7 +115,7 @@ namespace Event_Management.Controllers
         }
 
         [HttpPost("login-user")]
-        public async Task<ActionResult<string>> LoginUser([FromForm] LoginDto loginDto)
+        public async Task<ActionResult<string>> LoginUser([FromBody] LoginDto loginDto)
         {
             try
             {
@@ -150,7 +150,22 @@ namespace Event_Management.Controllers
             }
         }
 
-        [Authorize(Roles = "BASIC,ORGANIZER")]
+        [HttpPatch("change-login-status/{userId}")]
+        public async Task<ActionResult<bool>> ChangeLoginStatus(int userId)
+        {
+            try
+            {
+                var updated = await _userRepository.UpdateLoginStatus(userId);
+
+                return !updated ? throw new NotFoundException("User not found!") : Ok(new { updated ,message = "Login status updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [Authorize(Roles = "BASIC,ORGANIZER,PARTICIPANT")]
         [HttpPatch("change-user-type/{userId}")]
         public async Task<ActionResult<string>> ChangeUserType(int userId, UserType userType)
         {
@@ -166,7 +181,7 @@ namespace Event_Management.Controllers
             }
         }
 
-        [Authorize(Roles = "BASIC,ORGANIZER")]
+        [Authorize(Roles = "BASIC,ORGANIZER,PARTICIPANT")]
         [HttpPatch("change-user-password/{userId}")]
         public async Task<ActionResult<string>> ChangeUserPassword(int userId, [FromForm] ChangePasswordDto changePasswordDto)
         {
@@ -182,7 +197,7 @@ namespace Event_Management.Controllers
             }
         }
 
-        [Authorize(Roles = "BASIC,ORGANIZER")]
+        [Authorize(Roles = "BASIC,ORGANIZER,PARTICIPANT")]
         [HttpPut("update-user-information/{userId}")]
         public async Task<ActionResult<bool>> UpdateUserInformation(int userId, [FromForm] UserUpdateDto userUpdateDto)
         {
@@ -201,7 +216,7 @@ namespace Event_Management.Controllers
             }
         }
 
-        [Authorize(Roles = "BASIC,ORGANIZER")]
+        [Authorize(Roles = "BASIC,ORGANIZER,PARTICIPANT")]
         [HttpDelete("remove-user/{userId}")]
         public async Task<ActionResult<string>> RemoveUser(int userId)
         {

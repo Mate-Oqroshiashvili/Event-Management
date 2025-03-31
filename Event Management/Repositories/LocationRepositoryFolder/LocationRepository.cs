@@ -24,8 +24,8 @@ namespace Event_Management.Repositories.LocationRepositoryFolder
         public async Task<IEnumerable<LocationDto>> GetLocationsAsync()
         {
             var locations = await _context.Locations
-                .Include(x => x.Events.Where(e => e.Status != EventStatus.DELETED && e.Status != EventStatus.DRAFT))
-                .Include(x => x.Organizers)
+                //.Include(x => x.Events.Where(e => e.Status != EventStatus.DELETED && e.Status != EventStatus.DRAFT))
+                //.Include(x => x.Organizers)
                 .ToListAsync();
 
             var locationsDtos = _mapper.Map<IEnumerable<LocationDto>>(locations);
@@ -36,9 +36,9 @@ namespace Event_Management.Repositories.LocationRepositoryFolder
         public async Task<LocationDto> GetLocationByIdAsync(int id)
         {
             var location = await _context.Locations
-                .Include(x => x.Events.Where(e => e.Status != EventStatus.DELETED && e.Status != EventStatus.DRAFT))
-                .Include(x => x.Organizers)
-                    .ThenInclude(x => x.Locations)
+                //.Include(x => x.Events.Where(e => e.Status != EventStatus.DELETED && e.Status != EventStatus.DRAFT))
+                //.Include(x => x.Organizers)
+                //    .ThenInclude(x => x.Locations)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             var locationDto = _mapper.Map<LocationDto>(location);
@@ -50,9 +50,9 @@ namespace Event_Management.Repositories.LocationRepositoryFolder
         {
             var locations = await _context.Locations
                 .Where(l => l.Organizers.Any(o => o.Id == organizerId))
-                .Include(x => x.Events)
-                .Include(x => x.Organizers)
-                    .ThenInclude(x => x.User)
+                //.Include(x => x.Events)
+                //.Include(x => x.Organizers)
+                //    .ThenInclude(x => x.User)
                 .ToListAsync();
 
             var locationsDtos = _mapper.Map<IEnumerable<LocationDto>>(locations);

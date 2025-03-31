@@ -14,6 +14,8 @@ namespace Event_Management.Repositories.EventRepositoryFolder
         Task<EventDto> GetEventBySearchtermAsync(string searchTerm);
         Task<IEnumerable<EventDto>> GetEventsByOrganizerIdAsync(int organizerId);
         Task<EventDto> AddEventAsync(EventCreateDto eventCreateDto);
+        Task<UserDto> AddSpeakerOrArtistOnEventAsync(int eventId, int userId);
+        Task<string> RemoveSpeakerOrArtistFromEventAsync(int eventId, int userId);
         Task<bool> UpdateEventAsync(int id, EventUpdateDto eventUpdateDto);
         Task<bool> RescheduleEventAsync(int id, DateTime newDate);
         Task<bool> PublishTheEvent(int eventId);

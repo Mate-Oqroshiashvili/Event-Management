@@ -1,5 +1,4 @@
 ﻿using Event_Management.Exceptions;
-using Event_Management.Models;
 using Event_Management.Models.Dtos.ReviewDtos;
 using Event_Management.Repositories.ReviewRepositoryFolder;
 using Microsoft.AspNetCore.Authorization;
@@ -20,7 +19,7 @@ namespace Event_Management.Controllers
 
         [Authorize(Roles = "ADMINISTRATOR")]
         [HttpGet("get-all-reviews")]
-        public async Task<ActionResult<IEnumerable<Review>>> GetAllReviews()
+        public async Task<ActionResult<IEnumerable<ReviewDto>>> GetAllReviews()
         {
             try
             {
@@ -35,7 +34,7 @@ namespace Event_Management.Controllers
         }
 
         [HttpGet("get-review-by-id/{reviewId}")]
-        public async Task<ActionResult<Review>> GetReviewsById(int reviewId)
+        public async Task<ActionResult<ReviewDto>> GetReviewsById(int reviewId)
         {
             try
             {
@@ -50,7 +49,7 @@ namespace Event_Management.Controllers
         }
 
         [HttpGet("get-reviews-by-event-id/{eventId}")]
-        public async Task<ActionResult<IEnumerable<Review>>> GetReviewsByEventId(int eventId)
+        public async Task<ActionResult<IEnumerable<ReviewDto>>> GetReviewsByEventId(int eventId)
         {
             try
             {
@@ -65,7 +64,7 @@ namespace Event_Management.Controllers
         }
 
         [HttpGet("get-reviews-by-user-id/{userId}")]
-        public async Task<ActionResult<IEnumerable<Review>>> GetReviewsByUserId(int userId)
+        public async Task<ActionResult<IEnumerable<ReviewDto>>> GetReviewsByUserId(int userId)
         {
             try
             {
@@ -80,7 +79,7 @@ namespace Event_Management.Controllers
         }
 
         [HttpPost("add-review")]
-        public async Task<ActionResult<Review>> AddReview([FromForm] ReviewCreateDto reviewCreateDto)
+        public async Task<ActionResult<ReviewDto>> AddReview([FromForm] ReviewCreateDto reviewCreateDto)
         {
             try
             {

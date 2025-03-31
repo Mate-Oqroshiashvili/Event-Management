@@ -20,7 +20,6 @@ namespace Event_Management.Controllers
             _codeRepository = codeRepository;
         }
 
-        [Authorize(Roles = "ADMINISTRATOR")]
         [HttpGet("get-all-organizers")]
         public async Task<ActionResult<IEnumerable<OrganizerDto>>> GetAllOrganizers()
         {
