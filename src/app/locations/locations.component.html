@@ -1,0 +1,38 @@
+<section class="cards">
+  @for (location of locations; track location.id) {
+  <div class="card">
+    <img [src]="location.imageUrl" class="card-img-top" alt="..." />
+    <div class="card-body">
+      <h5 class="card-title">{{ location.name }}</h5>
+      <p class="card-text">
+        {{ location.description }}
+      </p>
+      <p class="card-text">City: {{ location.city }}</p>
+      <p class="card-text">State: {{ location.state }}</p>
+      <p class="card-text">Country: {{ location.country }}</p>
+      <p class="card-text">Address: {{ location.address }}</p>
+      <p class="card-text">
+        Participants Maximum Capacity: {{ location.maxCapacity }}
+      </p>
+      <p class="card-text">
+        Participants Remaining Capacity: {{ location.remainingCapacity }}
+      </p>
+      <p class="card-text">
+        Maximum Staff Count:
+        {{ location.bookedStaff + location.availableStaff }}
+      </p>
+      <p class="card-text">
+        Available Staff Count: {{ location.availableStaff }}
+      </p>
+      @if (location.isIndoor) {
+      <p class="card-text">Type: Indoor</p>
+      }@else {
+      <p class="card-text">Type: Outdoor</p>
+      }
+      <a [routerLink]="['location', location.id]" class="btn btn-primary"
+        >See More</a
+      >
+    </div>
+  </div>
+  }
+</section>

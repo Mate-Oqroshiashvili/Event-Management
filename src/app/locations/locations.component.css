@@ -1,0 +1,16 @@
+.cards {
+  padding: 40px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  justify-content: center;
+  gap: 40px;
+}
+
+img {
+  height: 250px;
+  object-fit: cover;
+}
+
+p {
+  margin-bottom: 8px;
+}

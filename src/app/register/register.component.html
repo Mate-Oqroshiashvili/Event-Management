@@ -1,0 +1,89 @@
+<div class="register-form">
+  <form (ngSubmit)="registerUser()">
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="userCreateDto.name"
+        type="text"
+        class="form-control"
+        name="name"
+        id="name"
+        placeholder="Jon doe"
+      />
+      <label for="floatingInput">Account Name</label>
+    </div>
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="userCreateDto.email"
+        type="email"
+        class="form-control"
+        name="email"
+        id="email"
+        placeholder="name@example.com"
+      />
+      <label for="floatingInput">Email address</label>
+    </div>
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="userCreateDto.phoneNumber"
+        type="text"
+        class="form-control"
+        name="number"
+        id="number"
+        placeholder="555 555 555"
+      />
+      <label for="floatingInput">Phone Number</label>
+    </div>
+    <div class="form-floating">
+      <input
+        [(ngModel)]="userCreateDto.password"
+        type="password"
+        class="form-control"
+        name="password"
+        id="password"
+        placeholder="Password"
+      />
+      <label for="floatingPassword">Password</label>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end" class="verify-button">
+      <button
+        type="button"
+        (click)="sendVerificationCodes()"
+        class="btn btn-primary mt-3 mb-5"
+      >
+        Verify User
+      </button>
+    </div>
+
+    @if (response) {
+    <h4 style="width: 80%; margin: auto; text-align: center" class="mb-3">
+      Verification Codes Were Sent To Your Email And Phone Number!
+    </h4>
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="userCreateDto.emailCode"
+        type="text"
+        class="form-control"
+        name="emailCode"
+        id="emailCode"
+        placeholder="123456"
+      />
+      <label for="floatingInput">Email Verification Code</label>
+    </div>
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="userCreateDto.phoneNumberCode"
+        type="text"
+        class="form-control"
+        name="numberCode"
+        id="numberCode"
+        placeholder="123456"
+      />
+      <label for="floatingInput">Phone Number Verification Code</label>
+    </div>
+    <button type="submit" style="float: right" class="btn btn-success mt-3">
+      Register
+    </button>
+    }
+  </form>
+</div>

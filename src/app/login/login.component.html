@@ -1,0 +1,29 @@
+<div class="login-form">
+  <form (ngSubmit)="loginUser()">
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="loginDto.email"
+        type="email"
+        class="form-control"
+        name="email"
+        id="email"
+        placeholder="name@example.com"
+      />
+      <label for="floatingInput">Email address</label>
+    </div>
+    <div class="form-floating">
+      <input
+        [(ngModel)]="loginDto.password"
+        type="password"
+        class="form-control"
+        name="password"
+        id="password"
+        placeholder="Password"
+      />
+      <label for="floatingPassword">Password</label>
+    </div>
+    <div style="display: flex; justify-content: flex-end" class="login-button">
+      <button type="submit" class="btn btn-success mb-3 mt-3">Log In</button>
+    </div>
+  </form>
+</div>
