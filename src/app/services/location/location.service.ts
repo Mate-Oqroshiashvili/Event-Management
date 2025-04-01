@@ -66,4 +66,17 @@ export class LocationService {
       `${this.apiUrl}Location/get-all-locations`
     );
   }
+
+  getLocationById(locationId: number): Observable<LocationDto> {
+    return this.http.get<LocationDto>(
+      `${this.apiUrl}Location/get-location-by-id/${locationId}`
+    );
+  }
+
+  getLocationsByOrganizerId(organizerId: number): Observable<LocationDto[]> {
+    return this.http.get<LocationDto[]>(
+      `${this.apiUrl}Location/get-locations-by-organizer-id/${organizerId}`,
+      {}
+    );
+  }
 }

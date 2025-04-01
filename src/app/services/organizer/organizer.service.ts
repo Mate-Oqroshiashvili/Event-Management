@@ -36,8 +36,8 @@ export interface OrganizerDto {
   city: string;
   country: string;
   isVerified: boolean;
-  createdAt: Date;
-  user: UserDto;
+  createdAt: Date | undefined;
+  user: UserDto | null;
 }
 
 @Injectable({
@@ -51,6 +51,19 @@ export class OrganizerService {
   getAllOrganizers(): Observable<OrganizerDto[]> {
     return this.http.get<OrganizerDto[]>(
       `${this.apiUrl}Organizer/get-all-organizers`
+    );
+  }
+
+  getOrganizerById(organizerId: number): Observable<OrganizerDto> {
+    return this.http.get<OrganizerDto>(
+      `${this.apiUrl}Organizer/get-organizer-by-id/${organizerId}`
+    );
+  }
+
+  getOrganizersByLocationId(locationId: number): Observable<OrganizerDto[]> {
+    return this.http.get<OrganizerDto[]>(
+      `${this.apiUrl}Organizer/get-organizers-by-location-id/${locationId}`,
+      {}
     );
   }
 }

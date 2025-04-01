@@ -6,10 +6,10 @@ import {
 } from '../services/organizer/organizer.service';
 
 @Component({
-    selector: 'app-organizers',
-    imports: [RouterModule],
-    templateUrl: './organizers.component.html',
-    styleUrl: './organizers.component.css'
+  selector: 'app-organizers',
+  imports: [RouterModule],
+  templateUrl: './organizers.component.html',
+  styleUrl: './organizers.component.css',
 })
 export class OrganizersComponent implements OnInit {
   organizers: OrganizerDto[] = [];
@@ -24,6 +24,7 @@ export class OrganizersComponent implements OnInit {
     this.organizerSevice.getAllOrganizers().subscribe({
       next: (data: any) => {
         this.organizers = data.organizerDtos;
+        console.log(data);
       },
       error: (err) => {
         console.error(err);

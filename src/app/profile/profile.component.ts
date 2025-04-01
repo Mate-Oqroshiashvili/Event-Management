@@ -1,11 +1,25 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 @Component({
-    selector: 'app-profile',
-    imports: [],
-    templateUrl: './profile.component.html',
-    styleUrl: './profile.component.css'
+  selector: 'app-profile',
+  imports: [CommonModule, RouterModule],
+  templateUrl: './profile.component.html',
+  styleUrl: './profile.component.css',
 })
-export class ProfileComponent {
+export class ProfileComponent implements OnInit {
+  userId: number = 0;
 
+  constructor(private route: ActivatedRoute, private router: Router) {}
+
+  ngOnInit(): void {
+    this.route.paramMap.subscribe((data) => {
+      this.userId = +data.get('userId')!;
+
+      if (this.route.snapshot.url.length === 2) {
+        this.router.navigate([`/profile/${this.userId}/user-information`]);
+      }
+    });
+  }
 }

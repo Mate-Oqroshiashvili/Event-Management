@@ -1,1 +1,79 @@
-<p>location-page works!</p>
+<div class="location-page">
+  <section class="top">
+    <img [src]="location.imageUrl" alt="" />
+    <div class="main-information">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">{{ location.name }}</h5>
+          <p class="card-text">City: {{ location.city }}</p>
+          <p class="card-text">State: {{ location.state }}</p>
+          <p class="card-text">Country: {{ location.country }}</p>
+          <p class="card-text">
+            Maximum Participant Capacity: {{ location.maxCapacity }}
+          </p>
+          <p class="card-text">
+            Remaining Participant Capacity: {{ location.remainingCapacity }}
+          </p>
+          <p class="card-text">
+            Available Staff: {{ location.availableStaff }}
+          </p>
+          @if (location.isIndoor) {
+          <p class="card-text">Type: Indoor</p>
+          }@else {
+          <p class="card-text">Type: Outdoor</p>
+          } @if (location.isAccessible) {
+          <p class="card-text">Accessibility Status: Accessible</p>
+          }@else {
+          <p class="card-text">Accessibility Status: Inaccessible</p>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="bottom">
+    <div class="additional-information">
+      <div class="description my-5">
+        <h1>Description</h1>
+        <p class="description">{{ location.description }}</p>
+      </div>
+      <h1>Related Organizers</h1>
+      <div class="cards">
+        @for (organizer of organizers; track $index) {
+        <div class="card custom">
+          <img [src]="organizer.logoUrl" alt="" />
+          <div style="display: flex; align-items: center" class="text">
+            <h3 style="margin: 10px 0px">
+              <a [routerLink]="['/organizers/organizer', organizer.id]">{{
+                organizer.name
+              }}</a>
+              @if (organizer.isVerified) {
+              <p style="margin: 0px">Verification Status: Verified</p>
+              } @else {
+              <p style="margin: 0px">Verification Status: Not Verified</p>
+              }
+            </h3>
+          </div>
+        </div>
+        }
+      </div>
+      <h1>Related Events</h1>
+      <div class="cards">
+        @for (event of events; track $index) {
+        <div class="card custom">
+          <img [src]="event.images[0]" alt="" />
+          <div style="display: flex; align-items: center" class="text">
+            <h3 style="margin: 10px 0px">
+              <a [routerLink]="['/events/event', event.id]">{{
+                event.title
+              }}</a>
+              <p style="margin: 0px">
+                Event Status: {{ getEventStatus(event.status).toLowerCase() }}
+              </p>
+            </h3>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,7 +1,7 @@
 <section class="cards">
   @for (event of events; track event.id) {
   <div class="card">
-    <img [src]="event.location.imageUrl" class="card-img-top" alt="..." />
+    <img [src]="event.location!.imageUrl" class="card-img-top" alt="..." />
     <div class="card-body">
       <h5 class="card-title">{{ event.title }}</h5>
       <p class="card-text">
@@ -9,8 +9,8 @@
       </p>
       <p class="card-text">Event Start Date: {{ event.startDate }}</p>
       <p class="card-text">Event End Date: {{ event.endDate }}</p>
-      <p class="card-text">Event Organizer: {{ event.organizer.name }}</p>
-      <p class="card-text">Event Address: {{ event.location.address }}</p>
+      <p class="card-text">Event Organizer: {{ event.organizer?.name }}</p>
+      <p class="card-text">Event Address: {{ event.location?.address }}</p>
       @for (item of event.speakersAndArtists; track $index) {
       <p class="card-text">Speakers & Artists: {{ item.name }}</p>
       }

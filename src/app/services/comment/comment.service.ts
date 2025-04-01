@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
+import { UserDto } from '../user/user.service';
 
 export interface CommentCreateDto {
   commentContent: string;
@@ -17,6 +18,7 @@ export interface CommentDto {
   commentContent: string;
   createdAt: Date;
   userId: number;
+  user: UserDto;
   eventId: number;
 }
 

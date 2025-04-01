@@ -43,14 +43,14 @@ export interface EventDto {
   id: number;
   title: string;
   description: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: Date | null;
+  endDate: Date | null;
   capacity: number;
   status: EventStatus;
   bookedStaff: number;
   images: string[];
-  location: LocationDto;
-  organizer: OrganizerDto;
+  location: LocationDto | null;
+  organizer: OrganizerDto | null;
   tickets: TicketDto[];
   speakersAndArtists: UserDto[];
   reviews: ReviewDto[];
@@ -68,6 +68,27 @@ export class EventService {
   getPublishedEvents(): Observable<EventDto[]> {
     return this.http.get<EventDto[]>(
       `${this.apiUrl}Event/get-published-events`
+    );
+  }
+
+  getEventsByOrganizerId(organizerId: number): Observable<EventDto[]> {
+    return this.http.get<EventDto[]>(
+      `${this.apiUrl}Event/get-events-by-organizer-id/${organizerId}`,
+      {}
+    );
+  }
+
+  getEventsByLocationId(locationId: number): Observable<EventDto[]> {
+    return this.http.get<EventDto[]>(
+      `${this.apiUrl}Event/get-events-by-location-id/${locationId}`,
+      {}
+    );
+  }
+
+  getEventById(eventId: number): Observable<EventDto> {
+    return this.http.get<EventDto>(
+      `${this.apiUrl}Event/get-event-by-id/${eventId}`,
+      {}
     );
   }
 }

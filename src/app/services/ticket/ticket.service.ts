@@ -5,6 +5,7 @@ import { EventDto } from '../event/event.service';
 import { UserDto } from '../user/user.service';
 import { PurchaseDto } from '../purchase/purchase.service';
 import { ParticipantDto } from '../participant/participant.service';
+import { Observable } from 'rxjs';
 
 export enum TicketType {
   BASIC = 1,
@@ -52,4 +53,11 @@ export class TicketService {
   private apiUrl: string = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
+
+  getTicketsByEventId(eventId: number): Observable<TicketDto[]> {
+    return this.http.get<TicketDto[]>(
+      `${this.apiUrl}Ticket/get-tickets-by-event-id/${eventId}`,
+      {}
+    );
+  }
 }

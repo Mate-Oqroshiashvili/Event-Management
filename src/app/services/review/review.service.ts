@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
+import { UserDto } from '../user/user.service';
 
 export interface ReviewCreateDto {
   starCount: number;
@@ -16,6 +17,7 @@ export interface ReviewDto {
   id: number;
   starCount: number;
   userId: number;
+  user: UserDto;
   eventId: number;
 }
 

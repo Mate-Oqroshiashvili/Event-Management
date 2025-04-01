@@ -70,9 +70,9 @@ export interface UserDto {
   balance: number;
   emailVerificationCode?: string;
   smsVerificationCode?: string;
-  codeExpiration: Date;
+  codeExpiration: Date | undefined;
   isLoggedIn: boolean;
-  organizer: OrganizerDto;
+  organizer: OrganizerDto | null;
   tickets: TicketDto[];
   purchases: PurchaseDto[];
   participants: ParticipantDto[];
@@ -99,6 +99,12 @@ export class UserService {
     if (isPlatformBrowser(this.platformId)) {
       this.isAuthenticatedSubject.next(this.hasValidToken());
     }
+  }
+
+  getUserById(userId: number): Observable<UserDto> {
+    return this.http.get<UserDto>(
+      `${this.apiUrl}User/get-user-by-id/${userId}`
+    );
   }
 
   sendVerificationCodes(

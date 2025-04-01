@@ -1,1 +1,28 @@
-<p>profile works!</p>
+<div class="profile">
+  <aside class="card">
+    <nav class="card-body">
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="user-information">User Information</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="user-analytics">User Analytics</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="participation-history"
+            >Participation History</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="reviews">Reviews User Made</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="comments">Comments User Added</a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+  <div class="content">
+    <router-outlet></router-outlet>
+  </div>
+</div>

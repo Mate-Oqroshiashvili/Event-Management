@@ -1,0 +1,15 @@
+.profile {
+  padding: 0px 40px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 40px;
+}
+
+aside {
+  width: max-content;
+  height: 85vh;
+}
+
+.nav-link {
+  padding-left: 10px;
+}
