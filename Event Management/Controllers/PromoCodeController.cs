@@ -83,7 +83,7 @@ namespace Event_Management.Controllers
 
         [Authorize(Roles = "ORGANIZER")]
         [HttpPost("create-promo-code")]
-        public async Task<ActionResult<PromoCodeDto>> CreatePromoCode([FromForm] PromoCodeCreateDto promoCodeCreateDto)
+        public async Task<ActionResult<PromoCodeDto>> CreatePromoCode([FromBody] PromoCodeCreateDto promoCodeCreateDto)
         {
             try
             {
@@ -99,7 +99,7 @@ namespace Event_Management.Controllers
 
         [Authorize(Roles = "ORGANIZER")]
         [HttpPut("update-promo-code/{promoCodeId}")]
-        public async Task<ActionResult<string>> UpdatePromoCode(int promoCodeId, [FromForm] PromoCodeUpdateDto promoCodeUpdateDto)
+        public async Task<ActionResult<string>> UpdatePromoCode(int promoCodeId, [FromBody] PromoCodeUpdateDto promoCodeUpdateDto)
         {
             try
             {

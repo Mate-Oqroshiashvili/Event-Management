@@ -192,11 +192,13 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             }
         }
 
-        public async Task<EventDto> GetEventBySearchtermAsync(string searchTerm)
+        public async Task<IEnumerable<EventDto>> GetEventBySearchtermAsync(string searchTerm)
         {
             try
             {
                 var @event = await _context.Events
+                    .Where(x => x.Title == searchTerm || x.Description.Contains(searchTerm) &&
+                                         x.Status != EventStatus.DELETED && x.Status != EventStatus.DRAFT)
                     .Include(x => x.Participants)
                     .Include(x => x.Participants)
                     .Include(x => x.Tickets)
@@ -212,13 +214,12 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                     .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
                     .Include(x => x.Comments)
-                    .FirstOrDefaultAsync(x => x.Title == searchTerm || x.Description.Contains(searchTerm) &&
-                                         x.Status != EventStatus.DELETED && x.Status != EventStatus.DRAFT)
+                    .ToListAsync()
                     ?? throw new NotFoundException($"Event can't be found with search term - {searchTerm}");
 
-                var eventDto = _mapper.Map<EventDto>(@event);
+                var eventDtos = _mapper.Map<IEnumerable<EventDto>>(@event);
 
-                return eventDto;
+                return eventDtos;
             }
             catch (Exception ex)
             {

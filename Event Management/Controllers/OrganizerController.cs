@@ -84,7 +84,7 @@ namespace Event_Management.Controllers
 
         [Authorize(Roles = "ORGANIZER")]
         [HttpPost("send-verification-codes-for-organizer/{organizerId}")]
-        public async Task<IActionResult> SendCodes(int organizerId)
+        public async Task<ActionResult<string>> SendCodes(int organizerId)
         {
             try
             {

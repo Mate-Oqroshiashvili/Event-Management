@@ -71,6 +71,36 @@ namespace Event_Management.Controllers
             }
         }
 
+        [HttpGet("get-speakers")]
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetSpeakers()
+        {
+            try
+            {
+                var speakers = await _userRepository.GetSpeakers();
+
+                return speakers == null ? throw new NotFoundException("Speakers can't be found!") : Ok(new { speakers });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [HttpGet("get-artists")]
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetArtists()
+        {
+            try
+            {
+                var artists = await _userRepository.GetArtists();
+
+                return artists == null ? throw new NotFoundException("Artists can't be found!") : Ok(new { artists });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
         [HttpPost("send-codes")]
         public async Task<ActionResult<string>> SendCodes(string email, string phoneNumber)
         {

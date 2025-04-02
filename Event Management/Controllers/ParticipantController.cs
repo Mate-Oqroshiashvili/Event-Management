@@ -70,7 +70,7 @@ namespace Event_Management.Controllers
 
         [Authorize(Roles = "BASIC")]
         [HttpPost("register-user-as-participant")]
-        public async Task<ActionResult<ParticipantDto>> AddParticipant(ParticipantCreateDto participantCreateDto)
+        public async Task<ActionResult<ParticipantDto>> AddParticipant([FromForm] ParticipantCreateDto participantCreateDto)
         {
             try
             {
@@ -86,7 +86,7 @@ namespace Event_Management.Controllers
 
         [Authorize(Roles = "PARTICIPANT")]
         [HttpPatch("change-ticket-type/{participantId}")]
-        public async Task<ActionResult<string>> ChangeTicketType(int participantId, [FromForm] TicketType ticketType)
+        public async Task<ActionResult<string>> ChangeTicketType(int participantId, [FromBody] TicketType ticketType)
         {
             try
             {

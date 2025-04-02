@@ -96,14 +96,14 @@ namespace Event_Management.Controllers
             }
         }
 
-        [HttpGet("get-event-by-search-term/{searchTerm}")]
-        public async Task<ActionResult<EventDto>> GetEventBySearchTerm(string searchTerm)
+        [HttpGet("get-events-by-search-term/{searchTerm}")]
+        public async Task<ActionResult<IEnumerable<EventDto>>> GetEventBySearchTerm(string searchTerm)
         {
             try
             {
-                var @event = await _eventRepository.GetEventBySearchtermAsync(searchTerm);
+                var events = await _eventRepository.GetEventBySearchtermAsync(searchTerm);
 
-                return @event == null ? throw new NotFoundException("Event not found!") : Ok(new { @event });
+                return events == null ? throw new NotFoundException("Events not found!") : Ok(new { events });
             }
             catch (Exception ex)
             {
