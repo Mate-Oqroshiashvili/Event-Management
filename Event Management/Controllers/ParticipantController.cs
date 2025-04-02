@@ -1,6 +1,5 @@
 ﻿using Event_Management.Exceptions;
 using Event_Management.Models.Dtos.ParticipantDtos;
-using Event_Management.Models.Dtos.UserDtos;
 using Event_Management.Models.Enums;
 using Event_Management.Repositories.ParticipantRepositoryFolder;
 using Event_Management.Repositories.TicketRepositoryFolder;
@@ -9,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Event_Management.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ParticipantController : ControllerBase

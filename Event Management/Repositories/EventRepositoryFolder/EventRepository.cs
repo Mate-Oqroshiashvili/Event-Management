@@ -8,6 +8,7 @@ using Event_Management.Models.Enums;
 using Event_Management.Repositories.CodeRepositoryFolder;
 using Event_Management.Repositories.ImageRepositoryFolder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Event_Management.Repositories.EventRepositoryFolder
 {
@@ -178,7 +179,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                     .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
                     .Include(x => x.Comments)
-                    .FirstOrDefaultAsync(x => x.Id == id && x.Status == EventStatus.PUBLISHED)
+                    .FirstOrDefaultAsync(x => x.Id == id)
                     ?? throw new NotFoundException("Event not found!");
 
                 var eventDto = _mapper.Map<EventDto>(@event);
@@ -261,6 +262,42 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             }
         }
 
+        public async Task<IEnumerable<EventDto>> GetEventsByLocationIdAsync(int locationId)
+        {
+            try
+            {
+                if (!_context.Locations.Any(x => x.Id == locationId))
+                    throw new NotFoundException("Location not found!");
+
+                var events = await _context.Events
+                    .Where(e => e.LocationId == locationId)
+                    .Include(x => x.Participants)
+                    .Include(x => x.Participants)
+                    .Include(x => x.Tickets)
+                    .Include(x => x.Tickets)
+                    .Include(x => x.Tickets)
+                    .Include(e => e.Location)
+                    .Include(x => x.Location)
+                    .Include(x => x.Organizer)
+                    .Include(x => x.Organizer)
+                    .Include(x => x.Organizer)
+                    .Include(x => x.Location)
+                    .Include(x => x.SpeakersAndArtists)
+                    .Include(x => x.PromoCodes)
+                    .Include(x => x.Reviews)
+                    .Include(x => x.Comments)
+                    .ToListAsync() ?? throw new NotFoundException("Locations does not have any events related.");
+
+                var eventDtos = _mapper.Map<IEnumerable<EventDto>>(events);
+
+                return eventDtos;
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
         public async Task<EventDto> AddEventAsync(EventCreateDto eventCreateDto)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -287,8 +324,8 @@ namespace Event_Management.Repositories.EventRepositoryFolder
 
                 try
                 {
-                    @event.Images = await Task.WhenAll(eventCreateDto.Images
-                        .Select(async image => await _imageRepository.GenerateImageSource(image)));
+                    @event.Images = [.. (await Task.WhenAll(eventCreateDto.Images
+                        .Select(async image => await _imageRepository.GenerateImageSource(image))))];
                 }
                 catch (Exception ex)
                 {
@@ -428,8 +465,15 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                     .FirstOrDefaultAsync(x => x.Id == eventUpdateDto.LocationId)
                     ?? throw new NotFoundException("Event location not found!");
 
-                existingEvent.Images = await Task.WhenAll(eventUpdateDto.Images
-                    .Select(async image => await _imageRepository.GenerateImageSource(image)));
+                try
+                {
+                    existingEvent.Images = [.. (await Task.WhenAll(eventUpdateDto.Images
+                        .Select(async image => await _imageRepository.GenerateImageSource(image))))];
+                }
+                catch (Exception ex)
+                {
+                    throw new BadRequestException(ex.Message, ex.InnerException);
+                }
 
                 _mapper.Map(eventUpdateDto, existingEvent);
 

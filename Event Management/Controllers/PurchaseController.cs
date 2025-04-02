@@ -1,11 +1,12 @@
 ﻿using Event_Management.Exceptions;
-using Event_Management.Models;
 using Event_Management.Models.Dtos.PurchaseDtos;
 using Event_Management.Repositories.PurchaseRepositoryFolder;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Event_Management.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class PurchaseController : ControllerBase
@@ -17,6 +18,7 @@ namespace Event_Management.Controllers
             _purchaseRepository = purchaseRepository;
         }
 
+        [Authorize(Roles = "ORGANIZER")]
         [HttpGet("get-all-purchases")]
         public async Task<ActionResult<IEnumerable<PurchaseDto>>> GetAllPurchases()
         {
@@ -62,6 +64,7 @@ namespace Event_Management.Controllers
             }
         }
 
+        [Authorize(Roles = "BASIC,PARTICIPANT")]
         [HttpPost("purchase-ticket")]
         public async Task<ActionResult<PurchaseDto>> PurchaseTicket([FromBody] PurchaseCreateDto purchaseCreateDto)
         {

@@ -13,6 +13,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
         Task<EventDto> GetEventByIdAsync(int id);
         Task<EventDto> GetEventBySearchtermAsync(string searchTerm);
         Task<IEnumerable<EventDto>> GetEventsByOrganizerIdAsync(int organizerId);
+        Task<IEnumerable<EventDto>> GetEventsByLocationIdAsync(int locationId);
         Task<EventDto> AddEventAsync(EventCreateDto eventCreateDto);
         Task<UserDto> AddSpeakerOrArtistOnEventAsync(int eventId, int userId);
         Task<string> RemoveSpeakerOrArtistFromEventAsync(int eventId, int userId);

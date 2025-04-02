@@ -3,7 +3,6 @@ using Event_Management.Data;
 using Event_Management.Exceptions;
 using Event_Management.Models;
 using Event_Management.Models.Dtos.OrganizerDtos;
-using Event_Management.Repositories.CodeRepositoryFolder;
 using Event_Management.Repositories.ImageRepositoryFolder;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,8 +24,6 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
         public async Task<IEnumerable<OrganizerDto>> GetOrganizersAsync()
         {
             var organizers = await _context.Organizers
-                //.Include(x => x.Events)
-                //.Include(x => x.Locations)
                 .Include(x => x.User)
                 .ToListAsync();
 
@@ -38,14 +35,26 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
         public async Task<OrganizerDto> GetOrganizerByIdAsync(int id)
         {
             var organizer = await _context.Organizers
-                //.Include(x => x.Events)
-                //.Include(x => x.Locations)
                 .Include(x => x.User)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             var organizerDto = _mapper.Map<OrganizerDto>(organizer);
 
             return organizerDto;
+        }
+
+        public async Task<IEnumerable<OrganizerDto>> GetOrganizersByLocationIdAsync(int locationId)
+        {
+            var organizers = await _context.Organizers
+                .Where(x => x.Locations.Any(x => x.Id == locationId))
+                .Include(x => x.Events)
+                .Include(x => x.Locations)
+                .Include(x => x.User)
+                .ToListAsync();
+
+            var organizerDtos = _mapper.Map<IEnumerable<OrganizerDto>>(organizers);
+
+            return organizerDtos;
         }
 
         public async Task<OrganizerDto> AddOrganizerAsync(OrganizerCreateDto organizerCreateDto)
@@ -55,15 +64,11 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
             organizer.User = await _context.Users
                 .Include(x => x.Participants)
                 .Include(x => x.Purchases)
-                //.Include(x => x.Organizer)
-                //    .ThenInclude(x => x!.Events)
-                //.Include(x => x.Organizer)
-                //    .ThenInclude(x => x!.Locations)
                 .Include(x => x.Tickets)
                 .Include(x => x.Comments)
                 .Include(x => x.Reviews)
                 .Include(x => x.UsedPromoCodes)
-                .FirstOrDefaultAsync(u => u.Id == organizerCreateDto.UserId) 
+                .FirstOrDefaultAsync(u => u.Id == organizerCreateDto.UserId)
                 ?? throw new NotFoundException("User not found!");
 
             organizer.Name = organizer.User.Name;

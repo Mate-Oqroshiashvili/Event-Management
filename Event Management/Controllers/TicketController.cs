@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Event_Management.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class TicketController : ControllerBase
@@ -17,6 +18,7 @@ namespace Event_Management.Controllers
             _ticketRepository = ticketRepository;
         }
 
+        [Authorize(Roles = "ORGANIZER")]
         [HttpGet("get-all-tickets")]
         public async Task<ActionResult<IEnumerable<TicketDto>>> GetAllTickets()
         {

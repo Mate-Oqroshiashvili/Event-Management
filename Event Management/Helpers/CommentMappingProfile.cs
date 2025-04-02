@@ -8,7 +8,9 @@ namespace Event_Management.Helpers
     {
         public CommentMappingProfile()
         {
-            CreateMap<CommentDto, Comment>().ReverseMap();
+            CreateMap<CommentDto, Comment>()
+                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))
+                .ReverseMap();
 
             CreateMap<CommentCreateDto, Comment>().ReverseMap();
                 //.ForMember(dest => dest.Id, opt => opt.Ignore()) // Ignore Id since it's auto-generated

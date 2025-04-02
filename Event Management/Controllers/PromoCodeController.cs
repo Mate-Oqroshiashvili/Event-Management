@@ -2,11 +2,11 @@
 using Event_Management.Models.Dtos.PromoCodeDtos;
 using Event_Management.Repositories.PromoCodeRepositoryFolder;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Event_Management.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class PromoCodeController : ControllerBase
@@ -26,7 +26,7 @@ namespace Event_Management.Controllers
             {
                 var promoCodes = await _promoCodeRepository.GetPromoCodesAsync();
 
-                return promoCodes == null ? throw new NotFoundException("Promo codes not found!") : Ok(new { promoCodes});
+                return promoCodes == null ? throw new NotFoundException("Promo codes not found!") : Ok(new { promoCodes });
             }
             catch (Exception ex)
             {

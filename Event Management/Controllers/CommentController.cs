@@ -3,12 +3,11 @@ using Event_Management.Models;
 using Event_Management.Models.Dtos.CommentDtos;
 using Event_Management.Repositories.CommentRepositoryFolder;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.Design;
 
 namespace Event_Management.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CommentController : ControllerBase
@@ -28,9 +27,9 @@ namespace Event_Management.Controllers
             {
                 var comments = await _commentRepository.GetCommentsAsync();
 
-                return comments == null ? throw new NotFoundException("Comments not found!") : Ok(new { comments});
+                return comments == null ? throw new NotFoundException("Comments not found!") : Ok(new { comments });
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 throw new BadRequestException(ex.Message, ex.InnerException);
             }

@@ -14,7 +14,7 @@ namespace Event_Management.Models
         public int BookedStaff { get; set; }
         public int LocationId { get; set; }
         public int OrganizerId { get; set; }
-        public IEnumerable<string> Images { get; set; }  
+        public List<string> Images { get; set; }  
         public Location Location { get; set; } 
         public Organizer Organizer { get; set; }
         public IEnumerable<Ticket> Tickets { get; set; } = new List<Ticket>();

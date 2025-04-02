@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Event_Management.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class EventController : ControllerBase
@@ -110,13 +111,27 @@ namespace Event_Management.Controllers
             }
         }
 
-        [Authorize(Roles = "ORGANIZER")]
         [HttpGet("get-events-by-organizer-id/{organizerId}")]
         public async Task<ActionResult<IEnumerable<EventDto>>> GetEventsByOrganizerId(int organizerId)
         {
             try
             {
                 var events = await _eventRepository.GetEventsByOrganizerIdAsync(organizerId);
+
+                return events == null ? throw new NotFoundException("Events not found!") : Ok(new { events });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [HttpGet("get-events-by-location-id/{locationId}")]
+        public async Task<ActionResult<IEnumerable<EventDto>>> GetEventsByLocationId(int locationId)
+        {
+            try
+            {
+                var events = await _eventRepository.GetEventsByLocationIdAsync(locationId);
 
                 return events == null ? throw new NotFoundException("Events not found!") : Ok(new { events });
             }

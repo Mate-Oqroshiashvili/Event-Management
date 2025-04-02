@@ -8,7 +8,9 @@ namespace Event_Management.Helpers
     {
         public ReviewMappingProfile()
         {
-            CreateMap<ReviewDto, Review>().ReverseMap();
+            CreateMap<ReviewDto, Review>()
+                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))
+                .ReverseMap();
 
             CreateMap<ReviewCreateDto, Review>().ReverseMap();
                 //.ForMember(dest => dest.Id, opt => opt.Ignore()) // Ignore Id since it's auto-generated

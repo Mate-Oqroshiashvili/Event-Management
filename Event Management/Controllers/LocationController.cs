@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Event_Management.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class LocationController : ControllerBase
@@ -47,7 +48,6 @@ namespace Event_Management.Controllers
             }
         }
 
-        [Authorize(Roles = "ORGANIZER")]
         [HttpGet("get-locations-by-organizer-id/{organizerId}")]
         public async Task<ActionResult<IEnumerable<LocationDto>>> GetLocationsByOrganizerId(int organizerId)
         {

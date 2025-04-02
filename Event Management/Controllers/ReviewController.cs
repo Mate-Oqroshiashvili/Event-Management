@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Event_Management.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ReviewController : ControllerBase
@@ -17,7 +18,7 @@ namespace Event_Management.Controllers
             _reviewRepository = reviewRepository;
         }
 
-        [Authorize(Roles = "ADMINISTRATOR")]
+        [Authorize(Roles = "ORGANIZER")]
         [HttpGet("get-all-reviews")]
         public async Task<ActionResult<IEnumerable<ReviewDto>>> GetAllReviews()
         {

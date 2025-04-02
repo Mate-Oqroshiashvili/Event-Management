@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Event_Management.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class OrganizerController : ControllerBase
@@ -35,7 +36,6 @@ namespace Event_Management.Controllers
             }
         }
 
-        [Authorize(Roles = "ORGANIZER")]
         [HttpGet("get-organizer-by-id/{organizerId}")]
         public async Task<ActionResult<OrganizerDto>> GetOrganizerById(int organizerId)
         {
@@ -44,6 +44,21 @@ namespace Event_Management.Controllers
                 var organizerDto = await _organizerRepository.GetOrganizerByIdAsync(organizerId);
 
                 return organizerDto == null ? throw new NotFoundException("Organizer can't be found!") : Ok(new { organizerDto });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [HttpGet("get-organizers-by-location-id/{locationId}")]
+        public async Task<ActionResult<IEnumerable<OrganizerDto>>> GetOrganizersByLocationId(int locationId)
+        {
+            try
+            {
+                var organizerDtos = await _organizerRepository.GetOrganizersByLocationIdAsync(locationId);
+
+                return organizerDtos == null ? throw new NotFoundException("Organizers can't be found!") : Ok(new { organizerDtos });
             }
             catch (Exception ex)
             {
