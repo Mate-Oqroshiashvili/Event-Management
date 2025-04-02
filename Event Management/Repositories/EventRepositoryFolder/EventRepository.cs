@@ -34,20 +34,15 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                 var events = await _context.Events
                     .Where(x => x.Status == EventStatus.PUBLISHED)
                     .Include(x => x.Participants)
-                    .Include(x => x.Participants)
-                    .Include(x => x.Tickets)
-                    .Include(x => x.Tickets)
                     .Include(x => x.Tickets)
                     .Include(e => e.Location)
-                    .Include(x => x.Location)
                     .Include(x => x.Organizer)
-                    .Include(x => x.Organizer)
-                    .Include(x => x.Organizer)
-                    .Include(x => x.Location)
                     .Include(x => x.SpeakersAndArtists)
                     .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
+                        .ThenInclude(x => x.User)
                     .Include(x => x.Comments)
+                        .ThenInclude(x => x.User)
                     .ToListAsync() ?? throw new NotFoundException("Events not found!");
 
                 var eventDtos = _mapper.Map<IEnumerable<EventDto>>(events);
@@ -67,20 +62,15 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                 var events = await _context.Events
                     .Where(x => x.Status == EventStatus.DRAFT)
                     .Include(x => x.Participants)
-                    .Include(x => x.Participants)
-                    .Include(x => x.Tickets)
-                    .Include(x => x.Tickets)
                     .Include(x => x.Tickets)
                     .Include(e => e.Location)
-                    .Include(x => x.Location)
                     .Include(x => x.Organizer)
-                    .Include(x => x.Organizer)
-                    .Include(x => x.Organizer)
-                    .Include(x => x.Location)
                     .Include(x => x.SpeakersAndArtists)
                     .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
+                        .ThenInclude(x => x.User)
                     .Include(x => x.Comments)
+                        .ThenInclude(x => x.User)
                     .ToListAsync() ?? throw new NotFoundException("Events not found!");
 
                 var eventDtos = _mapper.Map<IEnumerable<EventDto>>(events);
@@ -100,20 +90,15 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                 var events = await _context.Events
                     .Where(x => x.Status == EventStatus.COMPLETED)
                     .Include(x => x.Participants)
-                    .Include(x => x.Participants)
-                    .Include(x => x.Tickets)
-                    .Include(x => x.Tickets)
                     .Include(x => x.Tickets)
                     .Include(e => e.Location)
-                    .Include(x => x.Location)
                     .Include(x => x.Organizer)
-                    .Include(x => x.Organizer)
-                    .Include(x => x.Organizer)
-                    .Include(x => x.Location)
                     .Include(x => x.SpeakersAndArtists)
                     .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
+                        .ThenInclude(x => x.User)
                     .Include(x => x.Comments)
+                        .ThenInclude(x => x.User)
                     .ToListAsync() ?? throw new NotFoundException("Events not found!");
 
                 var eventDtos = _mapper.Map<IEnumerable<EventDto>>(events);
@@ -133,20 +118,15 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                 var events = await _context.Events
                     .Where(x => x.Status == EventStatus.DELETED)
                     .Include(x => x.Participants)
-                    .Include(x => x.Participants)
-                    .Include(x => x.Tickets)
-                    .Include(x => x.Tickets)
                     .Include(x => x.Tickets)
                     .Include(e => e.Location)
-                    .Include(x => x.Location)
                     .Include(x => x.Organizer)
-                    .Include(x => x.Organizer)
-                    .Include(x => x.Organizer)
-                    .Include(x => x.Location)
                     .Include(x => x.SpeakersAndArtists)
                     .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
+                        .ThenInclude(x => x.User)
                     .Include(x => x.Comments)
+                        .ThenInclude(x => x.User)
                     .ToListAsync() ?? throw new NotFoundException("Events not found!");
 
                 var eventDtos = _mapper.Map<IEnumerable<EventDto>>(events);
@@ -167,18 +147,14 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                     .Include(x => x.Participants)
                     .Include(x => x.Participants)
                     .Include(x => x.Tickets)
-                    .Include(x => x.Tickets)
-                    .Include(x => x.Tickets)
                     .Include(e => e.Location)
-                    .Include(x => x.Location)
                     .Include(x => x.Organizer)
-                    .Include(x => x.Organizer)
-                    .Include(x => x.Organizer)
-                    .Include(x => x.Location)
                     .Include(x => x.SpeakersAndArtists)
                     .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
+                        .ThenInclude(x => x.User)
                     .Include(x => x.Comments)
+                        .ThenInclude(x => x.User)
                     .FirstOrDefaultAsync(x => x.Id == id)
                     ?? throw new NotFoundException("Event not found!");
 
@@ -200,20 +176,15 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                     .Where(x => x.Title == searchTerm || x.Description.Contains(searchTerm) &&
                                          x.Status != EventStatus.DELETED && x.Status != EventStatus.DRAFT)
                     .Include(x => x.Participants)
-                    .Include(x => x.Participants)
-                    .Include(x => x.Tickets)
-                    .Include(x => x.Tickets)
                     .Include(x => x.Tickets)
                     .Include(e => e.Location)
-                    .Include(x => x.Location)
                     .Include(x => x.Organizer)
-                    .Include(x => x.Organizer)
-                    .Include(x => x.Organizer)
-                    .Include(x => x.Location)
                     .Include(x => x.SpeakersAndArtists)
                     .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
+                        .ThenInclude(x => x.User)
                     .Include(x => x.Comments)
+                        .ThenInclude(x => x.User)
                     .ToListAsync()
                     ?? throw new NotFoundException($"Event can't be found with search term - {searchTerm}");
 
@@ -237,20 +208,15 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                 var events = await _context.Events
                     .Where(e => e.OrganizerId == organizerId)
                     .Include(x => x.Participants)
-                    .Include(x => x.Participants)
-                    .Include(x => x.Tickets)
-                    .Include(x => x.Tickets)
                     .Include(x => x.Tickets)
                     .Include(e => e.Location)
-                    .Include(x => x.Location)
                     .Include(x => x.Organizer)
-                    .Include(x => x.Organizer)
-                    .Include(x => x.Organizer)
-                    .Include(x => x.Location)
                     .Include(x => x.SpeakersAndArtists)
                     .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
+                        .ThenInclude(x => x.User)
                     .Include(x => x.Comments)
+                        .ThenInclude(x => x.User)
                     .ToListAsync() ?? throw new NotFoundException("Organizer does not have any events planed.");
 
                 var eventDtos = _mapper.Map<IEnumerable<EventDto>>(events);
@@ -273,20 +239,15 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                 var events = await _context.Events
                     .Where(e => e.LocationId == locationId)
                     .Include(x => x.Participants)
-                    .Include(x => x.Participants)
-                    .Include(x => x.Tickets)
-                    .Include(x => x.Tickets)
                     .Include(x => x.Tickets)
                     .Include(e => e.Location)
-                    .Include(x => x.Location)
                     .Include(x => x.Organizer)
-                    .Include(x => x.Organizer)
-                    .Include(x => x.Organizer)
-                    .Include(x => x.Location)
                     .Include(x => x.SpeakersAndArtists)
                     .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
+                        .ThenInclude(x => x.User)
                     .Include(x => x.Comments)
+                        .ThenInclude(x => x.User)
                     .ToListAsync() ?? throw new NotFoundException("Locations does not have any events related.");
 
                 var eventDtos = _mapper.Map<IEnumerable<EventDto>>(events);
