@@ -52,18 +52,6 @@
             >
           </li>
         </ul>
-        <form class="d-flex" role="search" (ngSubmit)="searchLogic(searchTerm)">
-          <input
-            [(ngModel)]="searchTerm"
-            class="form-control me-2"
-            type="search"
-            placeholder="Search"
-            aria-label="Search"
-            name="search"
-            id="search"
-          />
-          <button class="btn btn-outline-success" type="submit">Search</button>
-        </form>
         <ul class="navbar-nav ms-2 mb-2 mb-lg-0">
           @if (!isLoggedIn$) {
           <li class="nav-item">
@@ -85,7 +73,7 @@
             >
           </li>
           } @else { @if (role === 'ADMINISTRATOR') {
-          <li class="nav-item mx-3">
+          <li class="nav-item">
             <a
               class="nav-link"
               routerLink="/admin-panel"
@@ -95,10 +83,10 @@
             >
           </li>
           } @else if(role === 'ORGANIZER'){
-          <li class="nav-item mx-3">
+          <li class="nav-item">
             <a
               class="nav-link"
-              routerLink="/organizer-panel"
+              [routerLink]="['organizer-panel', organizerId]"
               routerLinkActive="active"
               [routerLinkActiveOptions]="{ exact: true }"
               >Organizer Panel</a
@@ -108,7 +96,7 @@
           <li class="nav-item mx-3">
             <a
               style="font-size: 28px; color: rgba(0, 0, 0, 0.65)"
-              [routerLink]="['profile', userId]"
+              [routerLink]="['profile', userId, 'user-information']"
               routerLinkActive="active"
               [routerLinkActiveOptions]="{ exact: true }"
               ><i class="bi bi-person-circle"></i

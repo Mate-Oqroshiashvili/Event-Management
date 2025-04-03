@@ -1,0 +1,29 @@
+.hero {
+  background: url("https://t4.ftcdn.net/jpg/08/16/45/49/360_F_816454980_vzAig2DbHQq9NjeC2eyBFt6eG64qrCYP.jpg")
+    center/cover no-repeat;
+  color: white;
+  text-align: center;
+  padding: 250px 20px;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.hero p {
+  font-size: 1.2rem;
+}
+
+.card.event-card img {
+  height: 200px;
+  object-fit: cover;
+}
+
+i {
+  font-size: 2rem;
+}
+
+h2 {
+  font-weight: bold;
+}

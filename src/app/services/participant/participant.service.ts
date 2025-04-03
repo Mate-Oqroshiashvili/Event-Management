@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { EventDto } from '../event/event.service';
-import { TicketDto } from '../ticket/ticket.service';
+import { TicketDto, TicketType } from '../ticket/ticket.service';
 import { PurchaseDto } from '../purchase/purchase.service';
 import { UserDto } from '../user/user.service';
 import { environment } from '../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 export interface ParticipantCreateDto {
   eventId: number;
@@ -34,4 +35,54 @@ export class ParticipantService {
   private apiUrl: string = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
+
+  getAllParticipants(): Observable<ParticipantDto[]> {
+    return this.http.get<ParticipantDto[]>(
+      `${this.apiUrl}Participant/get-all-participants`
+    );
+  }
+
+  getParticipantById(participantId: number): Observable<ParticipantDto> {
+    return this.http.get<ParticipantDto>(
+      `${this.apiUrl}Participant/get-participant-by-id/${participantId}`
+    );
+  }
+
+  getParticipantsByUserId(userId: number): Observable<ParticipantDto[]> {
+    return this.http.get<ParticipantDto[]>(
+      `${this.apiUrl}Participant/get-participants-by-user-id/${userId}`
+    );
+  }
+
+  registerUserAsParticipant(
+    participantData: ParticipantCreateDto
+  ): Observable<ParticipantDto> {
+    const formData = new FormData();
+    Object.keys(participantData).forEach((key) => {
+      formData.append(key, (participantData as any)[key]);
+    });
+    return this.http.post<ParticipantDto>(
+      `${this.apiUrl}Participant/register-user-as-participant`,
+      formData
+    );
+  }
+
+  changeTicketType(
+    participantId: number,
+    ticketType: TicketType
+  ): Observable<string> {
+    return this.http.patch<string>(
+      `${this.apiUrl}Participant/change-ticket-type/${participantId}`,
+      { ticketType }
+    );
+  }
+
+  requestTheRefund(
+    participantId: number,
+    purchaseId: number
+  ): Observable<string> {
+    return this.http.delete<string>(
+      `${this.apiUrl}Participant/request-the-refund/${participantId}&${purchaseId}`
+    );
+  }
 }

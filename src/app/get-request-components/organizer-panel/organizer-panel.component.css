@@ -1,0 +1,28 @@
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cards {
+  padding: 40px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto;
+  gap: 20px;
+}
+
+.card {
+  padding: 10px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.text-center {
+  height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

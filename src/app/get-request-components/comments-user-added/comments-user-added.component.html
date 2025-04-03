@@ -1,0 +1,11 @@
+<div class="comments my-5">
+  <h1>Comments</h1>
+  <div class="cards my-3">
+    @for (item of comments; track $index) {
+    <div class="card">
+      <h3>{{ item.id }}: {{ item.user.name }}</h3>
+      <p>Comment: {{ item.commentContent }}</p>
+    </div>
+    }
+  </div>
+</div>

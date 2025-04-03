@@ -101,9 +101,19 @@ export class UserService {
     }
   }
 
+  getAllUsers(): Observable<UserDto[]> {
+    return this.http.get<UserDto[]>(`${this.apiUrl}User/get-all-users`);
+  }
+
   getUserById(userId: number): Observable<UserDto> {
     return this.http.get<UserDto>(
       `${this.apiUrl}User/get-user-by-id/${userId}`
+    );
+  }
+
+  getUserByEmail(email: string): Observable<UserDto> {
+    return this.http.get<UserDto>(
+      `${this.apiUrl}User/get-user-by-email/${email}`
     );
   }
 
@@ -140,6 +150,56 @@ export class UserService {
           }
         })
       );
+  }
+
+  addBalance(userId: number, balance: number): Observable<string> {
+    return this.http.patch<string>(`${this.apiUrl}User/add-balance/${userId}`, {
+      balance,
+    });
+  }
+
+  changeLoginStatus(userId: number): Observable<boolean> {
+    return this.http.patch<boolean>(
+      `${this.apiUrl}User/change-login-status/${userId}`,
+      {}
+    );
+  }
+
+  changeUserType(userId: number, userType: UserType): Observable<string> {
+    return this.http.patch<string>(
+      `${this.apiUrl}User/change-user-type/${userId}`,
+      {
+        userType,
+      }
+    );
+  }
+
+  changeUserPassword(
+    userId: number,
+    password: ChangePasswordDto
+  ): Observable<string> {
+    return this.http.patch<string>(
+      `${this.apiUrl}User/change-user-password/${userId}`,
+      {
+        password,
+      }
+    );
+  }
+
+  updateUserInformation(
+    userId: number,
+    userData: UserUpdateDto
+  ): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(
+      `${this.apiUrl}User/update-user-information/${userId}`,
+      userData
+    );
+  }
+
+  removeUser(userId: number): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(
+      `${this.apiUrl}User/remove-user/${userId}`
+    );
   }
 
   private hasValidToken(): boolean {

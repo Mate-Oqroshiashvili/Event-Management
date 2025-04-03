@@ -1,0 +1,37 @@
+import { Injectable } from '@angular/core';
+import { environment } from '../../../environments/environment.development';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class ImageService {
+  private apiUrl: string = environment.apiUrl;
+
+  constructor(private http: HttpClient) {}
+
+  updateUserProfilePicture(userId: number, image: File): Observable<string> {
+    return this.http.post<string>(
+      `${this.apiUrl}Image/update-user-profile-picture/${userId}`,
+      image
+    );
+  }
+
+  updateOrganizerLogoImage(
+    organizerId: number,
+    image: File
+  ): Observable<string> {
+    return this.http.post<string>(
+      `${this.apiUrl}Image/update-organizer-logo-image/${organizerId}`,
+      image
+    );
+  }
+
+  updateEventImages(eventId: number, images: File[]): Observable<string> {
+    return this.http.post<string>(
+      `${this.apiUrl}Image/update-event-images/${eventId}`,
+      images
+    );
+  }
+}

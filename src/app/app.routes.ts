@@ -1,25 +1,25 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './home/home.component';
+import { HomeComponent } from './get-request-components/home/home.component';
 import { NotFoundComponent } from './not-found/not-found.component';
-import { AdminPanelComponent } from './admin-panel/admin-panel.component';
-import { AvailablePromoCodesComponent } from './available-promo-codes/available-promo-codes.component';
-import { EventsComponent } from './events/events.component';
-import { EventPageComponent } from './event-page/event-page.component';
-import { LocationsComponent } from './locations/locations.component';
-import { LocationPageComponent } from './location-page/location-page.component';
-import { RegisterComponent } from './register/register.component';
-import { LoginComponent } from './login/login.component';
-import { OrganizersComponent } from './organizers/organizers.component';
-import { OrganizerPageComponent } from './organizer-page/organizer-page.component';
-import { OrganizerPanelComponent } from './organizer-panel/organizer-panel.component';
-import { ProfileComponent } from './profile/profile.component';
-import { UserInfoComponent } from './user-info/user-info.component';
-import { UserAnalyticsComponent } from './user-analytics/user-analytics.component';
-import { SearchResultComponent } from './search-result/search-result.component';
+import { AdminPanelComponent } from './get-request-components/admin-panel/admin-panel.component';
+import { AvailablePromoCodesComponent } from './get-request-components/available-promo-codes/available-promo-codes.component';
+import { EventsComponent } from './get-request-components/events/events.component';
+import { EventPageComponent } from './get-request-components/event-page/event-page.component';
+import { LocationsComponent } from './get-request-components/locations/locations.component';
+import { LocationPageComponent } from './get-request-components/location-page/location-page.component';
+import { RegisterComponent } from './post-request-components/register/register.component';
+import { LoginComponent } from './post-request-components/login/login.component';
+import { OrganizersComponent } from './get-request-components/organizers/organizers.component';
+import { OrganizerPageComponent } from './get-request-components/organizer-page/organizer-page.component';
+import { OrganizerPanelComponent } from './get-request-components/organizer-panel/organizer-panel.component';
+import { ProfileComponent } from './get-request-components/profile/profile.component';
+import { UserInfoComponent } from './get-request-components/user-info/user-info.component';
+import { UserAnalyticsComponent } from './get-request-components/user-analytics/user-analytics.component';
+import { SearchResultComponent } from './get-request-components/search-result/search-result.component';
 import { authGuard } from './services/guards/auth.guard';
-import { UserParticipationHistoryComponent } from './user-participation-history/user-participation-history.component';
-import { ReviewsUserAddedComponent } from './reviews-user-added/reviews-user-added.component';
-import { CommentsUserAddedComponent } from './comments-user-added/comments-user-added.component';
+import { UserParticipationHistoryComponent } from './get-request-components/user-participation-history/user-participation-history.component';
+import { ReviewsUserAddedComponent } from './get-request-components/reviews-user-added/reviews-user-added.component';
+import { CommentsUserAddedComponent } from './get-request-components/comments-user-added/comments-user-added.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -56,7 +56,7 @@ export const routes: Routes = [
     ],
   },
   {
-    path: 'organizer-panel',
+    path: 'organizer-panel/:organizerId',
     component: OrganizerPanelComponent,
     canActivate: [authGuard],
   },

@@ -54,10 +54,64 @@ export class TicketService {
 
   constructor(private http: HttpClient) {}
 
+  getAllTickets(): Observable<TicketDto[]> {
+    return this.http.get<TicketDto[]>(`${this.apiUrl}Ticket/get-all-tickets`);
+  }
+
+  getTicketById(ticketId: number): Observable<TicketDto> {
+    return this.http.get<TicketDto>(
+      `${this.apiUrl}Ticket/get-ticket-by-id/${ticketId}`
+    );
+  }
+
   getTicketsByEventId(eventId: number): Observable<TicketDto[]> {
     return this.http.get<TicketDto[]>(
       `${this.apiUrl}Ticket/get-tickets-by-event-id/${eventId}`,
       {}
+    );
+  }
+
+  getTicketsByUserId(userId: number): Observable<TicketDto[]> {
+    return this.http.get<TicketDto[]>(
+      `${this.apiUrl}Ticket/get-tickets-by-user-id/${userId}`
+    );
+  }
+
+  addTicket(ticketCreateDto: TicketCreateDto): Observable<TicketDto> {
+    const formData = new FormData();
+    Object.keys(ticketCreateDto).forEach((key) => {
+      formData.append(key, (ticketCreateDto as any)[key]);
+    });
+    return this.http.post<TicketDto>(
+      `${this.apiUrl}Ticket/add-ticket`,
+      formData
+    );
+  }
+
+  validateTicket(qrCodeImage: File): Observable<string> {
+    return this.http.post<string>(
+      `${this.apiUrl}Ticket/validate-ticket`,
+      qrCodeImage
+    );
+  }
+
+  updateTicket(
+    ticketId: number,
+    ticketUpdateDto: TicketUpdateDto
+  ): Observable<string> {
+    const formData = new FormData();
+    Object.keys(ticketUpdateDto).forEach((key) => {
+      formData.append(key, (ticketUpdateDto as any)[key]);
+    });
+    return this.http.put<string>(
+      `${this.apiUrl}Ticket/update-ticket/${ticketId}`,
+      formData
+    );
+  }
+
+  removeTicket(ticketId: number): Observable<string> {
+    return this.http.delete<string>(
+      `${this.apiUrl}Ticket/remove-ticket/${ticketId}`
     );
   }
 }

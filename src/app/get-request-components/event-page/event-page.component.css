@@ -1,0 +1,57 @@
+.event-page {
+  padding: 40px;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 40px;
+}
+
+.top {
+  height: 100% !important;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.carousel-item {
+  width: 100% !important;
+  height: 50vh !important;
+}
+
+img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: fill;
+}
+
+.main-information {
+  height: 100%;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 60px;
+}
+
+.cards {
+  padding: 20px 0px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto;
+  gap: 20px;
+}
+
+.card {
+  padding: 10px;
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: 20px;
+}
+
+.card.custom {
+  grid-template-columns: 0.2fr 1fr;
+}
+
+.card.custom img {
+  border-radius: 50%;
+}

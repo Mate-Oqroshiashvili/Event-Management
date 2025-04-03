@@ -79,4 +79,35 @@ export class LocationService {
       {}
     );
   }
+
+  addLocation(locationData: LocationCreateDto): Observable<LocationDto> {
+    const formData = new FormData();
+    Object.keys(locationData).forEach((key) => {
+      formData.append(key, (locationData as any)[key]);
+    });
+    return this.http.post<LocationDto>(
+      `${this.apiUrl}Location/add-location`,
+      formData
+    );
+  }
+
+  updateLocation(
+    locationId: number,
+    locationData: LocationUpdateDto
+  ): Observable<string> {
+    const formData = new FormData();
+    Object.keys(locationData).forEach((key) => {
+      formData.append(key, (locationData as any)[key]);
+    });
+    return this.http.put<string>(
+      `${this.apiUrl}Location/update-location/${locationId}`,
+      formData
+    );
+  }
+
+  removeLocation(locationId: number): Observable<string> {
+    return this.http.delete<string>(
+      `${this.apiUrl}Location/remove-location/${locationId}`
+    );
+  }
 }

@@ -4,6 +4,7 @@ import { TicketDto } from '../ticket/ticket.service';
 import { environment } from '../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
 import { PromoCodeDto } from '../promo-code/promo-code.service';
+import { Observable } from 'rxjs';
 
 export enum PurchaseStatus {
   PENDING = 1,
@@ -44,4 +45,31 @@ export class PurchaseService {
   private apiUrl: string = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
+
+  getAllPurchases(): Observable<PurchaseDto[]> {
+    return this.http.get<PurchaseDto[]>(
+      `${this.apiUrl}Purchase/get-all-purchases`
+    );
+  }
+
+  getOnePurchaseById(purchaseId: number): Observable<PurchaseDto> {
+    return this.http.get<PurchaseDto>(
+      `${this.apiUrl}Purchase/get-one-purchase-by-id/${purchaseId}`
+    );
+  }
+
+  getPurchasesByUserId(userId: number): Observable<PurchaseDto[]> {
+    return this.http.get<PurchaseDto[]>(
+      `${this.apiUrl}Purchase/get-purchases-by-user-id/${userId}`
+    );
+  }
+
+  purchaseTicket(
+    purchaseCreateDto: PurchaseCreateDto
+  ): Observable<PurchaseDto> {
+    return this.http.post<PurchaseDto>(
+      `${this.apiUrl}Purchase/purchase-ticket`,
+      purchaseCreateDto
+    );
+  }
 }

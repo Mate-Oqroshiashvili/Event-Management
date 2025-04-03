@@ -1,26 +1,31 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { UserService } from '../services/user/user.service';
-import { CommonModule, NgIf } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { jwtDecode } from 'jwt-decode';
+import { OrganizerService } from '../services/organizer/organizer.service';
 
 @Component({
   selector: 'app-navbar',
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
 })
 export class NavbarComponent implements OnInit {
   isLoggedIn$: boolean = false;
-  searchTerm: string = '';
   userId: number = 0;
+  organizerId: number = 0;
   role: string = '';
 
-  constructor(private userService: UserService, private router: Router) {
+  constructor(
+    private userService: UserService,
+    private organizerService: OrganizerService,
+    private router: Router
+  ) {
     this.userService.isAuthenticated$.subscribe((loggedIn) => {
       this.isLoggedIn$ = loggedIn;
       this.getUserInfo();
+      this.getOrganizer();
     });
   }
 
@@ -36,9 +41,18 @@ export class NavbarComponent implements OnInit {
     this.role = decoded.role;
   }
 
-  searchLogic(searchTerm: string) {
-    this.router.navigate(['search-result', searchTerm]);
-    searchTerm = '';
+  private getOrganizer() {
+    this.organizerService.getOrganizerByUserId(this.userId).subscribe({
+      next: (data: any) => {
+        this.organizerId = data.organizerDto.id;
+      },
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => {
+        console.log('Fetched organizer successfully!');
+      },
+    });
   }
 
   logout() {

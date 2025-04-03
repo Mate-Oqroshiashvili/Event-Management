@@ -1,0 +1,71 @@
+<div class="hero">
+  <h1 class="mb-2">Discover Amazing Events Near You</h1>
+  <p class="mb-3">Book tickets instantly!</p>
+  <a class="btn btn-primary btn-lg">Explore Events</a>
+</div>
+<section class="container my-5">
+  <h2 class="text-center mb-5">How It Works</h2>
+  <div class="row text-center">
+    <div class="col-md-4">
+      <i class="bi bi-search"></i>
+      <h5>Find Events</h5>
+      <p>Search by category, location, and date.</p>
+    </div>
+    <div class="col-md-4">
+      <i class="bi bi-ticket"></i>
+      <h5>Purchase Tickets</h5>
+      <p>Buy securely through our platform.</p>
+    </div>
+    <div class="col-md-4">
+      <i class="bi bi-star"></i>
+      <h5>Enjoy!</h5>
+      <p>Attend events and have a great time.</p>
+    </div>
+  </div>
+</section>
+
+<section class="container my-5" id="upcomingEvents">
+  <h2 class="text-center mb-5">Upcoming Events</h2>
+  <div class="row">
+    @for (item of upcoming; track $index) {
+    <div class="col-md-4">
+      <div class="card event-card">
+        <img [src]="item.images[0]" class="card-img-top" />
+        <div class="card-body">
+          <h5 class="card-title">{{ item.title }}</h5>
+          <p>
+            {{ item.startDate | date : "yyyy-MM-dd" }} -
+            {{ item.location?.name }}
+          </p>
+          <a [routerLink]="['/events/event', item.id]" class="btn btn-primary"
+            >View Details</a
+          >
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</section>
+
+<section class="container my-5" id="popularEvents">
+  <h2 class="text-center mb-5">Popular Events</h2>
+  <div class="row">
+    @for (item of popular; track $index) {
+    <div class="col-md-4">
+      <div class="card event-card">
+        <img [src]="item.images[0]" class="card-img-top" />
+        <div class="card-body">
+          <h5 class="card-title">{{ item.title }}</h5>
+          <p>
+            {{ item.startDate | date : "yyyy-MM-dd" }} -
+            {{ item.location?.name }}
+          </p>
+          <a [routerLink]="['/events/event', item.id]" class="btn btn-primary"
+            >View Details</a
+          >
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</section>
