@@ -24,7 +24,7 @@ namespace Event_Management.Validations.UserValidations
                 .NotEmpty().WithMessage("Phone number is required.")
                 .Matches(@"^\+?[1-9]\d{1,14}$").WithMessage("Invalid phone number format.");
 
-            RuleFor(x => x.ProfilePictureUrl)
+            RuleFor(x => x.ProfilePicture)
                 .Must(url => string.IsNullOrEmpty(url) || Uri.TryCreate(url, UriKind.Absolute, out _))
                 .WithMessage("Invalid profile picture URL.");
 

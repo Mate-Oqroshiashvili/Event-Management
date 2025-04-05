@@ -66,6 +66,21 @@ namespace Event_Management.Controllers
             }
         }
 
+        [HttpGet("get-organizer-by-user-id/{userId}")]
+        public async Task<ActionResult<IEnumerable<OrganizerDto>>> GetOrganizersByUserId(int userId)
+        {
+            try
+            {
+                var organizerDto = await _organizerRepository.GetOrganizerByUserIdAsync(userId);
+
+                return organizerDto == null ? throw new NotFoundException("Organizer can't be found!") : Ok(new { organizerDto });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
         [Authorize(Roles = "BASIC")]
         [HttpPost("register-user-as-organizer")]
         public async Task<ActionResult<OrganizerDto>> RegisterUserAsOrganizer([FromForm] OrganizerCreateDto organizerCreateDto)

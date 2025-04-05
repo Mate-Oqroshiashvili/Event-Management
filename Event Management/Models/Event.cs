@@ -11,6 +11,7 @@ namespace Event_Management.Models
         public DateTime EndDate { get; set; }
         public int Capacity { get; set; }
         public EventStatus Status { get; set; }
+        public EventCategory Category { get; set; }
         public int BookedStaff { get; set; }
         public int LocationId { get; set; }
         public int OrganizerId { get; set; }

@@ -105,27 +105,34 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
             var ticket = _mapper.Map<Ticket>(ticketCreateDto)
                 ?? throw new BadRequestException("Mapping failed: Ticket object is null.");
 
-            // Fetch the associated event with necessary relationships
             ticket.Event = await _context.Events
                 .Include(e => e.Participants)
-                    .ThenInclude(p => p.Ticket)
-                .Include(e => e.Participants)
-                    .ThenInclude(p => p.User)
                 .Include(e => e.Tickets)
-                    .ThenInclude(t => t.Users)
-                .Include(e => e.Tickets)
-                    .ThenInclude(t => t.Participants)
-                .Include(e => e.Tickets)
-                    .ThenInclude(t => t.Purchases)
+                    .ThenInclude(x => x.Purchases)
+                        .ThenInclude(x => x.Participants)
                 .Include(e => e.Location)
                 .Include(e => e.Organizer)
-                    .ThenInclude(o => o.User)
                 .Include(e => e.SpeakersAndArtists)
                 .Include(e => e.PromoCodes)
                 .Include(e => e.Reviews)
                 .Include(e => e.Comments)
                 .FirstOrDefaultAsync(e => e.Id == ticketCreateDto.EventId)
                 ?? throw new BadRequestException("Event not found.");
+
+            int threshold = 0;
+
+            foreach(var item in ticket.Event.Tickets)
+            {
+                threshold += item.Quantity;
+                var purchase = item.Purchases.FirstOrDefault(x => x.Participants.Count != 0);
+                if(purchase != null)
+                {
+                    threshold += purchase.Participants.Count;
+                }
+            }
+
+            if (threshold >= ticket.Event.Capacity)
+                throw new BadRequestException("Tickets capacity exceeds the event's maximum capacity!");
 
             if (ticket.Event.StartDate <= DateTime.UtcNow + TimeSpan.FromHours(1) &&
                 ticket.Event.StartDate > DateTime.UtcNow)
@@ -140,13 +147,13 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
             ticket.Users.Add(ticket.Event.Organizer.User);
 
             await _context.Tickets.AddAsync(ticket);
-            await _context.SaveChangesAsync(); // Ensure ticket.Id is assigned
+            await _context.SaveChangesAsync();
 
             ticket.Status = TicketStatus.AVAILABLE;
             ticket.ExpiryDate = ticket.Event?.EndDate
                 ?? throw new BadRequestException("Event EndDate is required.");
 
-            await _context.SaveChangesAsync(); // Save QRCodeImageUrl
+            await _context.SaveChangesAsync();
 
             return _mapper.Map<TicketDto>(ticket);
         }

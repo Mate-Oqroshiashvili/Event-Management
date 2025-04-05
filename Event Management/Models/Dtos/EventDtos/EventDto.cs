@@ -17,6 +17,7 @@ namespace Event_Management.Models.Dtos.EventDtos
         public DateTime EndDate { get; set; }
         public int Capacity { get; set; }
         public EventStatus Status { get; set; }
+        public EventCategory Category { get; set; }
         public int BookedStaff { get; set; }
         public IEnumerable<string> Images { get; set; }
         public LocationDto Location { get; set; }

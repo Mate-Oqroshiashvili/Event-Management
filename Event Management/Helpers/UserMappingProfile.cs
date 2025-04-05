@@ -10,22 +10,10 @@ namespace Event_Management.Helpers
         {
             CreateMap<User, UserDto>()
                 .ForMember(dest => dest.Organizer, opt => opt.MapFrom(src => src.Organizer))
-                .ForMember(dest => dest.Tickets, opt => opt.MapFrom(src => src.Tickets))
                 .ForMember(dest => dest.Purchases, opt => opt.MapFrom(src => src.Purchases))
-                .ForMember(dest => dest.Participants, opt => opt.MapFrom(src => src.Participants))
-                .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Comments))
-                .ForMember(dest => dest.ProfilePictureUrl, opt => opt.MapFrom(src => src.ProfilePicture))
-                .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => src.Reviews))
                 .ForMember(dest => dest.UsedPromoCodes, opt => opt.MapFrom(src => src.UsedPromoCodes));
 
             CreateMap<UserDto, User>();
-                //.ForMember(dest => dest.Organizer, opt => opt.Ignore())
-                //.ForMember(dest => dest.Tickets, opt => opt.Ignore())
-                //.ForMember(dest => dest.Purchases, opt => opt.Ignore())
-                //.ForMember(dest => dest.Participants, opt => opt.Ignore())
-                //.ForMember(dest => dest.Comments, opt => opt.Ignore())
-                //.ForMember(dest => dest.Reviews, opt => opt.Ignore())
-                //.ForMember(dest => dest.UsedPromoCodes, opt => opt.Ignore());
 
             CreateMap<UserCreateDto, User>()
                 .ForMember(dest => dest.PasswordHash, opt => opt.Ignore());

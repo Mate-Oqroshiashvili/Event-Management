@@ -21,36 +21,6 @@ namespace Event_Management.Validations.EventValidations
 
             RuleFor(e => e.Capacity)
                 .GreaterThan(0).WithMessage("Capacity must be greater than zero.");
-
-            RuleFor(e => e.Status)
-                .IsInEnum().WithMessage("Invalid event status.");
-
-            RuleFor(e => e.LocationId)
-                .GreaterThan(0).WithMessage("Location ID must be a positive integer.");
-
-            RuleFor(e => e.OrganizerId)
-                .GreaterThan(0).WithMessage("Organizer ID must be a positive integer.");
-
-            RuleForEach(x => x.Images)
-                .Must(file => file.Length > 0).WithMessage("Uploaded file is empty.")
-                .Must(BeAValidFileType).WithMessage("Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed.")
-                .Must(BeAReasonableFileSize).WithMessage("File size must be less than 5 MB.");
-
-            RuleFor(x => x.Images)
-                .Must(images => images.Count() <= 10).WithMessage("You can upload a maximum of 10 images.");
-        }
-
-        private bool BeAValidFileType(IFormFile file)
-        {
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-            var fileExtension = Path.GetExtension(file.FileName).ToLower();
-            return allowedExtensions.Contains(fileExtension);
-        }
-
-        private bool BeAReasonableFileSize(IFormFile file)
-        {
-            const long maxFileSize = 5 * 1024 * 1024;
-            return file.Length <= maxFileSize;
         }
     }
 }

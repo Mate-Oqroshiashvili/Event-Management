@@ -8,7 +8,6 @@ using Event_Management.Models.Enums;
 using Event_Management.Repositories.CodeRepositoryFolder;
 using Event_Management.Repositories.ImageRepositoryFolder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace Event_Management.Repositories.EventRepositoryFolder
 {
@@ -37,6 +36,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                     .Include(x => x.Tickets)
                     .Include(e => e.Location)
                     .Include(x => x.Organizer)
+                        .ThenInclude(x => x.User)
                     .Include(x => x.SpeakersAndArtists)
                     .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
@@ -65,6 +65,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                     .Include(x => x.Tickets)
                     .Include(e => e.Location)
                     .Include(x => x.Organizer)
+                        .ThenInclude(x => x.User)
                     .Include(x => x.SpeakersAndArtists)
                     .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
@@ -93,6 +94,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                     .Include(x => x.Tickets)
                     .Include(e => e.Location)
                     .Include(x => x.Organizer)
+                        .ThenInclude(x => x.User)
                     .Include(x => x.SpeakersAndArtists)
                     .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
@@ -121,6 +123,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                     .Include(x => x.Tickets)
                     .Include(e => e.Location)
                     .Include(x => x.Organizer)
+                        .ThenInclude(x => x.User)
                     .Include(x => x.SpeakersAndArtists)
                     .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
@@ -149,6 +152,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                     .Include(x => x.Tickets)
                     .Include(e => e.Location)
                     .Include(x => x.Organizer)
+                        .ThenInclude(x => x.User)
                     .Include(x => x.SpeakersAndArtists)
                     .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
@@ -179,6 +183,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                     .Include(x => x.Tickets)
                     .Include(e => e.Location)
                     .Include(x => x.Organizer)
+                        .ThenInclude(x => x.User)
                     .Include(x => x.SpeakersAndArtists)
                     .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
@@ -211,6 +216,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                     .Include(x => x.Tickets)
                     .Include(e => e.Location)
                     .Include(x => x.Organizer)
+                        .ThenInclude(x => x.User)
                     .Include(x => x.SpeakersAndArtists)
                     .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
@@ -242,6 +248,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                     .Include(x => x.Tickets)
                     .Include(e => e.Location)
                     .Include(x => x.Organizer)
+                        .ThenInclude(x => x.User)
                     .Include(x => x.SpeakersAndArtists)
                     .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
@@ -370,7 +377,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
 
                 return dto;
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 throw new BadRequestException(ex.Message, ex.InnerException);
             }
@@ -408,34 +415,12 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             {
                 var existingEvent = await _context.Events
                     .Include(x => x.Location)
+                    .Include(x => x.Organizer)
                     .FirstOrDefaultAsync(x => x.Id == id)
                     ?? throw new NotFoundException("Event does not exist!");
 
-                existingEvent.Organizer = await _context.Organizers
-                    .Include(x => x.Events)
-                    .Include(x => x.Locations)
-                    .Include(x => x.User)
-                    .FirstOrDefaultAsync(x => x.Id == existingEvent.OrganizerId)
-                    ?? throw new NotFoundException("Organizer not found!");
-
                 if (!existingEvent.Organizer.IsVerified)
                     throw new BadRequestException("Organizer is not verified!");
-
-                existingEvent.Location = await _context.Locations
-                    .Include(x => x.Events)
-                    .Include(x => x.Organizers)
-                    .FirstOrDefaultAsync(x => x.Id == eventUpdateDto.LocationId)
-                    ?? throw new NotFoundException("Event location not found!");
-
-                try
-                {
-                    existingEvent.Images = [.. (await Task.WhenAll(eventUpdateDto.Images
-                        .Select(async image => await _imageRepository.GenerateImageSource(image))))];
-                }
-                catch (Exception ex)
-                {
-                    throw new BadRequestException(ex.Message, ex.InnerException);
-                }
 
                 _mapper.Map(eventUpdateDto, existingEvent);
 
@@ -567,6 +552,9 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                     .Include(x => x.Location)
                     .FirstOrDefaultAsync(x => x.Id == eventId);
                 if (@event == null) return false;
+
+                if (!@event.Tickets.Any())
+                    throw new BadRequestException("No tickets found. Add tickets to upload the event!");
 
                 if (@event.StartDate < DateTime.UtcNow)
                     throw new BadRequestException("Event can't be published because it's start date is overdue!");

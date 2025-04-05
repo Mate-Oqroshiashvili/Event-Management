@@ -77,25 +77,23 @@ namespace Event_Management.Repositories.ImageRepositoryFolder
             }
         }
 
-        public async Task<string> ChangeEventImages(int eventId, IEnumerable<IFormFile> formFiles)
+        public async Task<string> ChangeEventImages(int eventId, List<string> existingImages, IEnumerable<IFormFile> formFiles)
         {
             try
             {
                 var @event = await _context.Events.FindAsync(eventId) ?? throw new NotFoundException("Event not found!");
 
-                if (@event.Images == null)
-                {
-                    @event.Images = new List<string>();
-                }
-                else
-                {
-                    @event.Images.Clear();
-                }
+                @event.Images ??= new List<string>();
 
-                foreach (var file in formFiles)
+                @event.Images = @event.Images.Where(img => existingImages.Contains(img)).ToList();
+
+                if (formFiles != null)
                 {
-                    var imageUrl = await GenerateImageSource(file);
-                    @event.Images.Add(imageUrl);
+                    foreach (var file in formFiles)
+                    {
+                        var imageUrl = await GenerateImageSource(file);
+                        @event.Images.Add(imageUrl);
+                    }
                 }
 
                 _context.Events.Update(@event);

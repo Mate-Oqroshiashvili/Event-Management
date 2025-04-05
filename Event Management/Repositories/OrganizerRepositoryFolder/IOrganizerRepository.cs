@@ -8,6 +8,7 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
         Task<IEnumerable<OrganizerDto>> GetOrganizersAsync();
         Task<OrganizerDto> GetOrganizerByIdAsync(int id);
         Task<IEnumerable<OrganizerDto>> GetOrganizersByLocationIdAsync(int locationId);
+        Task<OrganizerDto> GetOrganizerByUserIdAsync(int userId);
         Task<OrganizerDto> AddOrganizerAsync(OrganizerCreateDto organizerCreateDto);
         Task<string> AddOrganizerOnLocationAsync(int organizerId, int locationId);
         Task<string> RemoveOrganizerFromLocationAsync(int organizerId, int locationId);

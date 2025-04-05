@@ -25,6 +25,7 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
         {
             var organizers = await _context.Organizers
                 .Include(x => x.User)
+                .Include(x => x.Locations)
                 .ToListAsync();
 
             var organizerDtos = _mapper.Map<IEnumerable<OrganizerDto>>(organizers);
@@ -36,7 +37,21 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
         {
             var organizer = await _context.Organizers
                 .Include(x => x.User)
+                .Include(x => x.Locations)
                 .FirstOrDefaultAsync(x => x.Id == id);
+
+            var organizerDto = _mapper.Map<OrganizerDto>(organizer);
+
+            return organizerDto;
+        }
+
+        public async Task<OrganizerDto> GetOrganizerByUserIdAsync(int userId)
+        {
+            var organizer = await _context.Organizers
+                .Include(x => x.Events)
+                .Include(x => x.Locations)
+                .Include(x => x.User)
+                .FirstOrDefaultAsync(x => x.UserId == userId);
 
             var organizerDto = _mapper.Map<OrganizerDto>(organizer);
 
@@ -59,32 +74,44 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
 
         public async Task<OrganizerDto> AddOrganizerAsync(OrganizerCreateDto organizerCreateDto)
         {
-            var organizer = _mapper.Map<Organizer>(organizerCreateDto);
+            try
+            {
+                var existingOrganizer = await _context.Organizers.FirstOrDefaultAsync(x => x.UserId == organizerCreateDto.UserId);
 
-            organizer.User = await _context.Users
-                .Include(x => x.Participants)
-                .Include(x => x.Purchases)
-                .Include(x => x.Tickets)
-                .Include(x => x.Comments)
-                .Include(x => x.Reviews)
-                .Include(x => x.UsedPromoCodes)
-                .FirstOrDefaultAsync(u => u.Id == organizerCreateDto.UserId)
-                ?? throw new NotFoundException("User not found!");
+                if (existingOrganizer != null)
+                    throw new BadRequestException("Organizer already exists!");
 
-            organizer.Name = organizer.User.Name;
-            organizer.Email = organizer.User.Email;
-            organizer.PhoneNumber = organizer.User.PhoneNumber;
+                var organizer = _mapper.Map<Organizer>(organizerCreateDto);
 
-            var logoUrl = await _imageRepository.GenerateImageSource(organizerCreateDto.Logo);
-            organizer.LogoUrl = logoUrl;
-            organizer.UserId = organizerCreateDto.UserId;
-            organizer.User.Role = Models.Enums.Role.ORGANIZER;
+                organizer.User = await _context.Users
+                    .Include(x => x.Participants)
+                    .Include(x => x.Purchases)
+                    .Include(x => x.Tickets)
+                    .Include(x => x.Comments)
+                    .Include(x => x.Reviews)
+                    .Include(x => x.UsedPromoCodes)
+                    .FirstOrDefaultAsync(u => u.Id == organizerCreateDto.UserId)
+                    ?? throw new NotFoundException("User not found!");
 
-            await _context.Organizers.AddAsync(organizer);
-            await _context.SaveChangesAsync();
+                organizer.Name = organizer.User.Name;
+                organizer.Email = organizer.User.Email;
+                organizer.PhoneNumber = organizer.User.PhoneNumber;
 
-            var organizerDto = _mapper.Map<OrganizerDto>(organizer);
-            return organizerDto;
+                var logoUrl = await _imageRepository.GenerateImageSource(organizerCreateDto.Logo);
+                organizer.LogoUrl = logoUrl;
+                organizer.UserId = organizerCreateDto.UserId;
+                organizer.User.Role = Models.Enums.Role.ORGANIZER;
+
+                await _context.Organizers.AddAsync(organizer);
+                await _context.SaveChangesAsync();
+
+                var organizerDto = _mapper.Map<OrganizerDto>(organizer);
+                return organizerDto;
+            }
+            catch (Exception ex) 
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
         }
 
         public async Task<string> AddOrganizerOnLocationAsync(int organizerId, int locationId)

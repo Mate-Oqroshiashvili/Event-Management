@@ -9,15 +9,10 @@ namespace Event_Management.Helpers
         public ParticipantMappingProfile()
         {
             CreateMap<Participant, ParticipantDto>()
-                .ForMember(dest => dest.Event, opt => opt.MapFrom(src => src.Event))
                 .ForMember(dest => dest.Ticket, opt => opt.MapFrom(src => src.Ticket))
-                .ForMember(dest => dest.Purchase, opt => opt.MapFrom(src => src.Purchase))
                 .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
 
             CreateMap<ParticipantDto, Participant>();
-                //.ForMember(dest => dest.Event, opt => opt.Ignore())
-                //.ForMember(dest => dest.Ticket, opt => opt.Ignore())
-                //.ForMember(dest => dest.User, opt => opt.Ignore());
 
             CreateMap<ParticipantCreateDto, Participant>();
 

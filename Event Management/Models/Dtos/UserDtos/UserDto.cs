@@ -15,7 +15,7 @@ namespace Event_Management.Models.Dtos.UserDtos
         public string Name { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
-        public string? ProfilePictureUrl { get; set; } = string.Empty;
+        public string? ProfilePicture { get; set; } = string.Empty;
         public Role Role { get; set; }
         public UserType UserType { get; set; }
         public decimal Balance { get; set; }

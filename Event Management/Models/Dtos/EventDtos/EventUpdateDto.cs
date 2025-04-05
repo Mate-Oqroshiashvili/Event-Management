@@ -9,10 +9,6 @@ namespace Event_Management.Models.Dtos.EventDtos
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public int? Capacity { get; set; }
-        public EventStatus? Status { get; set; }
-        public int? LocationId { get; set; }
-        public int? OrganizerId { get; set; }
-        public IEnumerable<IFormFile> Images { get; set; }
 
         public EventUpdateDto()
         {

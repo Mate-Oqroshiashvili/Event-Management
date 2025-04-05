@@ -14,11 +14,9 @@ namespace Event_Management.Helpers
                 .ForMember(dest => dest.Location, opt => opt.MapFrom(src => src.Location))
                 .ForMember(dest => dest.Organizer, opt => opt.MapFrom(src => src.Organizer))
                 .ForMember(dest => dest.Tickets, opt => opt.MapFrom(src => src.Tickets))
-                //.ForMember(dest => dest.Participants, opt => opt.MapFrom(src => src.Participants))
                 .ForMember(dest => dest.SpeakersAndArtists, opt => opt.MapFrom(src => src.SpeakersAndArtists))
                 .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => src.Reviews))
                 .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Comments))
-                //.ForMember(dest => dest.PromoCodes, opt => opt.MapFrom(src => src.PromoCodes))
                 .ReverseMap();
 
             CreateMap<EventCreateDto, Event>()

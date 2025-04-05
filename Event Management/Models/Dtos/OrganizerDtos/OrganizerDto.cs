@@ -20,7 +20,7 @@ namespace Event_Management.Models.Dtos.OrganizerDtos
 
         public UserDto User { get; set; }
         //public List<EventDto> Events { get; set; }
-        //public List<LocationDto> Locations { get; set; }
+        public List<LocationDto> Locations { get; set; }
 
         public OrganizerDto()
         {
