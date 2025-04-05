@@ -1,1 +1,133 @@
-<p>add-event works!</p>
+<div class="add-event-form">
+  <form (ngSubmit)="addEvent()">
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="eventCreateDto.title"
+        type="text"
+        class="form-control"
+        name="title"
+        id="title"
+        placeholder="Jon doe"
+      />
+      <label for="title">Event Title</label>
+    </div>
+    <div class="form-floating mb-3">
+      <textarea
+        [(ngModel)]="eventCreateDto.description"
+        type="string"
+        class="form-control"
+        name="description"
+        id="description"
+        placeholder="Event Description"
+      ></textarea>
+      <label for="description">Event Description</label>
+    </div>
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="eventCreateDto.startDate"
+        type="datetime-local"
+        class="form-control"
+        name="startDate"
+        id="startDate"
+        placeholder="2025/01/01"
+      />
+      <label for="startDate">Event Start Date</label>
+    </div>
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="eventCreateDto.endDate"
+        type="datetime-local"
+        class="form-control"
+        name="endDate"
+        id="endDate"
+        placeholder="2025/01/01"
+      />
+      <label for="endDate">Event End Date</label>
+    </div>
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="eventCreateDto.capacity"
+        type="number"
+        class="form-control"
+        name="capacity"
+        id="capacity"
+        placeholder="e.g 500"
+      />
+      <label for="capacity">Event Capacity</label>
+    </div>
+    <div class="form-floating mb-3">
+      <select
+        [(ngModel)]="eventCreateDto.locationId"
+        name="location"
+        id="location"
+        class="form-select form-select-lg mb-3"
+        aria-label="Large select example"
+      >
+        <option value="0" selected>Select The Event Location Address</option>
+        @for (item of organizer.locations; track $index) {
+        <option [value]="$index">{{ item.address }}</option>
+        }
+      </select>
+      <label for="location">Event Location</label>
+    </div>
+    <div class="form-floating mb-3">
+      <select
+        [(ngModel)]="eventCreateDto.category"
+        name="category"
+        id="category"
+        class="form-select form-select-lg mb-3"
+        aria-label="Large select example"
+      >
+        <option value="0" selected>Select The Event Category</option>
+        <option value="1">IT And Technologies</option>
+        <option value="2">Bussiness Meetings</option>
+        <option value="3">Casual Meetings</option>
+        <option value="4">Conferences</option>
+        <option value="5">Music</option>
+        <option value="6">Festivals</option>
+        <option value="7">Sports</option>
+        <option value="8">Fashion</option>
+        <option value="9">Startups And Product Launches</option>
+      </select>
+      <label for="category">Event Category</label>
+    </div>
+
+    <div class="mb-3">
+      <label for="imageInput" class="form-label">Upload Images</label>
+      <input
+        class="form-control form-control-lg"
+        type="file"
+        id="imageInput"
+        (change)="onFileSelected($event)"
+        accept="image/*"
+        multiple
+      />
+    </div>
+
+    <div class="preview-container d-flex flex-wrap gap-3 mt-3">
+      <div
+        class="position-relative border rounded p-1"
+        *ngFor="let img of imagePreviews; let i = index"
+      >
+        <button
+          type="button"
+          class="btn-close position-absolute top-0 end-0 m-1"
+          aria-label="Close"
+          (click)="removeImage(i)"
+        ></button>
+        <img
+          [src]="img"
+          alt="Preview"
+          class="img-thumbnail"
+          style="width: 120px; height: 120px; object-fit: cover"
+        />
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end" class="verify-button">
+      <button type="submit" style="float: right" class="btn btn-success mt-3">
+        Add Event
+      </button>
+    </div>
+  </form>
+</div>

@@ -64,7 +64,7 @@ export interface UserDto {
   name: string;
   email: string;
   phoneNumber: string;
-  profilePictureUrl?: string;
+  profilePicture: string;
   role: Role;
   userType: UserType;
   balance: number;

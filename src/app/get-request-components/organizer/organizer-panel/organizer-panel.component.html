@@ -1,0 +1,49 @@
+<section class="header">
+  <ul class="nav">
+    <li class="nav-item">
+      <button class="nav-link" (click)="getDrafted()">Drafted Events</button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" (click)="getPublished()">
+        Published Events
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" (click)="getCompleted()">
+        Completed Events
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" (click)="getRemoved()">Removed Events</button>
+    </li>
+  </ul>
+</section>
+
+@if (result.length != 0) {
+<section class="cards">
+  @for (event of result; track event.id) {
+  <div class="card">
+    <img [src]="event.images[0]" class="card-img-top" alt="..." />
+    <div class="card-body">
+      <h5 class="card-title">{{ event.title }}</h5>
+      <p class="card-text">
+        Event Start Date: {{ event.startDate | date : "yyyy-MM-dd" }}
+      </p>
+      <p class="card-text">
+        Event End Date: {{ event.endDate | date : "yyyy-MM-dd" }}
+      </p>
+      <p class="card-text">Event Organizer: {{ event.organizer?.name }}</p>
+      <p class="card-text">Event Address: {{ event.location?.address }}</p>
+      @for (item of event.speakersAndArtists; track $index) {
+      <p class="card-text">Speakers & Artists: {{ item.name }}</p>
+      }
+      <a [routerLink]="['/events/event', event.id]" class="btn btn-primary"
+        >See More</a
+      >
+    </div>
+  </div>
+  }
+</section>
+} @else {
+<h1 class="text-center">No event found!</h1>
+}

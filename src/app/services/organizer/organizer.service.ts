@@ -3,10 +3,11 @@ import { environment } from '../../../environments/environment.development';
 import { UserDto } from '../user/user.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { LocationDto } from '../location/location.service';
 
 export interface OrganizerCreateDto {
   description: string;
-  logo: File;
+  logo: File | undefined;
   address: string;
   city: string;
   country: string;
@@ -38,6 +39,7 @@ export interface OrganizerDto {
   isVerified: boolean;
   createdAt: Date | undefined;
   user: UserDto | null;
+  locations: LocationDto[] | null;
 }
 
 @Injectable({

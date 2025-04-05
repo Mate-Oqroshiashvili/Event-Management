@@ -16,27 +16,37 @@ export enum EventStatus {
   DELETED = 4,
 }
 
+export enum EventCategory {
+  No_Category = 0,
+  IT_And_Technologies = 1,
+  Bussiness_Meetings = 2,
+  Casual_Meetings = 3,
+  Conferences = 4,
+  Music = 5,
+  Festivals = 6,
+  Sports = 7,
+  Fashion = 8,
+  Startups_And_Product_Launches = 9,
+}
+
 export interface EventCreateDto {
   title: string;
   description: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: Date | undefined;
+  endDate: Date | undefined;
   capacity: number;
   locationId: number;
   organizerId: number;
+  category: EventCategory;
   images: File[];
 }
 
 export interface EventUpdateDto {
-  title?: string;
-  description?: string;
-  startDate?: Date;
-  endDate?: Date;
-  capacity?: number;
-  status?: EventStatus;
-  locationId?: number;
-  organizerId?: number;
-  images: File[];
+  title: string;
+  description: string;
+  startDate: Date | null;
+  endDate: Date | null;
+  capacity: number;
 }
 
 export interface EventDto {
@@ -47,6 +57,7 @@ export interface EventDto {
   endDate: Date | null;
   capacity: number;
   status: EventStatus;
+  category: EventCategory;
   bookedStaff: number;
   images: string[];
   location: LocationDto | null;
@@ -115,9 +126,17 @@ export class EventService {
 
   addEvent(eventData: EventCreateDto): Observable<EventDto> {
     const formData = new FormData();
-    Object.keys(eventData).forEach((key) => {
-      formData.append(key, (eventData as any)[key]);
+
+    Object.entries(eventData).forEach(([key, value]) => {
+      if (key === 'images' && Array.isArray(value)) {
+        value.forEach((file: File) => {
+          formData.append('images', file);
+        });
+      } else if (value !== undefined && value !== null) {
+        formData.append(key, value.toString());
+      }
     });
+
     return this.http.post<EventDto>(`${this.apiUrl}Event/add-event`, formData);
   }
 

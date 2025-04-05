@@ -1,0 +1,32 @@
+.images {
+  padding: 20px 40px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.images img {
+  height: 100%;
+  object-fit: cover;
+}
+
+.card {
+  position: relative;
+}
+
+.remove {
+  line-height: 0%;
+  margin: -20px -10px;
+  font-size: 32px;
+  color: black;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.remove button {
+  padding: 0px;
+  margin: 0px;
+  border-radius: 50%;
+  border: none;
+}

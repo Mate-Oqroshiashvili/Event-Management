@@ -1,1 +1,65 @@
-<p>update-event works!</p>
+<div class="register-form">
+  <form (ngSubmit)="updateEvent()">
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="eventUpdateDto.title"
+        type="text"
+        class="form-control"
+        name="title"
+        id="title"
+        placeholder="New Event"
+      />
+      <label for="title">Event Title</label>
+    </div>
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="eventUpdateDto.description"
+        type="string"
+        class="form-control"
+        name="description"
+        id="description"
+        placeholder="Add description for the event"
+      />
+      <label for="description">Event Description</label>
+    </div>
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="eventUpdateDto.startDate"
+        type="datetime"
+        class="form-control"
+        name="startDate"
+        id="startDate"
+        placeholder="2025/01/01"
+      />
+      <label for="startDate">Event Start Date</label>
+    </div>
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="eventUpdateDto.endDate"
+        type="datetime"
+        class="form-control"
+        name="endDate"
+        id="endDate"
+        placeholder="2025/01/01"
+      />
+      <label for="endDate">Event End Date</label>
+    </div>
+    <div class="form-floating">
+      <input
+        [(ngModel)]="eventUpdateDto.capacity"
+        type="number"
+        class="form-control"
+        name="capacity"
+        id="capacity"
+        placeholder="e.g 500"
+      />
+      <label for="capacity">Event Capacity</label>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end" class="verify-button">
+      <button type="submit" class="btn btn-warning mt-3 mb-5">
+        Update Event
+      </button>
+    </div>
+  </form>
+</div>

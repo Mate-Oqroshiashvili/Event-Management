@@ -1,0 +1,40 @@
+<section class="search">
+  <div>
+    @if (role === "ORGANIZER") {
+    <a routerLink="add-event" class="btn btn-primary">Add New Event</a>
+    }
+  </div>
+  <div></div>
+  <form class="d-flex" role="search" (ngSubmit)="searchLogic(searchTerm)">
+    <input
+      [(ngModel)]="searchTerm"
+      class="form-control me-2"
+      type="search"
+      placeholder="Search"
+      aria-label="Search"
+      name="search"
+      id="search"
+    />
+    <button class="btn btn-outline-primary" type="submit">Search</button>
+  </form>
+</section>
+<section class="cards">
+  @for (event of events; track event.id) {
+  <a [routerLink]="['event', event.id]" class="card">
+    <img [src]="event.images[0]" class="card-img-top" alt="..." />
+    <div class="card-body">
+      <h5 class="card-title mb-3">{{ event.title }}</h5>
+
+      <p class="card-text">
+        <i class="bi bi-grid-fill me-1"></i>
+        Category: {{ getCategory(event.category) }}
+      </p>
+
+      <p class="card-text">
+        <i style="color: gold" class="me-1 bi bi-star-fill"></i>
+        Rating: {{ getReviewResult(event) }} ({{ event.reviews.length }})
+      </p>
+    </div>
+  </a>
+  }
+</section>

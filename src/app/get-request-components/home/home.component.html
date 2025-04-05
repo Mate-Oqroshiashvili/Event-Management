@@ -1,9 +1,9 @@
 <div class="hero">
   <h1 class="mb-2">Discover Amazing Events Near You</h1>
   <p class="mb-3">Book tickets instantly!</p>
-  <a class="btn btn-primary btn-lg">Explore Events</a>
+  <a routerLink="/events" class="btn btn-primary btn-lg">Explore Events</a>
 </div>
-<section class="container my-5">
+<section class="container my-5 hero-container">
   <h2 class="text-center mb-5">How It Works</h2>
   <div class="row text-center">
     <div class="col-md-4">
@@ -24,25 +24,29 @@
   </div>
 </section>
 
+@if (isLoggedIn$) {
 <section class="container my-5" id="upcomingEvents">
   <h2 class="text-center mb-5">Upcoming Events</h2>
   <div class="row">
     @for (item of upcoming; track $index) {
-    <div class="col-md-4">
+    <a [routerLink]="['/events/event', item.id]" class="col-md-4">
       <div class="card event-card">
         <img [src]="item.images[0]" class="card-img-top" />
         <div class="card-body">
-          <h5 class="card-title">{{ item.title }}</h5>
-          <p>
-            {{ item.startDate | date : "yyyy-MM-dd" }} -
-            {{ item.location?.name }}
+          <h5 class="card-title mb-3">{{ item.title }}</h5>
+
+          <p class="card-text mb-2">
+            <i class="bi bi-grid-fill me-1"></i>
+            Category: {{ getCategory(item.category) }}
           </p>
-          <a [routerLink]="['/events/event', item.id]" class="btn btn-primary"
-            >View Details</a
-          >
+
+          <p class="card-text">
+            <i style="color: gold" class="me-1 bi bi-star-fill"></i>
+            Rating: {{ getReviewResult(item) }} ({{ item.reviews.length }})
+          </p>
         </div>
       </div>
-    </div>
+    </a>
     }
   </div>
 </section>
@@ -51,21 +55,37 @@
   <h2 class="text-center mb-5">Popular Events</h2>
   <div class="row">
     @for (item of popular; track $index) {
-    <div class="col-md-4">
+    <a [routerLink]="['/events/event', item.id]" class="col-md-4">
       <div class="card event-card">
         <img [src]="item.images[0]" class="card-img-top" />
         <div class="card-body">
-          <h5 class="card-title">{{ item.title }}</h5>
-          <p>
-            {{ item.startDate | date : "yyyy-MM-dd" }} -
-            {{ item.location?.name }}
+          <h5 class="card-title mb-3">{{ item.title }}</h5>
+
+          <p class="card-text mb-2">
+            <i class="bi bi-grid-fill me-1"></i>
+            Category: {{ getCategory(item.category) }}
           </p>
-          <a [routerLink]="['/events/event', item.id]" class="btn btn-primary"
-            >View Details</a
-          >
+
+          <p class="card-text">
+            <i style="color: gold" class="me-1 bi bi-star-fill"></i>
+            Rating: {{ getReviewResult(item) }} ({{ item.reviews.length }})
+          </p>
         </div>
       </div>
-    </div>
+    </a>
     }
   </div>
 </section>
+} @else {
+<section class="container d-flex justify-content-center my-5">
+  <div class="content">
+    <h2 class="text-center mb-4">Wanna Get Started?</h2>
+    <div class="d-flex justify-content-center mb-4">
+      <i class="bi bi-arrow-down"></i>
+    </div>
+    <div class="d-flex justify-content-center">
+      <a class="btn btn-primary" routerLink="/register">Register Now</a>
+    </div>
+  </div>
+</section>
+}

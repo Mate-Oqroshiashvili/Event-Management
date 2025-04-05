@@ -1,0 +1,42 @@
+<h3 style="padding: 0px 40px">Existing Images</h3>
+<section class="images">
+  @for (item of eventImages; track $index) {
+  <div class="card">
+    <div class="remove">
+      <button (click)="removeExistingImage($index)">
+        <i class="bi bi-x-circle-fill"></i>
+      </button>
+    </div>
+    <img [src]="item" alt="Existing Image" />
+  </div>
+  }
+</section>
+
+<h3 style="padding: 20px 40px 0px">New Uploads</h3>
+<section class="images">
+  <div class="card" *ngFor="let img of uploadedPreviews; let i = index">
+    <div class="remove">
+      <button (click)="removeUploadedImage(i)">
+        <i class="bi bi-x-circle-fill"></i>
+      </button>
+    </div>
+    <img [src]="img" alt="New Upload Preview" />
+  </div>
+</section>
+
+<div style="padding: 0px 40px" class="form-group mt-3">
+  <label class="mb-2" for="imageUpload">Upload New Images:</label>
+  <input
+    type="file"
+    id="imageUpload"
+    class="form-control"
+    (change)="onFileSelected($event)"
+    multiple
+  />
+</div>
+
+<div style="padding: 20px 40px" class="button d-flex justify-content-end">
+  <button (click)="updateImages()" class="btn btn-success">
+    Update Images
+  </button>
+</div>

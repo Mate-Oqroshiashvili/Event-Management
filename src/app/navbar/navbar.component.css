@@ -2,6 +2,21 @@ nav {
   padding: 20px;
 }
 
+.navbar-brand {
+  color: #1565c0;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+a,
+i {
+  color: #2e2e2e;
+  font-weight: 500;
+}
+
+a:hover,
+i:hover,
 .active {
-  color: red !important;
+  color: #1565c0 !important;
+  transition: 0.2s;
 }

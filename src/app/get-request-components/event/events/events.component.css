@@ -1,0 +1,35 @@
+.search {
+  padding: 20px 40px 0px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+
+.cards {
+  padding: 40px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  justify-content: center;
+  gap: 40px;
+}
+
+.card {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+img {
+  border-top-right-radius: 12px;
+  border-top-left-radius: 12px;
+  height: 250px;
+  object-fit: cover;
+}
+
+p {
+  margin-bottom: 8px;
+}
+
+a {
+  text-decoration: none;
+}

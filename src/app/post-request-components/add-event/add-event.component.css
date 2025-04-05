@@ -1,0 +1,18 @@
+.add-event-form {
+  width: 60vw;
+  height: 90vh;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+form {
+  width: 100%;
+  height: max-content;
+}
+
+.preview-container {
+  max-width: 100%;
+  overflow-x: auto;
+}

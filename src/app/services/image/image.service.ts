@@ -28,10 +28,24 @@ export class ImageService {
     );
   }
 
-  updateEventImages(eventId: number, images: File[]): Observable<string> {
-    return this.http.post<string>(
+  updateEventImages(
+    eventId: number,
+    existingImages: string[],
+    formFiles: File[]
+  ) {
+    const formData = new FormData();
+
+    existingImages.forEach((image) => {
+      formData.append('existingImages', image);
+    });
+
+    formFiles.forEach((file) => {
+      formData.append('formFile', file);
+    });
+
+    return this.http.post<{ message: string }>(
       `${this.apiUrl}Image/update-event-images/${eventId}`,
-      images
+      formData
     );
   }
 }

@@ -19,17 +19,16 @@ export class NavbarComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private organizerService: OrganizerService,
-    private router: Router
-  ) {
+    private organizerService: OrganizerService
+  ) {}
+
+  ngOnInit(): void {
     this.userService.isAuthenticated$.subscribe((loggedIn) => {
       this.isLoggedIn$ = loggedIn;
       this.getUserInfo();
-      this.getOrganizer();
+      if (this.isLoggedIn$ && this.role === 'ORGANIZER') this.getOrganizer();
     });
   }
-
-  ngOnInit(): void {}
 
   private getUserInfo(): void {
     const token = this.userService.getToken();

@@ -95,15 +95,6 @@
           }
           <li class="nav-item mx-3">
             <a
-              style="font-size: 28px; color: rgba(0, 0, 0, 0.65)"
-              [routerLink]="['profile', userId, 'user-information']"
-              routerLinkActive="active"
-              [routerLinkActiveOptions]="{ exact: true }"
-              ><i class="bi bi-person-circle"></i
-            ></a>
-          </li>
-          <li class="nav-item">
-            <a
               class="nav-link"
               (click)="logout()"
               routerLink="/login"
@@ -111,6 +102,15 @@
               [routerLinkActiveOptions]="{ exact: true }"
               >Log Out</a
             >
+          </li>
+          <li class="nav-item">
+            <a
+              style="font-size: 28px; color: rgba(0, 0, 0, 0.65)"
+              [routerLink]="['profile', userId, 'user-information']"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              ><i class="bi bi-person-circle"></i
+            ></a>
           </li>
           }
         </ul>

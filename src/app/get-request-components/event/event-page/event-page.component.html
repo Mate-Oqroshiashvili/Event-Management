@@ -1,0 +1,365 @@
+<div class="event-page">
+  <section class="top">
+    <div class="carousel">
+      <div id="carouselExampleIndicators" class="carousel slide">
+        <div class="carousel-indicators">
+          @for (item of event.images; track $index) {
+          <button
+            type="button"
+            data-bs-target="#carouselExampleIndicators"
+            [attr.data-bs-slide-to]="$index"
+            [class.active]="$index === 0"
+            [attr.aria-current]="$index === 0 ? 'true' : 'null'"
+            [attr.aria-label]="'Slide' + ($index + 1)"
+          ></button>
+          }
+        </div>
+        <div class="carousel-inner">
+          @for (item of event.images; track $index) {
+          <div class="carousel-item" [ngClass]="{ active: $index === 0 }">
+            <img [src]="item" class="d-block w-100 img-fluid" alt="..." />
+          </div>
+          }
+        </div>
+        <button
+          class="carousel-control-prev"
+          type="button"
+          data-bs-target="#carouselExampleIndicators"
+          data-bs-slide="prev"
+        >
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button
+          class="carousel-control-next"
+          type="button"
+          data-bs-target="#carouselExampleIndicators"
+          data-bs-slide="next"
+        >
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+    </div>
+    <div class="main-information">
+      <div class="card event-info">
+        <div class="card-body p-0">
+          <div class="card-header-custom">
+            <h1 class="card-title">
+              {{ event.title }}
+            </h1>
+
+            @if (loggedInUserRole === "ORGANIZER" && event.organizer?.user?.id
+            == userId ) {
+            <div class="dropdown mt-1">
+              <button
+                class="btn btn-secondary"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li>
+                  <a
+                    [routerLink]="[
+                      '/events/event',
+                      event.id,
+                      'update-event-images'
+                    ]"
+                    class="dropdown-item"
+                    >Update Images</a
+                  >
+                </li>
+                <li>
+                  <a
+                    [routerLink]="['/events/event', event.id, 'update-event']"
+                    class="dropdown-item"
+                    >Update Event</a
+                  >
+                </li>
+                <li>
+                  <button (click)="deleteEvent()" class="dropdown-item">
+                    Delete Event
+                  </button>
+                </li>
+              </ul>
+            </div>
+            }
+          </div>
+
+          <p class="card-text mb-3">
+            <i class="me-1 bi bi-calendar-event-fill"></i>
+            Starts: {{ event.startDate | date : "fullDate" }} at
+            {{ event.startDate | date : "shortTime" }}
+          </p>
+
+          <p class="card-text mb-3">
+            <i class="me-1 bi bi-calendar-check-fill"></i>
+            Ends: {{ event.endDate | date : "fullDate" }} at
+            {{ event.endDate | date : "shortTime" }}
+          </p>
+
+          <p class="card-text mb-3">
+            <i class="me-1 bi bi-geo-alt-fill"></i>
+            Event Address: {{ event.location?.address }}
+          </p>
+
+          <p class="card-text mb-3">
+            <i class="bi bi-grid-fill"></i>
+            Category: {{ getCategory(event.category) }}
+          </p>
+
+          <p class="card-text mb-3">
+            <i class="me-1 bi bi-people-fill"></i>
+            Capacity: {{ event.capacity }}
+          </p>
+
+          @if (loggedInUserRole === "ORGANIZER" ) {
+          <p class="card-text mb-3">
+            <i class="me-1 bi bi-person-badge-fill"></i>
+            Booked Staff: {{ event.bookedStaff }}
+          </p>
+
+          <p class="card-text mb-3">
+            <i class="me-1 bi bi-info-circle-fill"></i>
+            Event Status: {{ getEventStatus(event.status).toLowerCase() }}
+          </p>
+          }
+
+          <p class="card-text">
+            <i style="color: gold" class="me-1 bi bi-star-fill"></i>
+            Rating: {{ reviewsResult }} ({{ event.reviews.length }})
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="bottom">
+    <div class="additional-information">
+      <div class="description my-5">
+        <h2>Description</h2>
+        <p class="description">{{ event.description }}</p>
+      </div>
+      <div class="tickets mt-5">
+        <h2>Tickets</h2>
+        <div class="cards">
+          @for (item of tickets; track $index) {
+          <div
+            [ngClass]="{
+              basic: item.type === 1,
+              vip: item.type === 2,
+              earlyBird: item.type === 3
+            }"
+            class="card p-4"
+          >
+            <i *ngIf="item.type === 1" class="bi bi-ticket-perforated-fill"></i>
+            <i *ngIf="item.type === 2" class="bi bi-award-fill"></i>
+            <i *ngIf="item.type === 3" class="bi bi-feather"></i>
+            <div class="ticket-body">
+              <h3>
+                Ticket Type: {{ getTicketStatus(item.type).toLowerCase() }}
+              </h3>
+              <p style="margin: 0px">Price: {{ item.price }}</p>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      <section class="group">
+        <div class="organizer mt-5 mb-3">
+          <h2>Organizer</h2>
+          <a
+            [routerLink]="['/organizers/organizer', event.organizer?.id]"
+            class="card custom"
+          >
+            <div class="top">
+              <img [src]="event.organizer?.logoUrl" alt="" />
+              <div class="text">
+                <h3 class="mt-4 mb-2">
+                  {{ event.organizer?.name }}
+                </h3>
+                @if (event.organizer?.isVerified) {
+                <p class="card-text mb-4" style="margin: 0px">
+                  Verification Status: Verified
+                </p>
+                } @else {
+                <p class="card-text mb-4" style="margin: 0px">
+                  Verification Status: Not Verified
+                </p>
+                }
+              </div>
+            </div>
+            <div class="bottom">
+              <h5>
+                <p class="card-text mb-3">
+                  <i class="bi bi-buildings"></i> City:
+                  {{ event.organizer?.city }}
+                </p>
+                <p class="card-text mb-3">
+                  <i class="bi bi-globe-americas"></i> Country:
+                  {{ event.organizer?.country }}
+                </p>
+                <p class="card-text">
+                  <i class="bi bi-geo-alt-fill"></i> Address:
+                  {{ event.organizer?.address }}
+                </p>
+              </h5>
+            </div>
+          </a>
+        </div>
+        <div class="location mt-5 mb-3">
+          <h2>Location</h2>
+          <a
+            [routerLink]="['/locations/location', event.location?.id]"
+            class="card custom"
+          >
+            <div class="top">
+              <img [src]="event.location?.imageUrl" alt="" />
+              <div class="text">
+                <h3 class="mt-4 mb-2">
+                  {{ event.location?.name }}
+                </h3>
+                @if (event.location?.isAccessible) {
+                <p class="card-text mb-4">Accessibility Status: Accessible</p>
+                }@else {
+                <p class="card-text mb-4">Accessibility Status: Inaccessible</p>
+                }
+              </div>
+            </div>
+            <div class="bottom">
+              <h5>
+                <p class="card-text mb-3">
+                  <i class="bi bi-buildings"></i> City:
+                  {{ event.location?.city }}
+                </p>
+                <p class="card-text mb-3">
+                  <i class="bi bi-map-fill"></i> State:
+                  {{ event.location?.state }}
+                </p>
+                <p class="card-text">
+                  <i class="bi bi-globe-americas"></i> Country:
+                  {{ event.location?.country }}
+                </p>
+              </h5>
+            </div>
+          </a>
+        </div>
+      </section>
+      @if (event.speakersAndArtists.length != 0) {
+      <div class="speakers-and-artists my-5">
+        <h2>Speakers and Artists</h2>
+        <div class="cards my-3">
+          @for (item of event.speakersAndArtists; track $index) {
+          <div class="card p-4">
+            <h3>{{ item.id }}: {{ item.name }}</h3>
+            <p>User Type: {{ item.userType }}</p>
+          </div>
+          }
+        </div>
+      </div>
+      }
+      <div class="comments my-5">
+        <h2>Comments</h2>
+        <div class="cards my-3">
+          @if (event.comments.length === 0) {
+          <h5>No comment found!</h5>
+          } @for (item of event.comments; track $index) {
+          <div class="card p-4">
+            <img [src]="item.user.profilePicture" alt="" />
+            <div class="comment-info">
+              <h5 class="mb-1">{{ item.user.name }}</h5>
+              <p>{{ item.commentContent }}</p>
+            </div>
+            @if (item.user.id == userId) {
+            <div class="dropdown">
+              <button
+                class="btn btn-warning"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li>
+                  <button class="dropdown-item" (click)="editActions(item.id)">
+                    Edit
+                  </button>
+                </li>
+                <li>
+                  <button
+                    class="dropdown-item"
+                    (click)="deleteComment(item.id, item.user.id)"
+                  >
+                    Delete
+                  </button>
+                </li>
+              </ul>
+            </div>
+            }
+          </div>
+          }
+        </div>
+        @if (!editing) {
+        <div class="add-comment">
+          <form (ngSubmit)="addComment()">
+            <div class="input-group mb-3">
+              <input
+                [(ngModel)]="commentCreateDto.commentContent"
+                name="commentContent"
+                id="commentContent"
+                type="text"
+                class="form-control p-3"
+                placeholder="Add comment"
+                aria-label="Add comment"
+                aria-describedby="button-addon2"
+              />
+              <button
+                class="btn btn-success px-5"
+                type="submit"
+                id="button-addon2"
+              >
+                Submit
+              </button>
+            </div>
+          </form>
+        </div>
+        } @else {
+        <div class="edit-comment">
+          <form (ngSubmit)="editComment()">
+            <div class="input-group mb-3">
+              <input
+                [(ngModel)]="commentUpdateDto.commentContent"
+                name="commentContent"
+                id="commentContent"
+                type="text"
+                class="form-control p-3"
+                placeholder="Edit comment"
+                aria-label="Edit comment"
+                aria-describedby="button-addon2"
+              />
+              <button
+                class="btn btn-secondary"
+                type="button"
+                id="button-addon2"
+                (click)="cancel()"
+              >
+                Cancel
+              </button>
+              <button
+                class="btn btn-warning px-5"
+                type="submit"
+                id="button-addon2"
+              >
+                Submit
+              </button>
+            </div>
+          </form>
+        </div>
+        }
+      </div>
+    </div>
+  </section>
+</div>
