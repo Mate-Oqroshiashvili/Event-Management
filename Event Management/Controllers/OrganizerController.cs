@@ -97,7 +97,6 @@ namespace Event_Management.Controllers
             }
         }
 
-        [Authorize(Roles = "ORGANIZER")]
         [HttpPost("send-verification-codes-for-organizer/{organizerId}")]
         public async Task<ActionResult<string>> SendCodes(int organizerId)
         {
@@ -113,7 +112,6 @@ namespace Event_Management.Controllers
             }
         }
 
-        [Authorize(Roles = "ORGANIZER")]
         [HttpPatch("verify-organizer/{organizerId}")]
         public async Task<ActionResult<string>> VerifyOrganizer(int organizerId, string emailCode, string smsCode)
         {

@@ -102,6 +102,13 @@ namespace Event_Management.Repositories.ReviewRepositoryFolder
         {
             try
             {
+                var @event = await _context.Events
+                    .Include(x => x.Reviews)
+                    .FirstOrDefaultAsync(x => x.Id == reviewCreateDto.EventId) ?? throw new NotFoundException("Event not found!");
+
+                if (@event.Reviews.Any(x => x.UserId == reviewCreateDto.UserId))
+                    throw new BadRequestException("User has already reviewed the event!");
+
                 var review = _mapper.Map<Review>(reviewCreateDto);
                 review.UserId = reviewCreateDto.UserId;
                 review.EventId = reviewCreateDto.EventId;

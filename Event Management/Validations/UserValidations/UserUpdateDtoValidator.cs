@@ -29,14 +29,6 @@ namespace Event_Management.Validations.UserValidations
                 .WithMessage("Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed.")
                 .Must(file => file == null || file.Length <= _maxFileSizeInMB * 1024 * 1024)
                 .WithMessage($"File size cannot exceed {_maxFileSizeInMB} MB.");
-
-            RuleFor(x => x.Role)
-                .Must(role => Enum.IsDefined(typeof(Role), role))
-                .WithMessage("Invalid role.");
-
-            RuleFor(x => x.UserType)
-                .Must(userType => Enum.IsDefined(typeof(UserType), userType))
-                .WithMessage("Invalid user type.");
         }
     }
 }
