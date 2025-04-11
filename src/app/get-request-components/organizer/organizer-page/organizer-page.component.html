@@ -4,23 +4,49 @@
     <div class="main-information">
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title">{{ organizer.name }}</h5>
-          <p class="card-text">City: {{ organizer.city }}</p>
-          <p class="card-text">Country: {{ organizer.country }}</p>
-          <p class="card-text">Address: {{ organizer.address }}</p>
-          <p class="card-text">Email: {{ organizer.email }}</p>
-          <p class="card-text">Phone Number: {{ organizer.phoneNumber }}</p>
-          <p class="card-text">
-            Organizer Since: {{ organizer.createdAt | date : "yyyy-MM-dd" }}
+          <h1 class="card-title">{{ organizer.name }}</h1>
+          <p class="card-text mb-3">
+            <i class="bi bi-geo-alt-fill me-2"></i>City: {{ organizer.city }}
           </p>
+          <p class="card-text mb-3">
+            <i class="bi bi-globe2 me-2"></i>Country: {{ organizer.country }}
+          </p>
+          <p class="card-text mb-3">
+            <i class="bi bi-house-door-fill me-2"></i>Address:
+            {{ organizer.address }}
+          </p>
+          <p class="card-text mb-3">
+            <i class="bi bi-envelope-fill me-2"></i>Email: {{ organizer.email }}
+          </p>
+          <p class="card-text mb-3">
+            <i class="bi bi-telephone-fill me-2"></i>Phone Number:
+            {{ organizer.phoneNumber }}
+          </p>
+          <p class="card-text mb-3">
+            <i class="bi bi-calendar-check-fill me-2"></i>Organizer Since:
+            {{ organizer.createdAt | date : "yyyy-MM-dd" }}
+          </p>
+
           @if (organizer.isVerified) {
-          <p class="card-text">Verification Status: Verified</p>
+          <p class="card-text mb-3">
+            <i class="bi bi-patch-check-fill me-2"></i>Verification Status:
+            Verified
+          </p>
           } @else {
-          <p class="card-text">Verification Status: Not Verified</p>
+          <p class="card-text mb-3">
+            <i class="bi bi-patch-exclamation-fill me-2"></i>Verification
+            Status: Not Verified
+          </p>
           } @if (organizer.user?.isLoggedIn) {
-          <p class="card-text">Online Status: Online</p>
+          <p class="card-text mb-3">
+            <i class="bi bi-circle-fill text-success me-2"></i>Online Status:
+            Online
+          </p>
           } @else {
-          <p class="card-text">Online Status: Offline</p>
+          <p class="card-text mb-3">
+            <i class="bi bi-circle-fill text-danger me-2"></i>Online Status:
+            Offline
+          </p>
           }
         </div>
       </div>
@@ -29,47 +55,75 @@
   <section class="bottom">
     <div class="additional-information">
       <div class="description my-5">
-        <h1>Description</h1>
+        <h2>Description</h2>
         <p class="description">{{ organizer.description }}</p>
       </div>
-      <h1>Related Locations</h1>
-      <div class="cards">
-        @for (location of locations; track $index) {
-        <div class="card custom">
-          <img [src]="location.imageUrl" alt="" />
-          <div style="display: flex; align-items: center" class="text">
-            <h3 style="margin: 10px 0px">
-              <a [routerLink]="['/locations/location', location.id]">{{
-                location.name
-              }}</a>
-              @if (location.isAccessible) {
-              <p class="card-text">Accessibility Status: Accessible</p>
-              }@else {
-              <p class="card-text">Accessibility Status: Inaccessible</p>
-              }
-            </h3>
-          </div>
+      <div class="locations mb-5">
+        <h2>Location</h2>
+        <div class="cards">
+          @if (locations.length === 0) {
+          <h5 class="my3 py-3">No location found!</h5>
+          } @for (location of locations; track $index) {
+          <a
+            [routerLink]="['/locations/location', location.id]"
+            class="card custom"
+          >
+            <div class="top">
+              <img [src]="location.imageUrl" alt="" />
+              <div class="text">
+                <h3 class="mt-4 mb-2">
+                  {{ location.name }}
+                </h3>
+                @if (location.isAccessible) {
+                <p class="card-text mb-4">Accessibility Status: Accessible</p>
+                }@else {
+                <p class="card-text mb-4">Accessibility Status: Inaccessible</p>
+                }
+              </div>
+            </div>
+            <div class="bottom">
+              <h5>
+                <p class="card-text mb-3">
+                  <i class="bi bi-buildings"></i> City:
+                  {{ location.city }}
+                </p>
+                <p class="card-text mb-3">
+                  <i class="bi bi-map-fill"></i> State:
+                  {{ location.state }}
+                </p>
+                <p class="card-text">
+                  <i class="bi bi-globe-americas"></i> Country:
+                  {{ location.country }}
+                </p>
+              </h5>
+            </div>
+          </a>
+          }
         </div>
-        }
       </div>
-      <h1>Related Upcoming Events</h1>
-      <div class="cards">
-        @for (event of events; track $index) {
-        <div class="card custom">
-          <img [src]="event.images[0]" alt="" />
-          <div style="display: flex; align-items: center" class="text">
-            <h3 style="margin: 10px 0px">
-              <a [routerLink]="['/events/event', event.id]">{{
-                event.title
-              }}</a>
-              <p style="margin: 0px">
-                Event Status: {{ getEventStatus(event.status).toLowerCase() }}
-              </p>
-            </h3>
+      <h2>Upcoming Events</h2>
+      <section class="cards events">
+        @if (events.length === 0) {
+        <h5 class="my3 py-3">No event found!</h5>
+        } @for (event of events; track event.id) {
+        <a [routerLink]="['/events/event', event.id]" class="card">
+          <img [src]="event.images[0]" class="card-img-top" alt="..." />
+          <div class="card-body">
+            <h5 class="card-title mb-3">{{ event.title }}</h5>
+
+            <p class="card-text">
+              <i class="bi bi-grid-fill me-1"></i>
+              Category: {{ getCategory(event.category) }}
+            </p>
+
+            <p class="card-text">
+              <i style="color: gold" class="me-1 bi bi-star-fill"></i>
+              Rating: {{ getReviewResult(event) }} ({{ event.reviews.length }})
+            </p>
           </div>
-        </div>
+        </a>
         }
-      </div>
+      </section>
     </div>
   </section>
 </div>

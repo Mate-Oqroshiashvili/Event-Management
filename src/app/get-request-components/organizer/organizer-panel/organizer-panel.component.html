@@ -22,26 +22,31 @@
 @if (result.length != 0) {
 <section class="cards">
   @for (event of result; track event.id) {
-  <div class="card">
+  <a
+    [ngClass]="{
+      drafted: resultType === 'drafted',
+      published: resultType === 'published',
+      completed: resultType === 'completed',
+      removed: resultType === 'removed'
+    }"
+    [routerLink]="['/events/event', event.id]"
+    class="card"
+  >
     <img [src]="event.images[0]" class="card-img-top" alt="..." />
     <div class="card-body">
-      <h5 class="card-title">{{ event.title }}</h5>
+      <h5 class="card-title mb-3">{{ event.title }}</h5>
+
       <p class="card-text">
-        Event Start Date: {{ event.startDate | date : "yyyy-MM-dd" }}
+        <i class="bi bi-grid-fill me-1"></i>
+        Category: {{ getCategory(event.category) }}
       </p>
+
       <p class="card-text">
-        Event End Date: {{ event.endDate | date : "yyyy-MM-dd" }}
+        <i style="color: gold" class="me-1 bi bi-star-fill"></i>
+        Rating: {{ getReviewResult(event) }} ({{ event.reviews.length }})
       </p>
-      <p class="card-text">Event Organizer: {{ event.organizer?.name }}</p>
-      <p class="card-text">Event Address: {{ event.location?.address }}</p>
-      @for (item of event.speakersAndArtists; track $index) {
-      <p class="card-text">Speakers & Artists: {{ item.name }}</p>
-      }
-      <a [routerLink]="['/events/event', event.id]" class="btn btn-primary"
-        >See More</a
-      >
     </div>
-  </div>
+  </a>
   }
 </section>
 } @else {

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { UserDto } from '../user/user.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { LocationDto } from '../location/location.service';
 
@@ -101,9 +101,14 @@ export class OrganizerService {
     emailCode: string,
     smsCode: string
   ): Observable<string> {
+    const params = new HttpParams()
+      .set('emailCode', emailCode)
+      .set('smsCode', smsCode);
+
     return this.http.patch<string>(
       `${this.apiUrl}Organizer/verify-organizer/${organizerId}`,
-      { emailCode, smsCode }
+      null,
+      { params }
     );
   }
 

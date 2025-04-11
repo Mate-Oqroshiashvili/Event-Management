@@ -12,9 +12,13 @@ export class ImageService {
   constructor(private http: HttpClient) {}
 
   updateUserProfilePicture(userId: number, image: File): Observable<string> {
+    const formData = new FormData();
+    formData.append('formFile', image);
+
     return this.http.post<string>(
       `${this.apiUrl}Image/update-user-profile-picture/${userId}`,
-      image
+      formData,
+      { responseType: 'text' as 'json' }
     );
   }
 

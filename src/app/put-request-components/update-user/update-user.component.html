@@ -1,1 +1,72 @@
-<p>update-user works!</p>
+<div class="register-form">
+  <form (ngSubmit)="updateUser()">
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="userUpdateDto.name"
+        type="text"
+        class="form-control"
+        name="name"
+        id="name"
+        placeholder="Jon doe"
+      />
+      <label for="name">Account Name</label>
+    </div>
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="userUpdateDto.email"
+        type="email"
+        class="form-control"
+        name="email"
+        id="email"
+        placeholder="name@example.com"
+      />
+      <label for="email">Email address</label>
+    </div>
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="userUpdateDto.phoneNumber"
+        type="text"
+        class="form-control"
+        name="number"
+        id="number"
+        placeholder="555 555 555"
+      />
+      <label for="number">Phone Number</label>
+    </div>
+
+    <div class="mb-3">
+      <label for="imageInput" class="form-label">Upload Image</label>
+      <input
+        class="form-control form-control-lg"
+        type="file"
+        id="imageInput"
+        (change)="onFileSelected($event)"
+        accept="image/*"
+        multiple
+      />
+    </div>
+
+    @if (imagePreview != '') {
+    <div class="preview-container d-flex flex-wrap gap-3 my-3">
+      <div class="position-relative border rounded p-1">
+        <button
+          type="button"
+          class="btn-close position-absolute top-0 end-0 m-1"
+          aria-label="Close"
+          (click)="removeImage()"
+        ></button>
+        <img
+          [src]="imagePreview"
+          alt="Preview"
+          class="img-thumbnail"
+          style="width: 120px; height: 120px; object-fit: cover"
+        />
+      </div>
+    </div>
+    }
+
+    <button type="submit" style="float: right" class="btn btn-warning mt-3">
+      Update User
+    </button>
+  </form>
+</div>

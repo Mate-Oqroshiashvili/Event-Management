@@ -1,1 +1,123 @@
-<p>add-organizer works!</p>
+<div class="add-location-form">
+  <form (ngSubmit)="addOrganizer()">
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="organizerCreateDto.address"
+        type="text"
+        class="form-control"
+        name="address"
+        id="address"
+        placeholder="organizer Address"
+      />
+      <label for="address">Organizer Address</label>
+    </div>
+
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="organizerCreateDto.city"
+        type="text"
+        class="form-control"
+        name="city"
+        id="city"
+        placeholder="City"
+      />
+      <label for="city">Organizer City</label>
+    </div>
+
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="organizerCreateDto.country"
+        type="text"
+        class="form-control"
+        name="country"
+        id="country"
+        placeholder="Country"
+      />
+      <label for="country">Organizer Country</label>
+    </div>
+
+    <div class="form-floating mb-3">
+      <textarea
+        [(ngModel)]="organizerCreateDto.description"
+        type="text"
+        class="form-control"
+        name="description"
+        id="description"
+        placeholder="e.g 20"
+        style="min-height: 100px"
+      ></textarea>
+      <label for="description">Organizer Description</label>
+    </div>
+
+    <div class="mb-3">
+      <label for="imageInput" class="form-label">Upload Logo</label>
+      <input
+        class="form-control form-control-lg"
+        type="file"
+        id="imageInput"
+        (change)="onFileSelected($event)"
+        accept="image/*"
+        multiple
+      />
+    </div>
+
+    @if (imagePreview != '') {
+    <div class="preview-container d-flex flex-wrap gap-3 my-3">
+      <div class="position-relative border rounded p-1">
+        <button
+          type="button"
+          class="btn-close position-absolute top-0 end-0 m-1"
+          aria-label="Close"
+          (click)="removeImage()"
+        ></button>
+        <img
+          [src]="imagePreview"
+          alt="Preview"
+          class="img-thumbnail"
+          style="width: 120px; height: 120px; object-fit: cover"
+        />
+      </div>
+    </div>
+    }
+
+    <div style="display: flex; justify-content: flex-end" class="verify-button">
+      <button type="submit" style="float: right" class="btn btn-success mt-3">
+        Add Organizer
+      </button>
+    </div>
+  </form>
+
+  @if (added) {
+  <form class="mt-5" (ngSubmit)="verifyOrganizer()">
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="emailCode"
+        type="text"
+        class="form-control"
+        name="emailCode"
+        id="emailCode"
+        placeholder="123456"
+      />
+      <label for="emailCode">Email Code</label>
+    </div>
+
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="smsCode"
+        type="text"
+        class="form-control"
+        name="smsCode"
+        id="smsCode"
+        placeholder="123456"
+      />
+      <label for="smsCode">SMS Code</label>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end" class="verify-button">
+      <button type="submit" style="float: right" class="btn btn-primary mt-3">
+        Verify Organizer
+      </button>
+    </div>
+  </form>
+  }
+</div>

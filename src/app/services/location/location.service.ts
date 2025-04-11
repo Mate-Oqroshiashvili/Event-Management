@@ -13,7 +13,7 @@ export interface LocationCreateDto {
   maxCapacity: number;
   availableStaff: number;
   description: string;
-  image: File;
+  image: File | undefined;
   isIndoor: boolean;
   isAccessible: boolean;
 }

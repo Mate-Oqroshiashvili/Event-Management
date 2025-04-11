@@ -1,0 +1,19 @@
+.add-location-form {
+  padding: 40px 0px;
+  width: 60vw;
+  min-height: 90vh;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+form {
+  width: 100%;
+  height: max-content;
+}
+
+.preview-container {
+  max-width: 100%;
+  overflow-x: auto;
+}

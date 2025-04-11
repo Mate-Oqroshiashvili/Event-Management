@@ -1,26 +1,39 @@
 <section class="cards">
   @for (organizer of organizers; track organizer.id) {
-  <div class="card">
-    <img [src]="organizer.logoUrl" class="card-img-top" alt="..." />
-    <div class="card-body">
-      <h5 class="card-title">{{ organizer.name }}</h5>
-      <p class="card-text">
-        {{ organizer.description }}
-      </p>
-      <p class="card-text">City: {{ organizer.city }}</p>
-      <p class="card-text">Country: {{ organizer.country }}</p>
-      <p class="card-text">Address: {{ organizer.address }}</p>
-      <p class="card-text">Organizer's Email: {{ organizer.email }}</p>
-      <p class="card-text">organizer's Number: {{ organizer.phoneNumber }}</p>
-      @if (organizer.isVerified) {
-      <p class="card-text">Verification Status: Verified</p>
-      } @else {
-      <p class="card-text">Verification Status: Not Verified</p>
-      }
-      <a [routerLink]="['organizer', organizer.id]" class="btn btn-primary"
-        >See More</a
-      >
+  <a [routerLink]="['/organizers/organizer', organizer.id]" class="card custom">
+    <div class="top">
+      <img [src]="organizer.logoUrl" alt="" />
+      <div class="text">
+        <h3 class="mt-4 mb-2">
+          {{ organizer.name }}
+        </h3>
+        @if (organizer.isVerified) {
+        <p class="card-text mb-4" style="margin: 0px">
+          Verification Status: Verified
+        </p>
+        } @else {
+        <p class="card-text mb-4" style="margin: 0px">
+          Verification Status: Not Verified
+        </p>
+        }
+      </div>
     </div>
-  </div>
+    <div class="bottom">
+      <h5>
+        <p class="card-text mb-3">
+          <i class="bi bi-buildings"></i> City:
+          {{ organizer.city }}
+        </p>
+        <p class="card-text mb-3">
+          <i class="bi bi-globe-americas"></i> Country:
+          {{ organizer.country }}
+        </p>
+        <p class="card-text">
+          <i class="bi bi-geo-alt-fill"></i> Address:
+          {{ organizer.address }}
+        </p>
+      </h5>
+    </div>
+  </a>
   }
 </section>

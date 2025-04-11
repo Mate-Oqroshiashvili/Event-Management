@@ -1,38 +1,40 @@
+<div style="padding-left: 40px">
+  @if (role === "ADMINISTRATOR") {
+  <a routerLink="add-location" class="btn btn-primary">Add New Location</a>
+  }
+</div>
 <section class="cards">
   @for (location of locations; track location.id) {
-  <div class="card">
-    <img [src]="location.imageUrl" class="card-img-top" alt="..." />
-    <div class="card-body">
-      <h5 class="card-title">{{ location.name }}</h5>
-      <p class="card-text">
-        {{ location.description }}
-      </p>
-      <p class="card-text">City: {{ location.city }}</p>
-      <p class="card-text">State: {{ location.state }}</p>
-      <p class="card-text">Country: {{ location.country }}</p>
-      <p class="card-text">Address: {{ location.address }}</p>
-      <p class="card-text">
-        Participants Maximum Capacity: {{ location.maxCapacity }}
-      </p>
-      <p class="card-text">
-        Participants Remaining Capacity: {{ location.remainingCapacity }}
-      </p>
-      <p class="card-text">
-        Maximum Staff Count:
-        {{ location.bookedStaff + location.availableStaff }}
-      </p>
-      <p class="card-text">
-        Available Staff Count: {{ location.availableStaff }}
-      </p>
-      @if (location.isIndoor) {
-      <p class="card-text">Type: Indoor</p>
-      }@else {
-      <p class="card-text">Type: Outdoor</p>
-      }
-      <a [routerLink]="['location', location.id]" class="btn btn-primary"
-        >See More</a
-      >
+  <a [routerLink]="['location', location.id]" class="card">
+    <div class="top">
+      <img [src]="location.imageUrl" alt="" />
+      <div class="text">
+        <h3 class="mt-4 mb-2">
+          {{ location.name }}
+        </h3>
+        @if (location.isAccessible) {
+        <p class="card-text mb-4">Accessibility Status: Accessible</p>
+        }@else {
+        <p class="card-text mb-4">Accessibility Status: Inaccessible</p>
+        }
+      </div>
     </div>
-  </div>
+    <div class="bottom">
+      <h5>
+        <p class="card-text mb-3">
+          <i class="bi bi-buildings"></i> City:
+          {{ location.city }}
+        </p>
+        <p class="card-text mb-3">
+          <i class="bi bi-map-fill"></i> State:
+          {{ location.state }}
+        </p>
+        <p class="card-text">
+          <i class="bi bi-globe-americas"></i> Country:
+          {{ location.country }}
+        </p>
+      </h5>
+    </div>
+  </a>
   }
 </section>

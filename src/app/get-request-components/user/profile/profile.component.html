@@ -14,11 +14,18 @@
           >
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="reviews">Reviews User Made</a>
+          <a class="nav-link" routerLink="reviews">Reviewed Events</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="comments">Comments User Added</a>
+          <a class="nav-link" routerLink="comments">Commented Events</a>
         </li>
+        @if (role != "3") {
+        <li class="nav-item">
+          <a class="nav-link" routerLink="register-as-organizer"
+            >Register As Organizer</a
+          >
+        </li>
+        }
       </ul>
     </nav>
   </aside>

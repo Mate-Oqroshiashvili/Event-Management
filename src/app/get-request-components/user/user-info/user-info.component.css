@@ -41,3 +41,9 @@ img {
 .card.custom {
   grid-template-columns: 0.2fr 1fr;
 }
+
+.card-header-custom {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}

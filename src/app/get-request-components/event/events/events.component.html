@@ -1,8 +1,28 @@
 <section class="search">
-  <div>
+  <div class="sortAndAdd">
     @if (role === "ORGANIZER") {
-    <a routerLink="add-event" class="btn btn-primary">Add New Event</a>
+    <a
+      style="width: max-content; white-space: nowrap"
+      routerLink="add-event"
+      class="btn btn-primary"
+      >Add New Event</a
+    >
     }
+    <select
+      [(ngModel)]="selectedSortOption"
+      name="sortOption"
+      (change)="onSortChange()"
+      style="width: max-content"
+      class="form-select"
+      aria-label="Default select example"
+    >
+      <option value="" selected>Sort By</option>
+      <option value="dateAsc">Date Asc.</option>
+      <option value="dateDesc">Date Desc.</option>
+      <option value="rating">Rating</option>
+      <option value="capacityAsc">Capacity Asc.</option>
+      <option value="capacityDesc">Capacity Desc.</option>
+    </select>
   </div>
   <div></div>
   <form class="d-flex" role="search" (ngSubmit)="searchLogic(searchTerm)">

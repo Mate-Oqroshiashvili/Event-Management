@@ -6,9 +6,39 @@
   gap: 40px;
 }
 
-img {
-  height: 250px;
-  object-fit: cover;
+.card {
+  height: 100%;
+  padding: 30px;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 60px;
+  text-decoration: none;
+  border: none;
+  border-radius: 20px;
+  transition: transform 0.3s;
+  will-change: transform;
+  background-color: #37474f;
+  color: #eceff1;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(55, 71, 79, 0.3);
+}
+
+.card:hover {
+  transform: scale(1.02);
+}
+
+.card .top {
+  display: grid;
+  grid-template-columns: 0.6fr 1fr;
+  gap: 20px;
+}
+
+.card img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: fill;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
 }
 
 p {

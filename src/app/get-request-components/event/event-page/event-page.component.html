@@ -142,7 +142,7 @@
         <h2>Description</h2>
         <p class="description">{{ event.description }}</p>
       </div>
-      <div class="tickets mt-5">
+      <div class="tickets my-5">
         <h2>Tickets</h2>
         <div class="cards">
           @for (item of tickets; track $index) {
@@ -168,7 +168,7 @@
         </div>
       </div>
       <section class="group">
-        <div class="organizer mt-5 mb-3">
+        <div class="organizer mb-5">
           <h2>Organizer</h2>
           <a
             [routerLink]="['/organizers/organizer', event.organizer?.id]"
@@ -209,7 +209,7 @@
             </div>
           </a>
         </div>
-        <div class="location mt-5 mb-3">
+        <div class="location mb-5">
           <h2>Location</h2>
           <a
             [routerLink]="['/locations/location', event.location?.id]"
@@ -247,7 +247,8 @@
           </a>
         </div>
       </section>
-      @if (event.speakersAndArtists.length != 0) {
+
+      <!-- @if (event.speakersAndArtists.length != 0) { -->
       <div class="speakers-and-artists my-5">
         <h2>Speakers and Artists</h2>
         <div class="cards my-3">
@@ -259,7 +260,41 @@
           }
         </div>
       </div>
+      <!-- } -->
+
+      @if (!hasReviewed) {
+      <section class="review">
+        <form (ngSubmit)="addReview()">
+          <h1 class="text-center mt-5 mb-3">Add The Review</h1>
+          <div
+            class="star-rating d-flex justify-content-center align-items-center"
+          >
+            <ng-container *ngFor="let star of stars; let i = index">
+              <i
+                class="me-2 bi"
+                [ngClass]="{
+                  'bi-star-fill': i < hoverRating || i < selectedRating,
+                  'bi-star': i >= hoverRating && i >= selectedRating,
+                  'text-warning': i < hoverRating || i < selectedRating,
+                  'text-secondary': i >= hoverRating && i >= selectedRating
+                }"
+                (click)="setRating(i + 1)"
+                (mouseover)="hoverRating = i + 1"
+                (mouseleave)="hoverRating = 0"
+                style="font-size: 2rem; cursor: pointer"
+              ></i>
+            </ng-container>
+
+            <span class="text-center ms-3 mt-1">{{ selectedRating }} / 5</span>
+          </div>
+
+          <div class="button d-flex justify-content-center my-5">
+            <button type="submit" class="btn btn-success">Add Review</button>
+          </div>
+        </form>
+      </section>
       }
+
       <div class="comments my-5">
         <h2>Comments</h2>
         <div class="cards my-3">

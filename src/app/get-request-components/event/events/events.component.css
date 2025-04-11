@@ -1,7 +1,7 @@
 .search {
   padding: 20px 40px 0px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 0.5fr 1fr;
   gap: 40px;
 }
 
@@ -32,4 +32,10 @@ p {
 
 a {
   text-decoration: none;
+}
+
+.sortAndAdd {
+  display: flex;
+  justify-content: flex-start;
+  gap: 20px;
 }

@@ -14,11 +14,12 @@
     <div class="form-floating mb-3">
       <textarea
         [(ngModel)]="eventCreateDto.description"
-        type="string"
+        type="text"
         class="form-control"
         name="description"
         id="description"
         placeholder="Event Description"
+        style="min-height: 100px"
       ></textarea>
       <label for="description">Event Description</label>
     </div>

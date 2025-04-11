@@ -95,6 +95,8 @@ export class HomeComponent implements OnInit {
     } else {
       this.reviewsResult = 0;
     }
+
+    return this.reviewsResult;
   }
 
   getCategory(category: number): string {

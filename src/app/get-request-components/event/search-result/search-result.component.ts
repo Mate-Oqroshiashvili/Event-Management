@@ -18,6 +18,7 @@ export class SearchResultComponent implements OnInit {
   searchTerm: string = '';
   events: EventDto[] = [];
   reviewsResult: number = 0;
+  selectedSortOption: string = '';
 
   constructor(
     private eventService: EventService,
@@ -62,6 +63,50 @@ export class SearchResultComponent implements OnInit {
       this.reviewsResult = totalStars / reviews.length;
     } else {
       this.reviewsResult = 0;
+    }
+  }
+
+  onSortChange() {
+    switch (this.selectedSortOption) {
+      case 'dateAsc':
+        this.events.sort((a, b) => {
+          const dateA = a.startDate ? new Date(a.startDate).getTime() : 0;
+          const dateB = b.startDate ? new Date(b.startDate).getTime() : 0;
+          return dateA - dateB;
+        });
+        break;
+
+      case 'dateDesc':
+        this.events.sort((a, b) => {
+          const dateA = a.startDate ? new Date(a.startDate).getTime() : 0;
+          const dateB = b.startDate ? new Date(b.startDate).getTime() : 0;
+          return dateB - dateA;
+        });
+        break;
+
+      case 'rating':
+        this.events.sort((a, b) => {
+          const aRating =
+            a.reviews?.reduce((sum, r) => sum + r.starCount, 0) /
+              (a.reviews?.length || 1) || 0;
+          const bRating =
+            b.reviews?.reduce((sum, r) => sum + r.starCount, 0) /
+              (b.reviews?.length || 1) || 0;
+          return bRating - aRating;
+        });
+        break;
+
+      case 'capacityAsc':
+        this.events.sort((a, b) => a.capacity - b.capacity);
+        break;
+
+      case 'capacityDesc':
+        this.events.sort((a, b) => b.capacity - a.capacity);
+        break;
+
+      default:
+        this.getFoundEvents();
+        break;
     }
   }
 

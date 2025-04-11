@@ -9,15 +9,34 @@
   padding: 40px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: auto;
-  gap: 20px;
+  justify-content: center;
+  gap: 40px;
 }
 
 .card {
-  padding: 10px;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+img {
+  border-top-right-radius: 12px;
+  border-top-left-radius: 12px;
+  height: 250px;
+  object-fit: cover;
+}
+
+p {
+  margin-bottom: 8px;
+}
+
+a {
+  text-decoration: none;
+}
+
+.nav-link {
+  color: #1565c0;
+  font-weight: bold;
 }
 
 .text-center {
@@ -25,4 +44,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.drafted {
+  background-color: lightskyblue;
+}
+
+.published {
+  background-color: #1565c0;
+  color: white;
+}
+
+.completed {
+  background-color: #2e7d32;
+  color: white;
+}
+
+.removed {
+  background-color: lightcoral;
 }

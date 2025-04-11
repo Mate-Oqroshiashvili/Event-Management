@@ -6,6 +6,7 @@ import {
   LocationService,
 } from '../../../services/location/location.service';
 import {
+  EventCategory,
   EventDto,
   EventService,
   EventStatus,
@@ -42,6 +43,7 @@ export class LocationPageComponent implements OnInit {
   };
   events: EventDto[] = [];
   organizers: OrganizerDto[] = [];
+  reviewsResult: number = 0;
 
   constructor(
     private locationService: LocationService,
@@ -82,8 +84,10 @@ export class LocationPageComponent implements OnInit {
   getEventsByLocationId() {
     this.eventService.getEventsByLocationId(this.locationId).subscribe({
       next: (data: any) => {
-        (event: EventDto) => event.status === EventStatus.PUBLISHED;
-        console.log(data);
+        const publishedEvents = data.events.filter(
+          (event: EventDto) => event.status === EventStatus.PUBLISHED
+        );
+        this.events = publishedEvents;
       },
       error: (err) => {
         console.error(err);
@@ -107,6 +111,28 @@ export class LocationPageComponent implements OnInit {
         console.log('Organizers fetched successfully!');
       },
     });
+  }
+
+  getReviewResult(event: EventDto) {
+    const reviews = event.reviews;
+
+    if (reviews && reviews.length > 0) {
+      const totalStars = reviews.reduce(
+        (sum: number, review: any) => sum + review.starCount,
+        0
+      );
+      this.reviewsResult = totalStars / reviews.length;
+    } else {
+      this.reviewsResult = 0;
+    }
+
+    return this.reviewsResult;
+  }
+
+  getCategory(category: number): string {
+    let categoryText = EventCategory[category] ?? 'Unknown Status';
+    let result = categoryText.replaceAll('_', ' ');
+    return result;
   }
 
   getEventStatus(status: number): string {

@@ -23,6 +23,10 @@ import {
   CommentService,
 } from '../../../services/comment/comment.service';
 import { FormsModule } from '@angular/forms';
+import {
+  ReviewCreateDto,
+  ReviewService,
+} from '../../../services/review/review.service';
 
 @Component({
   selector: 'app-event-page',
@@ -66,11 +70,23 @@ export class EventPageComponent implements OnInit {
   commentId: number = 0;
   editing: boolean = false;
 
+  reviewDto: ReviewCreateDto = {
+    starCount: 0,
+    userId: 0,
+    eventId: 0,
+  };
+  hasReviewed: boolean = false;
+
+  stars = Array(5).fill(0);
+  selectedRating: number = 0;
+  hoverRating: number = 0;
+
   constructor(
     private userService: UserService,
     private eventService: EventService,
     private ticketService: TicketService,
     private commentService: CommentService,
+    private reviewService: ReviewService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -105,7 +121,12 @@ export class EventPageComponent implements OnInit {
           this.reviewsResult = 0;
         }
 
-        console.log(data);
+        let review = reviews.find((x) => x.userId == this.userId);
+        if (review != null) {
+          this.hasReviewed = true;
+        } else {
+          this.hasReviewed = false;
+        }
       },
       error: (err) => {
         console.error(err);
@@ -120,7 +141,6 @@ export class EventPageComponent implements OnInit {
     this.ticketService.getTicketsByEventId(this.eventId).subscribe({
       next: (data: any) => {
         this.tickets = data.tickets;
-        console.log(data);
       },
       error: (err) => {
         console.error(err);
@@ -215,6 +235,24 @@ export class EventPageComponent implements OnInit {
     });
   }
 
+  addReview() {
+    this.reviewDto.userId = this.userId;
+    this.reviewDto.eventId = this.eventId;
+    this.reviewDto.starCount = this.selectedRating;
+
+    this.reviewService.addReview(this.reviewDto).subscribe({
+      next: (data: any) => {
+        console.log(data);
+      },
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => {
+        this.getEventById();
+      },
+    });
+  }
+
   getEventStatus(status: number): string {
     return EventStatus[status] ?? 'Unknown Status';
   }
@@ -237,5 +275,10 @@ export class EventPageComponent implements OnInit {
     const decoded: any = jwtDecode(token);
     this.userId = decoded.nameid;
     this.loggedInUserRole = decoded.role;
+  }
+
+  setRating(rating: number): void {
+    this.selectedRating = rating;
+    console.log(this.selectedRating);
   }
 }

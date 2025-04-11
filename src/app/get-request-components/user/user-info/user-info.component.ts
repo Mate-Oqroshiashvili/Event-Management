@@ -6,16 +6,19 @@ import {
   UserService,
   UserType,
 } from '../../../services/user/user.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { OrganizerService } from '../../../services/organizer/organizer.service';
+import { ImageService } from '../../../services/image/image.service';
 
 @Component({
   selector: 'app-user-info',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './user-info.component.html',
   styleUrl: './user-info.component.css',
 })
 export class UserInfoComponent implements OnInit {
   userId: number = 0;
+  userRole: string = '';
   user: UserDto = {
     id: 0,
     name: '',
@@ -35,10 +38,16 @@ export class UserInfoComponent implements OnInit {
     usedPromoCodes: [],
     profilePicture: '',
   };
+  organizerId: number = 0;
+  imageFile: File | undefined;
+  imagePreview: string = '';
 
   constructor(
     private userService: UserService,
-    private route: ActivatedRoute
+    private organizerService: OrganizerService,
+    private imageService: ImageService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -47,6 +56,7 @@ export class UserInfoComponent implements OnInit {
       if (userIdParam) {
         this.userId = +userIdParam;
         this.getUserById();
+        this.getOrganizer();
       } else {
         console.error('User ID not found in route parameters');
       }
@@ -66,6 +76,91 @@ export class UserInfoComponent implements OnInit {
         console.log('User fetched successfully!');
       },
     });
+  }
+
+  getOrganizer() {
+    this.organizerService.getOrganizerByUserId(this.userId).subscribe({
+      next: (data: any) => {
+        this.organizerId = data.organizerDto.id;
+        console.log(this.organizerId);
+      },
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => {
+        console.log('Organizer fetched successfully!');
+      },
+    });
+  }
+
+  removeAsOrganizer() {
+    this.organizerService.removeOrganizer(this.organizerId).subscribe({
+      next: (data: any) => {
+        console.log(data);
+      },
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => {
+        this.userService.logout();
+        this.router.navigate(['/login']);
+      },
+    });
+  }
+
+  deleteUser() {
+    this.userService.removeUser(this.userId).subscribe({
+      next: (data: any) => {
+        console.log(data);
+      },
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => {
+        console.log('User removed successfully!');
+        this.router.navigate(['/events']);
+      },
+    });
+  }
+
+  changeProfilePicture() {
+    this.imageService
+      .updateUserProfilePicture(this.userId, this.imageFile!)
+      .subscribe({
+        next: (data) => {
+          console.log(data);
+        },
+        error: (err) => {
+          console.error(err);
+        },
+        complete: () => {
+          this.imageFile = undefined;
+          this.imagePreview = '';
+          this.getUserById();
+        },
+      });
+  }
+
+  onFileSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    if (target.files) {
+      Array.from(target.files).forEach((file) => {
+        this.imageFile = file;
+
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.imagePreview = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+
+      target.value = '';
+    }
+  }
+
+  removeImage(): void {
+    this.imageFile = undefined;
+    this.imagePreview = '';
   }
 
   getUserType(type: number): string {

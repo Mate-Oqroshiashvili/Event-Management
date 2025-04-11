@@ -4,27 +4,46 @@
     <div class="main-information">
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title">{{ location.name }}</h5>
-          <p class="card-text">City: {{ location.city }}</p>
-          <p class="card-text">State: {{ location.state }}</p>
-          <p class="card-text">Country: {{ location.country }}</p>
-          <p class="card-text">
-            Maximum Participant Capacity: {{ location.maxCapacity }}
+          <h1 class="card-title">{{ location.name }}</h1>
+          <p class="card-text mb-3">
+            <i class="bi bi-geo-alt-fill me-2"></i>City: {{ location.city }}
           </p>
-          <p class="card-text">
-            Remaining Participant Capacity: {{ location.remainingCapacity }}
+          <p class="card-text mb-3">
+            <i class="bi bi-map-fill me-2"></i>State: {{ location.state }}
           </p>
-          <p class="card-text">
-            Available Staff: {{ location.availableStaff }}
+          <p class="card-text mb-3">
+            <i class="bi bi-globe2 me-2"></i>Country: {{ location.country }}
+          </p>
+          <p class="card-text mb-3">
+            <i class="bi bi-people-fill me-2"></i>Maximum Participant Capacity:
+            {{ location.maxCapacity }}
+          </p>
+          <p class="card-text mb-3">
+            <i class="bi bi-person-dash-fill me-2"></i>Remaining Participant
+            Capacity: {{ location.remainingCapacity }}
+          </p>
+          <p class="card-text mb-3">
+            <i class="bi bi-person-badge-fill me-2"></i>Available Staff:
+            {{ location.availableStaff }}
           </p>
           @if (location.isIndoor) {
-          <p class="card-text">Type: Indoor</p>
-          }@else {
-          <p class="card-text">Type: Outdoor</p>
+          <p class="card-text mb-3">
+            <i class="bi bi-house-door-fill me-2"></i>Type: Indoor
+          </p>
+          } @else {
+          <p class="card-text mb-3">
+            <i class="bi bi-tree-fill me-2"></i>Type: Outdoor
+          </p>
           } @if (location.isAccessible) {
-          <p class="card-text">Accessibility Status: Accessible</p>
-          }@else {
-          <p class="card-text">Accessibility Status: Inaccessible</p>
+          <p class="card-text mb-3">
+            <i class="bi bi-universal-access-circle me-2"></i>Accessibility
+            Status: Accessible
+          </p>
+          } @else {
+          <p class="card-text mb-3">
+            <i class="bi bi-slash-circle-fill me-2"></i>Accessibility Status:
+            Inaccessible
+          </p>
           }
         </div>
       </div>
@@ -33,47 +52,80 @@
   <section class="bottom">
     <div class="additional-information">
       <div class="description my-5">
-        <h1>Description</h1>
+        <h2>Description</h2>
         <p class="description">{{ location.description }}</p>
       </div>
-      <h1>Related Organizers</h1>
-      <div class="cards">
-        @for (organizer of organizers; track $index) {
-        <div class="card custom">
-          <img [src]="organizer.logoUrl" alt="" />
-          <div style="display: flex; align-items: center" class="text">
-            <h3 style="margin: 10px 0px">
-              <a [routerLink]="['/organizers/organizer', organizer.id]">{{
-                organizer.name
-              }}</a>
-              @if (organizer.isVerified) {
-              <p style="margin: 0px">Verification Status: Verified</p>
-              } @else {
-              <p style="margin: 0px">Verification Status: Not Verified</p>
-              }
-            </h3>
-          </div>
-        </div>
+      <div class="organizers mb-5">
+        <h2>Organizers</h2>
+        @if (organizers.length === 0) {
+        <h5 class="mt-3 pt-3">No organizer found!</h5>
         }
-      </div>
-      <h1>Related Upcoming Events</h1>
-      <div class="cards">
-        @for (event of events; track $index) {
-        <div class="card custom">
-          <img [src]="event.images[0]" alt="" />
-          <div style="display: flex; align-items: center" class="text">
-            <h3 style="margin: 10px 0px">
-              <a [routerLink]="['/events/event', event.id]">{{
-                event.title
-              }}</a>
-              <p style="margin: 0px">
-                Event Status: {{ getEventStatus(event.status).toLowerCase() }}
-              </p>
-            </h3>
-          </div>
+        <div class="cards">
+          @for (organizer of organizers; track $index) {
+          <a
+            [routerLink]="['/organizers/organizer', organizer.id]"
+            class="card custom"
+          >
+            <div class="top">
+              <img [src]="organizer.logoUrl" alt="" />
+              <div class="text">
+                <h3 class="mt-4 mb-2">
+                  {{ organizer.name }}
+                </h3>
+                @if (organizer.isVerified) {
+                <p class="card-text mb-4" style="margin: 0px">
+                  Verification Status: Verified
+                </p>
+                } @else {
+                <p class="card-text mb-4" style="margin: 0px">
+                  Verification Status: Not Verified
+                </p>
+                }
+              </div>
+            </div>
+            <div class="bottom">
+              <h5>
+                <p class="card-text mb-3">
+                  <i class="bi bi-buildings"></i> City:
+                  {{ organizer.city }}
+                </p>
+                <p class="card-text mb-3">
+                  <i class="bi bi-globe-americas"></i> Country:
+                  {{ organizer.country }}
+                </p>
+                <p class="card-text">
+                  <i class="bi bi-geo-alt-fill"></i> Address:
+                  {{ organizer.address }}
+                </p>
+              </h5>
+            </div>
+          </a>
+          }
         </div>
-        }
       </div>
+      <h2>Upcoming Events</h2>
+      <section class="cards events">
+        @if (events.length === 0) {
+        <h5 class="mt-3 pt-3">No event found!</h5>
+        } @for (event of events; track event.id) {
+        <a [routerLink]="['/events/event', event.id]" class="card">
+          <img [src]="event.images[0]" class="card-img-top" alt="..." />
+          <div class="card-body">
+            <h5 class="card-title mb-3">{{ event.title }}</h5>
+
+            <p class="card-text">
+              <i class="bi bi-grid-fill me-1"></i>
+              Category: {{ getCategory(event.category) }}
+            </p>
+
+            <p class="card-text">
+              <i style="color: gold" class="me-1 bi bi-star-fill"></i>
+              Rating: {{ getReviewResult(event) }} ({{ event.reviews.length }})
+            </p>
+          </div>
+        </a>
+        }
+      </section>
     </div>
   </section>
 </div>

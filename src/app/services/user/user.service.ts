@@ -42,12 +42,10 @@ export interface UserCreateDto {
 }
 
 export interface UserUpdateDto {
-  name?: string;
-  email?: string;
-  phoneNumber?: string;
-  profilePicture?: File;
-  role?: Role;
-  userType?: UserType;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  profilePicture: File | undefined;
 }
 
 export interface ChangePasswordDto {
@@ -168,9 +166,7 @@ export class UserService {
   changeUserType(userId: number, userType: UserType): Observable<string> {
     return this.http.patch<string>(
       `${this.apiUrl}User/change-user-type/${userId}`,
-      {
-        userType,
-      }
+      userType
     );
   }
 
@@ -180,9 +176,7 @@ export class UserService {
   ): Observable<string> {
     return this.http.patch<string>(
       `${this.apiUrl}User/change-user-password/${userId}`,
-      {
-        password,
-      }
+      password
     );
   }
 
@@ -190,9 +184,13 @@ export class UserService {
     userId: number,
     userData: UserUpdateDto
   ): Observable<{ message: string }> {
+    const formData = new FormData();
+    Object.keys(userData).forEach((key) => {
+      formData.append(key, (userData as any)[key]);
+    });
     return this.http.put<{ message: string }>(
       `${this.apiUrl}User/update-user-information/${userId}`,
-      userData
+      formData
     );
   }
 

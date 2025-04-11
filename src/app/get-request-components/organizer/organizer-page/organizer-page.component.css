@@ -12,7 +12,7 @@
   gap: 40px;
 }
 
-img {
+.top img {
   width: 100% !important;
   height: 100% !important;
   object-fit: fill;
@@ -24,20 +24,93 @@ img {
 }
 
 .cards {
-  padding: 20px 0px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto;
-  gap: 20px;
+  grid-template-columns: repeat(3, 1fr);
+  justify-content: center;
+  gap: 40px;
+}
+
+.main-information .card {
+  padding: 30px;
+  border-radius: 20px;
+}
+
+.main-information .card-body {
+  padding: 0px;
 }
 
 .card {
-  padding: 10px;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+img {
+  border-top-right-radius: 12px;
+  border-top-left-radius: 12px;
+  height: 250px;
+  object-fit: cover;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+h2 {
+  margin-bottom: 20px;
+}
+
+p {
+  margin: 0px;
+  font-size: 20px;
+}
+
+.main-information p,
+.description p {
+  color: #858585;
+}
+
+a {
+  text-decoration: none;
+}
+
+.locations .cards {
+  grid-template-columns: 1fr 1fr;
 }
 
 .card.custom {
-  grid-template-columns: 0.2fr 1fr;
+  height: 100%;
+  padding: 30px;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 40px;
+  border: none;
+  border-radius: 20px;
+  text-decoration: none;
+  background-color: #37474f;
+  color: #eceff1;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(55, 71, 79, 0.3);
+}
+
+.card.custom,
+.events .card {
+  transition: transform 0.3s;
+  will-change: transform;
+}
+
+.card.custom .top {
+  grid-template-columns: 0.3fr 1fr;
+  gap: 20px;
+}
+
+.card.custom img {
+  border-radius: 50%;
+}
+
+.card.custom:hover,
+.events .card:hover {
+  transform: scale(1.02);
 }
