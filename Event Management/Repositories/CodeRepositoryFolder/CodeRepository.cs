@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System.Net;
 using System.Net.Mail;
+using System.Text.RegularExpressions;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
@@ -221,6 +222,26 @@ namespace Event_Management.Repositories.CodeRepositoryFolder
 
         public async Task<bool> SendCodes(string email, string phoneNumber)
         {
+            var errorMessages = new List<string>();
+
+            // Email validation
+            if (string.IsNullOrWhiteSpace(email) || !IsValidEmail(email))
+            {
+                errorMessages.Add("A valid email address is required.-");
+            }
+
+            // Phone number validation
+            if (string.IsNullOrWhiteSpace(phoneNumber) || !Regex.IsMatch(phoneNumber, @"^\d{9}$"))
+            {
+                errorMessages.Add("Phone number must be exactly 9 digits.");
+            }
+
+            // If there are validation errors, throw them together
+            if (errorMessages.Count != 0)
+            {
+                throw new BadRequestException(string.Join(" ", errorMessages));
+            }
+
             var emailCode = new Random().Next(100000, 999999).ToString();
             var smsCode = new Random().Next(100000, 999999).ToString();
 
@@ -235,6 +256,19 @@ namespace Event_Management.Repositories.CodeRepositoryFolder
         public string GetCodes(string email)
         {
             return _cache.TryGetValue(email, out string? codes) ? codes! : string.Empty;
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

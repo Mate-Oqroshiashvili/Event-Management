@@ -11,8 +11,13 @@ namespace Event_Management.Validations.OrganizerValidations
         public OrganizerCreateDtoValidator()
         {
             RuleFor(o => o.Description)
+                .NotEmpty().WithMessage("Description is required.")
                 .MaximumLength(500).WithMessage("Description must not exceed 500 characters.")
-                .Must(desc => !desc.Contains("spam") && !desc.Contains("free") && !desc.Contains("discount"))
+                .Must(desc =>
+                    string.IsNullOrWhiteSpace(desc) ||
+                    !(desc.Contains("spam", StringComparison.OrdinalIgnoreCase) ||
+                      desc.Contains("free", StringComparison.OrdinalIgnoreCase) ||
+                      desc.Contains("discount", StringComparison.OrdinalIgnoreCase)))
                 .WithMessage("Description contains forbidden words.");
 
             RuleFor(o => o.Logo)

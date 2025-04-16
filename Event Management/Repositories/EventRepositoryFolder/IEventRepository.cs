@@ -18,7 +18,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
         Task<UserDto> AddSpeakerOrArtistOnEventAsync(int eventId, int userId);
         Task<string> RemoveSpeakerOrArtistFromEventAsync(int eventId, int userId);
         Task<bool> UpdateEventAsync(int id, EventUpdateDto eventUpdateDto);
-        Task<bool> RescheduleEventAsync(int id, DateTime newDate);
+        Task<bool> RescheduleEventAsync(int id, RescheduleEventDto rescheduleEventDto);
         Task<bool> PublishTheEvent(int eventId);
         Task<bool> DeleteEventAsync(int id);
     }

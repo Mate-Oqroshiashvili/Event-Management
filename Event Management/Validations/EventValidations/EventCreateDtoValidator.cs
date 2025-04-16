@@ -63,6 +63,9 @@ namespace Event_Management.Validations.EventValidations
 
         private bool NotContainBlacklistedWords(string title)
         {
+            if (string.IsNullOrWhiteSpace(title))
+                return true;
+
             foreach (var word in _blacklistedWords)
             {
                 if (title.ToLower().Contains(word))

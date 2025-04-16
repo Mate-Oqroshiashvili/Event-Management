@@ -7,6 +7,7 @@ using Event_Management.Models.Dtos.UserDtos;
 using Event_Management.Models.Enums;
 using Event_Management.Repositories.CodeRepositoryFolder;
 using Event_Management.Repositories.ImageRepositoryFolder;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Event_Management.Repositories.EventRepositoryFolder
@@ -362,7 +363,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                 var @event = await _context.Events.FindAsync(eventId) ?? throw new NotFoundException("Event not found!");
                 var user = await _context.Users.FindAsync(userId) ?? throw new NotFoundException("User not found!");
 
-                if (user.UserType != UserType.SPEAKER || user.UserType != UserType.ARTIST)
+                if (user.UserType != UserType.SPEAKER && user.UserType != UserType.ARTIST)
                     throw new BadRequestException("User is neither speaker, nor artist. User should be artist or speaker to be added on event as one!");
 
                 if (@event.SpeakersAndArtists.Any(x => x.Id == userId))
@@ -454,12 +455,15 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             }
         }
 
-        public async Task<bool> RescheduleEventAsync(int id, DateTime newDate)
+        public async Task<bool> RescheduleEventAsync(int id, RescheduleEventDto rescheduleEventDto)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
 
             try
             {
+                if (rescheduleEventDto == null || rescheduleEventDto?.NewDate == null)
+                    throw new NotFoundException("Missing date");
+
                 var @event = await _context.Events
                     .Include(x => x.Participants)
                         .ThenInclude(x => x.Ticket)
@@ -485,13 +489,15 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                 if (!@event.Organizer.IsVerified)
                     throw new BadRequestException("Organizer is not verified!");
 
-                if (newDate < DateTime.UtcNow)
-                    throw new BadRequestException("Event should be planned in the future!");
+                if (rescheduleEventDto.NewDate < DateTime.UtcNow)
+                    throw new BadRequestException($"Event should be planned in the future!");
+
+                var wasDeleted = @event.Status == EventStatus.DELETED;
 
                 // Update the event date
                 var duration = @event.EndDate - @event.StartDate;
-                @event.StartDate = newDate;
-                @event.EndDate = newDate + duration;
+                @event.StartDate = rescheduleEventDto.NewDate;
+                @event.EndDate = rescheduleEventDto.NewDate + duration;
                 @event.Status = EventStatus.DRAFT;
 
                 if (!@event.Location.Organizers.Any(o => o.Id == @event.Organizer.Id))
@@ -517,19 +523,27 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                 if (@event.Capacity <= 0)
                     throw new BadRequestException("Event capacity must be greater than zero!");
 
-                if (@event.Capacity > @event.Location.RemainingCapacity)
-                    throw new BadRequestException("Event capacity exceeds location’s maximum capacity!");
+                if (wasDeleted)
+                {
+                    Console.WriteLine("Event is deleted, updating capacities...");
+                    if (@event.Capacity > @event.Location.RemainingCapacity)
+                        throw new BadRequestException($"Event capacity exceeds location’s maximum capacity! Event Capacity {@event.Capacity}, Location Capacity: {@event.Location.RemainingCapacity}.");
 
-                @event.Location.RemainingCapacity -= @event.Capacity;
-                @event.Location.AvailableStaff -= @event.BookedStaff;
-                @event.Location.BookedStaff += @event.BookedStaff;
+                    @event.Location.RemainingCapacity -= @event.Capacity;
+                    @event.Location.AvailableStaff -= @event.BookedStaff;
+                    @event.Location.BookedStaff += @event.BookedStaff;
+                }
+                else
+                {
+                    Console.WriteLine("Event is not deleted, no capacity update needed.");
+                }
 
                 _context.Events.Update(@event);
 
                 // Notify participants (pseudo-code, replace with real email service)
                 foreach (var participant in @event.Participants)
                 {
-                    await _codeRepository.SendEventRescheduleNotification(participant.User.Email, @event.Title, newDate);
+                    await _codeRepository.SendEventRescheduleNotification(participant.User.Email, @event.Title, rescheduleEventDto.NewDate);
                 }
 
                 await _context.SaveChangesAsync();

@@ -197,7 +197,7 @@ namespace Event_Management.Controllers
 
         [Authorize(Roles = "BASIC,ORGANIZER,PARTICIPANT")]
         [HttpPatch("change-user-type/{userId}")]
-        public async Task<ActionResult<string>> ChangeUserType(int userId, UserType userType)
+        public async Task<ActionResult<string>> ChangeUserType(int userId, [FromBody] UserType userType)
         {
             try
             {

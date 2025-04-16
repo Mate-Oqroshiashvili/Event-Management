@@ -207,11 +207,11 @@ namespace Event_Management.Controllers
 
         [Authorize(Roles = "ORGANIZER")]
         [HttpPut("reschedule-event/{eventId}")]
-        public async Task<ActionResult<string>> RescheduleEvent(int eventId, DateTime dateTime)
+        public async Task<ActionResult<string>> RescheduleEvent(int eventId, [FromBody] RescheduleEventDto rescheduleEventDto)
         {
             try
             {
-                var @event = await _eventRepository.RescheduleEventAsync(eventId, dateTime);
+                var @event = await _eventRepository.RescheduleEventAsync(eventId, rescheduleEventDto);
 
                 return !@event ? throw new NotFoundException("Event not found!") : Ok(new { message = "Event rescheduled successfully!" });
             }
