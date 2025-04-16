@@ -1,32 +1,41 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { LoginDto, UserService } from '../../services/user/user.service';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { UserService } from '../../services/user/user.service';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
 export class LoginComponent {
-  loginDto: LoginDto = {
-    email: '',
-    password: '',
-  };
+  loginForm: FormGroup;
+  serverErrors: any = {};
 
-  response: any;
-
-  constructor(private userService: UserService, private router: Router) {}
+  constructor(
+    private fb: FormBuilder,
+    private userService: UserService,
+    private router: Router
+  ) {
+    this.loginForm = this.fb.group({
+      email: [''],
+      password: [''],
+    });
+  }
 
   loginUser() {
-    this.userService.loginUser(this.loginDto).subscribe({
+    this.serverErrors = {};
+    this.userService.loginUser(this.loginForm.value).subscribe({
       next: (data: any) => {
-        this.response = data;
+        console.log('Login success:', data);
       },
       error: (err) => {
         console.error(err);
+        if (err.status === 400 && err.error && err.error.errors) {
+          this.serverErrors = err.error.errors;
+        }
       },
       complete: () => {
         this.router.navigate(['']);

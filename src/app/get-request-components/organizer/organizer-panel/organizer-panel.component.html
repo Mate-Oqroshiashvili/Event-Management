@@ -1,6 +1,14 @@
 <section class="header">
   <ul class="nav">
     <li class="nav-item">
+      <a
+        style="width: max-content; white-space: nowrap; color: #167347"
+        routerLink="/events/add-event"
+        class="nav-link"
+        >Add New Event</a
+      >
+    </li>
+    <li class="nav-item">
       <button class="nav-link" (click)="getDrafted()">Drafted Events</button>
     </li>
     <li class="nav-item">
@@ -22,31 +30,61 @@
 @if (result.length != 0) {
 <section class="cards">
   @for (event of result; track event.id) {
-  <a
+  <div
     [ngClass]="{
       drafted: resultType === 'drafted',
       published: resultType === 'published',
       completed: resultType === 'completed',
       removed: resultType === 'removed'
     }"
-    [routerLink]="['/events/event', event.id]"
     class="card"
   >
-    <img [src]="event.images[0]" class="card-img-top" alt="..." />
-    <div class="card-body">
-      <h5 class="card-title mb-3">{{ event.title }}</h5>
+    <a [routerLink]="['/events/event', event.id]">
+      <img [src]="event.images[0]" class="card-img-top" alt="..." />
+      <div class="card-body">
+        <h5 class="card-title mb-3">{{ event.title }}</h5>
 
-      <p class="card-text">
-        <i class="bi bi-grid-fill me-1"></i>
-        Category: {{ getCategory(event.category) }}
-      </p>
+        <p class="card-text">
+          <i class="bi bi-grid-fill me-1"></i>
+          Category: {{ getCategory(event.category) }}
+        </p>
 
-      <p class="card-text">
-        <i style="color: gold" class="me-1 bi bi-star-fill"></i>
-        Rating: {{ getReviewResult(event) }} ({{ event.reviews.length }})
-      </p>
+        <p class="card-text">
+          <i style="color: gold" class="me-1 bi bi-star-fill"></i>
+          Rating: {{ getReviewResult(event) }} ({{ event.reviews.length }})
+        </p>
+      </div>
+    </a>
+    <div class="buttons mt-3">
+      @if (resultType === 'drafted') {
+      <button (click)="publishEvent(event.id)" class="btn btn-light">
+        Publish Event
+      </button>
+      } @if (resultType === 'drafted' || resultType === 'removed' || resultType
+      === 'published') {
+      <a [routerLink]="['reschedule-event', event.id]" class="btn btn-warning"
+        >Reschedule Event</a
+      >
+      } @if (resultType === 'drafted') {
+      <a
+        [routerLink]="['add-artist-on-event', event.id]"
+        class="btn btn-success"
+      >
+        Add Artist
+      </a>
+      <a
+        [routerLink]="['add-speaker-on-event', event.id]"
+        class="btn btn-success"
+      >
+        Add Speaker
+      </a>
+      } @if (resultType === 'drafted' || resultType === 'published') {
+      <button (click)="deleteEvent(event.id)" class="btn btn-danger">
+        Delete Event
+      </button>
+      }
     </div>
-  </a>
+  </div>
   }
 </section>
 } @else {

@@ -1,89 +1,136 @@
 <div class="register-form">
-  <form (ngSubmit)="registerUser()">
+  <form
+    [formGroup]="registerForm"
+    (ngSubmit)="registerUser()"
+    class="form-card shadow"
+  >
+    <h2 class="text-center mb-4">Create Your Account</h2>
+
+    <!-- Account Name -->
     <div class="form-floating mb-3">
       <input
-        [(ngModel)]="userCreateDto.name"
+        formControlName="name"
         type="text"
         class="form-control"
-        name="name"
         id="name"
-        placeholder="Jon doe"
+        placeholder="Jon Doe"
       />
       <label for="name">Account Name</label>
+      @if (serverErrors?.Name) { @for (err of serverErrors.Name; track $index) {
+      <div class="text-danger mt-1">{{ err }}</div>
+      } }
     </div>
+
+    <!-- Email -->
     <div class="form-floating mb-3">
       <input
-        [(ngModel)]="userCreateDto.email"
+        formControlName="email"
         type="email"
         class="form-control"
-        name="email"
         id="email"
         placeholder="name@example.com"
       />
-      <label for="email">Email address</label>
+      <label for="email">Email Address</label>
+      @if (serverErrors?.Email || serverErrors?.email) { @for (err of
+      serverErrors.Email; track $index) {
+      <div class="text-danger mt-1">{{ err }}</div>
+      } @for (err of serverErrors.email; track $index) {
+      <div class="text-danger mt-1">{{ err }}</div>
+      } }
     </div>
+
+    <!-- Phone -->
     <div class="form-floating mb-3">
       <input
-        [(ngModel)]="userCreateDto.phoneNumber"
+        formControlName="phoneNumber"
         type="text"
         class="form-control"
-        name="number"
         id="number"
         placeholder="555 555 555"
       />
       <label for="number">Phone Number</label>
+      @if (serverErrors?.PhoneNumber || serverErrors?.phoneNumber) { @for (err
+      of serverErrors.PhoneNumber; track $index) {
+      <div class="text-danger mt-1">{{ err }}</div>
+      } @for (err of serverErrors.phoneNumber; track $index) {
+      <div class="text-danger mt-1">{{ err }}</div>
+      } }
     </div>
-    <div class="form-floating">
+
+    <!-- Password -->
+    <div class="form-floating mb-3">
       <input
-        [(ngModel)]="userCreateDto.password"
+        formControlName="password"
         type="password"
         class="form-control"
-        name="password"
         id="password"
         placeholder="Password"
       />
       <label for="password">Password</label>
+      @if (serverErrors?.Password) { @for (err of serverErrors.Password; track
+      $index) {
+      <div class="text-danger mt-1">{{ err }}</div>
+      } }
     </div>
 
-    <div style="display: flex; justify-content: flex-end" class="verify-button">
+    <!-- General Server Errors -->
+    <div *ngIf="serverErrors?.general">
+      <div *ngFor="let err of serverErrors.general" class="text-danger mt-2">
+        {{ err }}
+      </div>
+    </div>
+
+    <!-- Verify Button -->
+    <div class="text-end">
       <button
         type="button"
         (click)="sendVerificationCodes()"
-        class="btn btn-primary mt-3 mb-5"
+        class="btn btn-outline-primary mt-3"
       >
-        Verify User
+        Send Verification Codes
       </button>
     </div>
 
-    @if (response) {
-    <h4 style="width: 80%; margin: auto; text-align: center" class="mb-3">
-      Verification Codes Were Sent To Your Email And Phone Number!
-    </h4>
-    <div class="form-floating mb-3">
-      <input
-        [(ngModel)]="userCreateDto.emailCode"
-        type="text"
-        class="form-control"
-        name="emailCode"
-        id="emailCode"
-        placeholder="123456"
-      />
-      <label for="emailCode">Email Verification Code</label>
-    </div>
-    <div class="form-floating mb-3">
-      <input
-        [(ngModel)]="userCreateDto.phoneNumberCode"
-        type="text"
-        class="form-control"
-        name="numberCode"
-        id="numberCode"
-        placeholder="123456"
-      />
-      <label for="numberCode">Phone Number Verification Code</label>
-    </div>
-    <button type="submit" style="float: right" class="btn btn-success mt-3">
-      Register
-    </button>
-    }
+    <!-- Verification Fields -->
+    <ng-container *ngIf="response">
+      <p class="text-success text-center mt-4">
+        Verification codes sent to your email and phone!
+      </p>
+
+      <div class="form-floating mb-3">
+        <input
+          formControlName="emailCode"
+          type="text"
+          class="form-control"
+          id="emailCode"
+          placeholder="123456"
+        />
+        <label for="emailCode">Email Verification Code</label>
+        @if (serverErrors?.EmailCode) { @for (err of serverErrors.EmailCode;
+        track $index) {
+        <div class="text-danger mt-1">{{ err }}</div>
+        } }
+      </div>
+
+      <div class="form-floating mb-4">
+        <input
+          formControlName="phoneNumberCode"
+          type="text"
+          class="form-control"
+          id="numberCode"
+          placeholder="123456"
+        />
+        <label for="numberCode">Phone Verification Code</label>
+        @if (serverErrors?.PhoneNumberCode) { @for (err of
+        serverErrors.PhoneNumberCode; track $index) {
+        <div class="text-danger mt-1">{{ err }}</div>
+        } }
+      </div>
+
+      <!-- Submit Button -->
+      <div class="text-end">
+        <button type="submit" class="btn btn-success">Register</button>
+      </div>
+    </ng-container>
   </form>
 </div>

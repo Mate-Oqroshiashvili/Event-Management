@@ -33,10 +33,18 @@ import { AddEventComponent } from './post-request-components/add-event/add-event
 import { AddLocationComponent } from './post-request-components/add-location/add-location.component';
 import { AddOrganizerComponent } from './post-request-components/add-organizer/add-organizer.component';
 import { AddOrganizerOnLocationComponent } from './post-request-components/add-organizer-on-location/add-organizer-on-location.component';
+import { AddArtistOnEventComponent } from './post-request-components/add-artist-on-event/add-artist-on-event.component';
+import { AddSpeakerOnEventComponent } from './post-request-components/add-speaker-on-event/add-speaker-on-event.component';
+import { registerGuard } from './services/guards/register.guard';
+import { RescheduleEventComponent } from './put-request-components/reschedule-event/reschedule-event.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'register', component: RegisterComponent },
+  {
+    path: 'register',
+    component: RegisterComponent,
+    canDeactivate: [registerGuard],
+  },
   { path: 'login', component: LoginComponent },
   {
     path: 'search-result/:searchTerm',
@@ -79,6 +87,26 @@ export const routes: Routes = [
   {
     path: 'organizer-panel/:organizerId',
     component: OrganizerPanelComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'organizer-panel/:organizerId',
+    component: OrganizerPanelComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'organizer-panel/:organizerId/reschedule-event/:eventId',
+    component: RescheduleEventComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'organizer-panel/:organizerId/add-artist-on-event/:eventId',
+    component: AddArtistOnEventComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'organizer-panel/:organizerId/add-speaker-on-event/:eventId',
+    component: AddSpeakerOnEventComponent,
     canActivate: [authGuard],
   },
   {

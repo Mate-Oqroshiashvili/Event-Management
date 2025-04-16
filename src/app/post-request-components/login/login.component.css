@@ -1,13 +1,41 @@
 .login-form {
-  width: 60vw;
-  height: 90vh;
-  margin: auto;
+  padding: 50px 15px;
+  min-height: 85vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  background: #f8f9fa;
 }
 
-form {
+.form-card {
   width: 100%;
-  height: max-content;
+  max-width: 500px;
+  background: #ffffff;
+  padding: 40px 30px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.form-control {
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn {
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.text-center {
+  text-align: center;
 }

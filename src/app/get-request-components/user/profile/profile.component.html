@@ -25,6 +25,30 @@
             >Register As Organizer</a
           >
         </li>
+        } @if (userType != "2") {
+        <li class="nav-item">
+          <button (click)="registerAsArtist()" class="nav-link">
+            Register As Artist
+          </button>
+        </li>
+        } @else {
+        <li class="nav-item">
+          <button (click)="getBackToBasic()" class="nav-link">
+            Remove As Artist
+          </button>
+        </li>
+        } @if (userType != "3") {
+        <li class="nav-item">
+          <button (click)="registerAsSpeaker()" class="nav-link">
+            Register As Speaker
+          </button>
+        </li>
+        } @else {
+        <li class="nav-item">
+          <button (click)="getBackToBasic()" class="nav-link">
+            Remove As Speaker
+          </button>
+        </li>
         }
       </ul>
     </nav>

@@ -20,8 +20,10 @@ export class EventsComponent implements OnInit {
   role: string = '';
   searchTerm: string = '';
   events: EventDto[] = [];
+  filteredEvents: EventDto[] = [];
   reviewsResult: number = 0;
   selectedSortOption: string = '';
+  selectedCategoryOption: string = '';
 
   constructor(
     private userService: UserService,
@@ -38,6 +40,7 @@ export class EventsComponent implements OnInit {
     this.eventService.getPublishedEvents().subscribe({
       next: (data: any) => {
         this.events = data.events;
+        this.applyFiltersAndSort();
       },
       error: (err) => {
         console.error(err);
@@ -84,10 +87,22 @@ export class EventsComponent implements OnInit {
     return result;
   }
 
-  onSortChange() {
+  applyFiltersAndSort() {
+    let result = [...this.events];
+    if (this.selectedCategoryOption) {
+      const selectedCategoryEnumValue =
+        EventCategory[
+          this.selectedCategoryOption as keyof typeof EventCategory
+        ];
+
+      result = result.filter(
+        (event) => event.category === selectedCategoryEnumValue
+      );
+    }
+
     switch (this.selectedSortOption) {
       case 'dateAsc':
-        this.events.sort((a, b) => {
+        result.sort((a, b) => {
           const dateA = a.startDate ? new Date(a.startDate).getTime() : 0;
           const dateB = b.startDate ? new Date(b.startDate).getTime() : 0;
           return dateA - dateB;
@@ -95,7 +110,7 @@ export class EventsComponent implements OnInit {
         break;
 
       case 'dateDesc':
-        this.events.sort((a, b) => {
+        result.sort((a, b) => {
           const dateA = a.startDate ? new Date(a.startDate).getTime() : 0;
           const dateB = b.startDate ? new Date(b.startDate).getTime() : 0;
           return dateB - dateA;
@@ -103,7 +118,7 @@ export class EventsComponent implements OnInit {
         break;
 
       case 'rating':
-        this.events.sort((a, b) => {
+        result.sort((a, b) => {
           const aRating =
             a.reviews?.reduce((sum, r) => sum + r.starCount, 0) /
               (a.reviews?.length || 1) || 0;
@@ -115,16 +130,21 @@ export class EventsComponent implements OnInit {
         break;
 
       case 'capacityAsc':
-        this.events.sort((a, b) => a.capacity - b.capacity);
+        result.sort((a, b) => a.capacity - b.capacity);
         break;
 
       case 'capacityDesc':
-        this.events.sort((a, b) => b.capacity - a.capacity);
+        result.sort((a, b) => b.capacity - a.capacity);
         break;
 
       default:
-        this.getPublishedEvents();
         break;
     }
+
+    this.filteredEvents = result;
+  }
+
+  onLogicChange() {
+    this.applyFiltersAndSort();
   }
 }

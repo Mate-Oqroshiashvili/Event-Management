@@ -1,0 +1,26 @@
+<div class="reschedule-form">
+  <form (ngSubmit)="rescheduleEvent()">
+    <div class="form-floating mb-3">
+      <input
+        [(ngModel)]="newDate"
+        type="datetime-local"
+        class="form-control"
+        name="newDate"
+        id="newDate"
+        placeholder="New Date"
+      />
+      <label for="newDate">New Date</label>
+      @if (errorMessage != '') {
+      <small class="text-danger">
+        {{ errorMessage }}
+      </small>
+      }
+    </div>
+
+    <div style="display: flex; justify-content: flex-end">
+      <button type="submit" class="btn btn-warning mt-3 mb-5">
+        Reschedule Event
+      </button>
+    </div>
+  </form>
+</div>

@@ -5,13 +5,18 @@ import {
 } from './../../services/event/event.service';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { EventDto, EventStatus } from '../../services/event/event.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-update-event',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './update-event.component.html',
   styleUrl: './update-event.component.css',
 })
@@ -42,8 +47,11 @@ export class UpdateEventComponent implements OnInit {
     endDate: null,
     capacity: 0,
   };
+  form!: FormGroup;
+  backendErrors: { [key: string]: string[] } = {};
 
   constructor(
+    private fb: FormBuilder,
     private eventService: EventService,
     private route: ActivatedRoute,
     private router: Router
@@ -54,6 +62,7 @@ export class UpdateEventComponent implements OnInit {
       const eventIdParam = data.get('eventId');
       if (eventIdParam) {
         this.eventId = +eventIdParam;
+        this.initializeForm();
         this.getEvent();
       } else {
         console.error('Event ID not found in route parameters');
@@ -61,43 +70,61 @@ export class UpdateEventComponent implements OnInit {
     });
   }
 
+  initializeForm(): void {
+    this.form = this.fb.group({
+      title: ['', [Validators.required]],
+      description: [''],
+      startDate: ['', [Validators.required]],
+      endDate: ['', [Validators.required]],
+      capacity: [0, [Validators.required, Validators.min(1)]],
+    });
+  }
+
   getEvent() {
     this.eventService.getEventById(this.eventId).subscribe({
       next: (data: any) => {
         this.event = data.event;
-
-        this.eventUpdateDto = {
+        this.form.patchValue({
           title: this.event.title,
           description: this.event.description,
-          startDate: this.event.startDate,
-          endDate: this.event.endDate,
+          startDate: this.formatDateForInput(this.event.startDate),
+          endDate: this.formatDateForInput(this.event.endDate),
           capacity: this.event.capacity,
-        };
-
-        console.log(data);
+        });
       },
-      error: (err) => {
-        console.error(err);
-      },
-      complete: () => {
-        console.log('Event fetched successfully!');
-      },
+      error: (err) => console.error(err),
     });
   }
 
   updateEvent() {
-    this.eventService
-      .updateEventById(this.eventId, this.eventUpdateDto)
-      .subscribe({
-        next: (data) => {
-          console.log(data);
-        },
-        error: (err) => {
-          console.error(err);
-        },
-        complete: () => {
-          this.router.navigate(['events/event', this.eventId]);
-        },
-      });
+    this.backendErrors = {};
+
+    const updateDto: EventUpdateDto = this.form.value;
+
+    this.eventService.updateEventById(this.eventId, updateDto).subscribe({
+      next: () => {
+        this.router.navigate(['events/event', this.eventId]);
+      },
+      error: (err) => {
+        if (err.status === 400 && err.error?.errors) {
+          this.backendErrors = err.error.errors;
+        }
+        console.error(err);
+      },
+    });
+  }
+
+  formatDateForInput(dateData: Date | string | null): string {
+    if (!dateData) return '';
+
+    const date = new Date(dateData);
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 }

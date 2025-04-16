@@ -16,13 +16,19 @@ import {
   TicketService,
   TicketType,
 } from '../../../services/ticket/ticket.service';
-import { UserService } from '../../../services/user/user.service';
+import { UserService, UserType } from '../../../services/user/user.service';
 import { jwtDecode } from 'jwt-decode';
 import {
   CommentDto,
   CommentService,
 } from '../../../services/comment/comment.service';
-import { FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import {
   ReviewCreateDto,
   ReviewService,
@@ -30,7 +36,7 @@ import {
 
 @Component({
   selector: 'app-event-page',
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule],
   templateUrl: './event-page.component.html',
   styleUrl: './event-page.component.css',
 })
@@ -67,6 +73,10 @@ export class EventPageComponent implements OnInit {
   commentUpdateDto: CommentUpdateDto = {
     commentContent: '',
   };
+
+  addCommentForm!: FormGroup;
+  editCommentForm!: FormGroup;
+
   commentId: number = 0;
   editing: boolean = false;
 
@@ -82,6 +92,7 @@ export class EventPageComponent implements OnInit {
   hoverRating: number = 0;
 
   constructor(
+    private fb: FormBuilder,
     private userService: UserService,
     private eventService: EventService,
     private ticketService: TicketService,
@@ -99,6 +110,14 @@ export class EventPageComponent implements OnInit {
         this.getUserInfo();
         this.getEventById();
         this.getTicketsByEventId();
+
+        this.addCommentForm = this.fb.group({
+          commentContent: ['', Validators.required],
+        });
+
+        this.editCommentForm = this.fb.group({
+          commentContent: ['', Validators.required],
+        });
       } else {
         console.error('Event ID not found in route parameters');
       }
@@ -166,10 +185,17 @@ export class EventPageComponent implements OnInit {
   }
 
   addComment() {
-    this.commentCreateDto.eventId = this.eventId;
-    this.commentCreateDto.userId = this.userId;
+    if (this.addCommentForm.invalid) return;
 
-    this.commentService.addComment(this.commentCreateDto).subscribe({
+    const commentContent = this.addCommentForm.value.commentContent;
+
+    const comment: CommentCreateDto = {
+      commentContent: commentContent,
+      userId: this.userId,
+      eventId: this.eventId,
+    };
+
+    this.commentService.addComment(comment).subscribe({
       next: (data: any) => {
         console.log(data);
       },
@@ -178,6 +204,7 @@ export class EventPageComponent implements OnInit {
       },
       complete: () => {
         this.getEventById();
+        this.addCommentForm.reset();
       },
     });
   }
@@ -186,7 +213,9 @@ export class EventPageComponent implements OnInit {
     this.commentService.getCommentById(id).subscribe({
       next: (data: any) => {
         this.commentId = data.comment.id;
-        this.commentUpdateDto.commentContent = data.comment.commentContent;
+        this.editCommentForm.patchValue({
+          commentContent: data.comment.commentContent,
+        });
       },
       error: (err) => {
         console.error(err);
@@ -198,8 +227,16 @@ export class EventPageComponent implements OnInit {
   }
 
   editComment() {
+    if (this.editCommentForm.invalid) return;
+
+    const updatedContent = this.editCommentForm.value.commentContent;
+
+    const updateDto: CommentUpdateDto = {
+      commentContent: updatedContent,
+    };
+
     this.commentService
-      .updateComment(this.commentId, this.userId, this.commentUpdateDto)
+      .updateComment(this.commentId, this.userId, updateDto)
       .subscribe({
         next: (data: any) => {
           console.log(data);
@@ -210,6 +247,7 @@ export class EventPageComponent implements OnInit {
         complete: () => {
           this.editing = false;
           this.getEventById();
+          this.editCommentForm.reset();
         },
       });
   }
@@ -259,6 +297,10 @@ export class EventPageComponent implements OnInit {
 
   getTicketStatus(status: number): string {
     return TicketType[status] ?? 'Unknown Status';
+  }
+
+  getUserType(type: number): string {
+    return UserType[type] ?? 'Unknown Type';
   }
 
   getCategory(category: number): string {

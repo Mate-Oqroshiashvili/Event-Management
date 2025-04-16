@@ -91,14 +91,14 @@
 
           <p class="card-text mb-3">
             <i class="me-1 bi bi-calendar-event-fill"></i>
-            Starts: {{ event.startDate | date : "fullDate" }} at
-            {{ event.startDate | date : "shortTime" }}
+            Starts: {{ event.startDate | date : "fullDate" : "+4" }} at
+            {{ event.startDate | date : "shortTime" : "+4" }}
           </p>
 
           <p class="card-text mb-3">
             <i class="me-1 bi bi-calendar-check-fill"></i>
-            Ends: {{ event.endDate | date : "fullDate" }} at
-            {{ event.endDate | date : "shortTime" }}
+            Ends: {{ event.endDate | date : "fullDate" : "+4" }} at
+            {{ event.endDate | date : "shortTime" : "+4" }}
           </p>
 
           <p class="card-text mb-3">
@@ -156,7 +156,7 @@
           >
             <i *ngIf="item.type === 1" class="bi bi-ticket-perforated-fill"></i>
             <i *ngIf="item.type === 2" class="bi bi-award-fill"></i>
-            <i *ngIf="item.type === 3" class="bi bi-feather"></i>
+            <i *ngIf="item.type === 3" class="bi bi-lightning-fill"></i>
             <div class="ticket-body">
               <h3>
                 Ticket Type: {{ getTicketStatus(item.type).toLowerCase() }}
@@ -248,21 +248,45 @@
         </div>
       </section>
 
-      <!-- @if (event.speakersAndArtists.length != 0) { -->
+      @if (event.speakersAndArtists.length != 0) {
       <div class="speakers-and-artists my-5">
         <h2>Speakers and Artists</h2>
         <div class="cards my-3">
           @for (item of event.speakersAndArtists; track $index) {
-          <div class="card p-4">
-            <h3>{{ item.id }}: {{ item.name }}</h3>
-            <p>User Type: {{ item.userType }}</p>
-          </div>
+
+          <a
+            [routerLink]=""
+            class="card custom"
+            style="gap: 40px; background-color: #1565c0; color: #e8f5e9"
+          >
+            <div class="top">
+              <img [src]="item.profilePicture" alt="" />
+              <div class="text">
+                <h3 class="mt-4 mb-2">
+                  {{ item.name }}
+                </h3>
+                <p class="card-text mb-4" style="margin: 0px">
+                  {{ getUserType(item.userType).toLowerCase() }}
+                </p>
+              </div>
+            </div>
+            <div class="bottom">
+              <h5>
+                <p class="card-text mb-3">
+                  <i class="bi bi-envelope-fill"></i> Email:
+                  {{ item.email }}
+                </p>
+                <p class="card-text mb-3">
+                  <i class="bi bi-phone-fill"></i> Phone Number:
+                  {{ item.phoneNumber }}
+                </p>
+              </h5>
+            </div>
+          </a>
           }
         </div>
       </div>
-      <!-- } -->
-
-      @if (!hasReviewed) {
+      } @if (!hasReviewed && event.status.toString() === "2") {
       <section class="review">
         <form (ngSubmit)="addReview()">
           <h1 class="text-center mt-5 mb-3">Add The Review</h1>
@@ -293,8 +317,8 @@
           </div>
         </form>
       </section>
-      }
-
+      } @if (event.status.toString() !== "1" && event.status.toString() !== "4")
+      {
       <div class="comments my-5">
         <h2>Comments</h2>
         <div class="cards my-3">
@@ -338,12 +362,11 @@
           }
         </div>
         @if (!editing) {
-        <div class="add-comment">
-          <form (ngSubmit)="addComment()">
+        <div class="add-comment" *ngIf="!editing">
+          <form [formGroup]="addCommentForm" (ngSubmit)="addComment()">
             <div class="input-group mb-3">
               <input
-                [(ngModel)]="commentCreateDto.commentContent"
-                name="commentContent"
+                formControlName="commentContent"
                 id="commentContent"
                 type="text"
                 class="form-control p-3"
@@ -355,20 +378,21 @@
                 class="btn btn-success px-5"
                 type="submit"
                 id="button-addon2"
+                [disabled]="addCommentForm.invalid"
               >
                 Submit
               </button>
             </div>
           </form>
         </div>
+
         } @else {
-        <div class="edit-comment">
-          <form (ngSubmit)="editComment()">
+        <div class="edit-comment" *ngIf="editing">
+          <form [formGroup]="editCommentForm" (ngSubmit)="editComment()">
             <div class="input-group mb-3">
               <input
-                [(ngModel)]="commentUpdateDto.commentContent"
-                name="commentContent"
-                id="commentContent"
+                formControlName="commentContent"
+                id="editCommentContent"
                 type="text"
                 class="form-control p-3"
                 placeholder="Edit comment"
@@ -378,7 +402,7 @@
               <button
                 class="btn btn-secondary"
                 type="button"
-                id="button-addon2"
+                id="button-cancel"
                 (click)="cancel()"
               >
                 Cancel
@@ -386,15 +410,18 @@
               <button
                 class="btn btn-warning px-5"
                 type="submit"
-                id="button-addon2"
+                id="button-submit"
+                [disabled]="editCommentForm.invalid"
               >
                 Submit
               </button>
             </div>
           </form>
         </div>
+
         }
       </div>
+      }
     </div>
   </section>
 </div>

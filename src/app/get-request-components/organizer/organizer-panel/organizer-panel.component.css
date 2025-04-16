@@ -32,6 +32,12 @@ p {
 
 a {
   text-decoration: none;
+  color: white;
+}
+
+.nav {
+  padding: 0px 40px;
+  justify-content: center;
 }
 
 .nav-link {
@@ -50,6 +56,10 @@ a {
   background-color: lightskyblue;
 }
 
+.drafted a {
+  color: #000;
+}
+
 .published {
   background-color: #1565c0;
   color: white;
@@ -62,4 +72,16 @@ a {
 
 .removed {
   background-color: lightcoral;
+}
+
+.buttons {
+  padding: 0px 16px 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto;
+  gap: 20px;
+}
+
+button {
+  width: 100%;
 }

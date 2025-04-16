@@ -1,52 +1,75 @@
 <div class="add-location-form">
-  <form (ngSubmit)="addOrganizer()">
+  <form [formGroup]="organizerForm" (ngSubmit)="addOrganizer()">
     <div class="form-floating mb-3">
       <input
-        [(ngModel)]="organizerCreateDto.address"
         type="text"
         class="form-control"
-        name="address"
         id="address"
-        placeholder="organizer Address"
+        placeholder="Address"
+        formControlName="address"
       />
       <label for="address">Organizer Address</label>
+
+      @if (backendErrors.Address) { @for (error of backendErrors.Address; track
+      $index) {
+      <div class="text-danger small">
+        <div>{{ error }}</div>
+      </div>
+      } }
     </div>
 
     <div class="form-floating mb-3">
       <input
-        [(ngModel)]="organizerCreateDto.city"
         type="text"
         class="form-control"
-        name="city"
         id="city"
         placeholder="City"
+        formControlName="city"
       />
       <label for="city">Organizer City</label>
+
+      @if (backendErrors.City) { @for (error of backendErrors.City; track
+      $index) {
+      <div class="text-danger small">
+        <div>{{ error }}</div>
+      </div>
+      } }
     </div>
 
     <div class="form-floating mb-3">
       <input
-        [(ngModel)]="organizerCreateDto.country"
         type="text"
         class="form-control"
-        name="country"
         id="country"
         placeholder="Country"
+        formControlName="country"
       />
       <label for="country">Organizer Country</label>
+
+      @if (backendErrors.Country) { @for (error of backendErrors.Country; track
+      $index) {
+      <div class="text-danger small">
+        <div>{{ error }}</div>
+      </div>
+      } }
     </div>
 
     <div class="form-floating mb-3">
       <textarea
-        [(ngModel)]="organizerCreateDto.description"
-        type="text"
         class="form-control"
-        name="description"
         id="description"
-        placeholder="e.g 20"
+        formControlName="description"
+        placeholder="Description"
         style="min-height: 100px"
       ></textarea>
       <label for="description">Organizer Description</label>
+
+      @if (backendErrors.Description) { @for (error of
+      backendErrors.Description; track $index) {
+      <div class="text-danger small">
+        <div>{{ error }}</div>
+      </div>
+      } }
     </div>
 
     <div class="mb-3">
@@ -57,17 +80,24 @@
         id="imageInput"
         (change)="onFileSelected($event)"
         accept="image/*"
-        multiple
       />
+
+      @if (backendErrors.Logo) { @for (error of backendErrors.Logo; track
+      $index) {
+      <div class="text-danger small">
+        <div>{{ error }}</div>
+      </div>
+      } }
     </div>
 
-    @if (imagePreview != '') {
-    <div class="preview-container d-flex flex-wrap gap-3 my-3">
+    <div
+      *ngIf="imagePreview"
+      class="preview-container d-flex flex-wrap gap-3 my-3"
+    >
       <div class="position-relative border rounded p-1">
         <button
           type="button"
           class="btn-close position-absolute top-0 end-0 m-1"
-          aria-label="Close"
           (click)="removeImage()"
         ></button>
         <img
@@ -78,12 +108,9 @@
         />
       </div>
     </div>
-    }
 
-    <div style="display: flex; justify-content: flex-end" class="verify-button">
-      <button type="submit" style="float: right" class="btn btn-success mt-3">
-        Add Organizer
-      </button>
+    <div class="d-flex justify-content-end">
+      <button type="submit" class="btn btn-success mt-3">Add Organizer</button>
     </div>
   </form>
 

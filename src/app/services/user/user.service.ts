@@ -115,6 +115,14 @@ export class UserService {
     );
   }
 
+  getArtists(): Observable<UserDto[]> {
+    return this.http.get<UserDto[]>(`${this.apiUrl}User/get-artists`);
+  }
+
+  getSpeakers(): Observable<UserDto[]> {
+    return this.http.get<UserDto[]>(`${this.apiUrl}User/get-speakers`);
+  }
+
   sendVerificationCodes(
     email: string,
     phoneNumber: string

@@ -68,6 +68,10 @@ export interface EventDto {
   comments: CommentDto[];
 }
 
+export interface RescheduleEventDto {
+  newDate: Date;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -174,10 +178,13 @@ export class EventService {
     );
   }
 
-  rescheduleEvent(eventId: number, newDate: Date): Observable<string> {
+  rescheduleEvent(
+    eventId: number,
+    rescheduleEvent: RescheduleEventDto
+  ): Observable<string> {
     return this.http.put<string>(
       `${this.apiUrl}Event/reschedule-event/${eventId}`,
-      newDate
+      rescheduleEvent
     );
   }
 

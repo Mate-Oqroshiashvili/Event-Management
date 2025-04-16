@@ -56,7 +56,6 @@ export class UserInfoComponent implements OnInit {
       if (userIdParam) {
         this.userId = +userIdParam;
         this.getUserById();
-        this.getOrganizer();
       } else {
         console.error('User ID not found in route parameters');
       }
@@ -67,6 +66,10 @@ export class UserInfoComponent implements OnInit {
     this.userService.getUserById(this.userId).subscribe({
       next: (data: any) => {
         this.user = data.userDto;
+        this.userRole = this.user.role.toString();
+        if (this.userRole === '3') {
+          this.getOrganizer();
+        }
         console.log(data);
       },
       error: (err) => {
@@ -82,7 +85,6 @@ export class UserInfoComponent implements OnInit {
     this.organizerService.getOrganizerByUserId(this.userId).subscribe({
       next: (data: any) => {
         this.organizerId = data.organizerDto.id;
-        console.log(this.organizerId);
       },
       error: (err) => {
         console.error(err);

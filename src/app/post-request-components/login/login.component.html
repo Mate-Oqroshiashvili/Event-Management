@@ -1,29 +1,45 @@
 <div class="login-form">
-  <form (ngSubmit)="loginUser()">
+  <form
+    [formGroup]="loginForm"
+    (ngSubmit)="loginUser()"
+    class="form-card shadow"
+  >
+    <h2 class="text-center mb-4">Welcome Back</h2>
+
     <div class="form-floating mb-3">
       <input
-        [(ngModel)]="loginDto.email"
+        formControlName="email"
         type="email"
         class="form-control"
-        name="email"
         id="email"
         placeholder="name@example.com"
       />
       <label for="email">Email address</label>
+      @if (serverErrors?.Email || serverErrors?.email) { @for (err of
+      serverErrors.Email; track $index) {
+      <div class="text-danger mt-1">{{ err }}</div>
+      } @for (err of serverErrors.email; track $index) {
+      <div class="text-danger mt-1">{{ err }}</div>
+      } }
     </div>
-    <div class="form-floating">
+
+    <div class="form-floating mb-3">
       <input
-        [(ngModel)]="loginDto.password"
+        formControlName="password"
         type="password"
         class="form-control"
-        name="password"
         id="password"
         placeholder="Password"
       />
       <label for="password">Password</label>
+      @if (serverErrors?.Password) { @for (err of serverErrors.Password; track
+      $index) {
+      <div class="text-danger mt-1">{{ err }}</div>
+      } }
     </div>
-    <div style="display: flex; justify-content: flex-end" class="login-button">
-      <button type="submit" class="btn btn-success mb-3 mt-3">Log In</button>
+
+    <div class="text-end">
+      <button type="submit" class="btn btn-success mt-3">Log In</button>
     </div>
   </form>
 </div>

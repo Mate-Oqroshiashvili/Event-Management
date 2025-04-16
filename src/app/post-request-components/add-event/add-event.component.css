@@ -1,6 +1,6 @@
 .add-event-form {
   width: 60vw;
-  height: 90vh;
+  min-height: 90vh;
   margin: auto;
   display: flex;
   justify-content: center;
@@ -15,4 +15,8 @@ form {
 .preview-container {
   max-width: 100%;
   overflow-x: auto;
+}
+
+small {
+  white-space: pre-line;
 }

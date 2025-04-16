@@ -151,14 +151,14 @@ p {
 
 .bi-ticket-perforated-fill {
   color: #d35400;
-  margin-top: -30px;
+  margin-top: -30px !important;
 }
 
 .bi-award-fill {
   color: #ffd700;
 }
 
-.bi-feather {
+.bi-lightning-fill {
   color: #00bfa5;
 }
 

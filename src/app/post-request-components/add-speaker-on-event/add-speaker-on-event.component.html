@@ -1,0 +1,17 @@
+<div class="speakers">
+  @for (speaker of speakers; track $index) {
+  <div class="card">
+    <img [src]="speaker.profilePicture" class="card-img-top" alt="..." />
+    <div class="card-body">
+      <h5 class="card-title">{{ speaker.name }}</h5>
+      <button
+        style="width: 100%"
+        class="mt-3 btn btn-primary"
+        (click)="addSpeaker(speaker.id)"
+      >
+        Add Speaker On Event
+      </button>
+    </div>
+  </div>
+  }
+</div>

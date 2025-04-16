@@ -1,19 +1,24 @@
 <div class="add-event-form">
-  <form (ngSubmit)="addEvent()">
+  <form [formGroup]="eventForm" (ngSubmit)="addEvent()">
     <div class="form-floating mb-3">
       <input
-        [(ngModel)]="eventCreateDto.title"
+        formControlName="title"
         type="text"
         class="form-control"
         name="title"
         id="title"
         placeholder="Jon doe"
       />
+      @if (getFieldErrors('Title')) {
+      <small class="text-danger">
+        {{ getFieldErrors("Title") }}
+      </small>
+      }
       <label for="title">Event Title</label>
     </div>
     <div class="form-floating mb-3">
       <textarea
-        [(ngModel)]="eventCreateDto.description"
+        formControlName="description"
         type="text"
         class="form-control"
         name="description"
@@ -21,47 +26,67 @@
         placeholder="Event Description"
         style="min-height: 100px"
       ></textarea>
+      @if (getFieldErrors('Description')) {
+      <small class="text-danger">
+        {{ getFieldErrors("Description") }}
+      </small>
+      }
       <label for="description">Event Description</label>
     </div>
     <div class="form-floating mb-3">
       <input
-        [(ngModel)]="eventCreateDto.startDate"
+        formControlName="startDate"
         type="datetime-local"
         class="form-control"
         name="startDate"
         id="startDate"
         placeholder="2025/01/01"
       />
+      @if (getFieldErrors('StartDate')) {
+      <small class="text-danger">
+        {{ getFieldErrors("StartDate") }}
+      </small>
+      }
       <label for="startDate">Event Start Date</label>
     </div>
     <div class="form-floating mb-3">
       <input
-        [(ngModel)]="eventCreateDto.endDate"
+        formControlName="endDate"
         type="datetime-local"
         class="form-control"
         name="endDate"
         id="endDate"
         placeholder="2025/01/01"
       />
+      @if (getFieldErrors('EndDate')) {
+      <small class="text-danger">
+        {{ getFieldErrors("EndDate") }}
+      </small>
+      }
       <label for="endDate">Event End Date</label>
     </div>
     <div class="form-floating mb-3">
       <input
-        [(ngModel)]="eventCreateDto.capacity"
+        formControlName="capacity"
         type="number"
         class="form-control"
         name="capacity"
         id="capacity"
         placeholder="e.g 500"
       />
+      @if (getFieldErrors('Capacity')) {
+      <small class="text-danger">
+        {{ getFieldErrors("Capacity") }}
+      </small>
+      }
       <label for="capacity">Event Capacity</label>
     </div>
     <div class="form-floating mb-3">
       <select
-        [(ngModel)]="eventCreateDto.locationId"
+        formControlName="locationId"
         name="location"
         id="location"
-        class="form-select form-select-lg mb-3"
+        class="form-select form-select-lg"
         aria-label="Large select example"
       >
         <option value="0" selected>Select The Event Location Address</option>
@@ -69,14 +94,19 @@
         <option [value]="$index">{{ item.address }}</option>
         }
       </select>
+      @if (getFieldErrors('LocationId')) {
+      <small class="text-danger">
+        {{ getFieldErrors("LocationId") }}
+      </small>
+      }
       <label for="location">Event Location</label>
     </div>
     <div class="form-floating mb-3">
       <select
-        [(ngModel)]="eventCreateDto.category"
+        formControlName="category"
         name="category"
         id="category"
-        class="form-select form-select-lg mb-3"
+        class="form-select form-select-lg"
         aria-label="Large select example"
       >
         <option value="0" selected>Select The Event Category</option>
@@ -90,6 +120,11 @@
         <option value="8">Fashion</option>
         <option value="9">Startups And Product Launches</option>
       </select>
+      @if (getFieldErrors('Category')) {
+      <small class="text-danger">
+        {{ getFieldErrors("Category") }}
+      </small>
+      }
       <label for="category">Event Category</label>
     </div>
 

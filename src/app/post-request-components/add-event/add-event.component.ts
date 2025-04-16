@@ -6,7 +6,13 @@ import {
 } from './../../services/event/event.service';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import {
   OrganizerDto,
@@ -16,7 +22,7 @@ import { jwtDecode } from 'jwt-decode';
 
 @Component({
   selector: 'app-add-event',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './add-event.component.html',
   styleUrl: './add-event.component.css',
 })
@@ -51,7 +57,11 @@ export class AddEventComponent implements OnInit {
   imageFiles: File[] = [];
   imagePreviews: string[] = [];
 
+  eventForm!: FormGroup;
+  backendErrors: { [key: string]: string[] } = {};
+
   constructor(
+    private fb: FormBuilder,
     private userService: UserService,
     private eventService: EventService,
     private organizerService: OrganizerService,
@@ -61,23 +71,36 @@ export class AddEventComponent implements OnInit {
   ngOnInit(): void {
     this.getUserInfo();
     this.getOrganizerByUserId();
+
+    this.eventForm = this.fb.group({
+      title: ['', Validators.required],
+      description: ['', Validators.required],
+      startDate: ['', Validators.required],
+      endDate: ['', Validators.required],
+      capacity: [null, [Validators.required, Validators.min(1)]],
+      locationId: [0, Validators.required],
+      category: [0, Validators.required],
+    });
   }
 
   addEvent() {
-    this.eventCreateDto.images = this.imageFiles;
-    this.eventCreateDto.organizerId = this.organizer.id;
+    const formValues = this.eventForm.value;
 
-    console.log(this.eventCreateDto);
+    const dto: EventCreateDto = {
+      ...formValues,
+      organizerId: this.organizer.id,
+      images: this.imageFiles,
+    };
 
-    this.eventService.addEvent(this.eventCreateDto).subscribe({
-      next: (data: any) => {
-        console.log(data);
+    this.eventService.addEvent(dto).subscribe({
+      next: (data) => {
+        this.router.navigate(['/events']);
       },
       error: (err) => {
+        if (err.status === 400 && err.error.errors) {
+          this.backendErrors = err.error.errors;
+        }
         console.error(err);
-      },
-      complete: () => {
-        this.router.navigate(['/events']);
       },
     });
   }
@@ -126,5 +149,15 @@ export class AddEventComponent implements OnInit {
 
     const decoded: any = jwtDecode(token);
     this.userId = decoded.nameid;
+  }
+
+  getFieldErrors(field: string): string | null {
+    if (this.backendErrors[field]) {
+      const filteredErrors = this.backendErrors[field].filter(
+        (msg) => !msg.toLowerCase().includes('field')
+      );
+      return filteredErrors.join('\n') || null;
+    }
+    return null;
   }
 }

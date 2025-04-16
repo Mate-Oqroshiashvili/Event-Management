@@ -63,7 +63,7 @@ export class OrganizerPanelComponent implements OnInit {
       },
       complete: () => {
         this.resultType = 'published';
-        console.log('Fetched drafted events successfully!');
+        console.log('Fetched published events successfully!');
       },
     });
   }
@@ -81,7 +81,7 @@ export class OrganizerPanelComponent implements OnInit {
       },
       complete: () => {
         this.resultType = 'completed';
-        console.log('Fetched drafted events successfully!');
+        console.log('Fetched completed events successfully!');
       },
     });
   }
@@ -99,7 +99,7 @@ export class OrganizerPanelComponent implements OnInit {
       },
       complete: () => {
         this.resultType = 'removed';
-        console.log('Fetched drafted events successfully!');
+        console.log('Fetched removed events successfully!');
       },
     });
   }
@@ -124,5 +124,33 @@ export class OrganizerPanelComponent implements OnInit {
     let categoryText = EventCategory[category] ?? 'Unknown Status';
     let result = categoryText.replaceAll('_', ' ');
     return result;
+  }
+
+  deleteEvent(eventId: number) {
+    this.eventService.removeEvent(eventId).subscribe({
+      next: (data: any) => {
+        console.log(data);
+      },
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => {
+        this.getDrafted();
+      },
+    });
+  }
+
+  publishEvent(eventId: number) {
+    this.eventService.publishEvent(eventId).subscribe({
+      next: (data: any) => {
+        console.log(data);
+      },
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => {
+        this.getDrafted();
+      },
+    });
   }
 }

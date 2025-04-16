@@ -1,17 +1,29 @@
 <section class="search">
   <div class="sortAndAdd">
-    @if (role === "ORGANIZER") {
-    <a
-      style="width: max-content; white-space: nowrap"
-      routerLink="add-event"
-      class="btn btn-primary"
-      >Add New Event</a
+    <select
+      [(ngModel)]="selectedCategoryOption"
+      name="categoryOption"
+      (change)="onLogicChange()"
+      style="width: max-content"
+      class="form-select"
+      aria-label="Default select example"
     >
-    }
+      <option value="" selected>Filter By Category</option>
+      <option value="IT_And_Technologies">IT And Technologies</option>
+      <option value="Bussiness_Meetings">Bussiness Meetings</option>
+      <option value="Casual_Meetings">Casual Meetings</option>
+      <option value="Conferences">Conferences</option>
+      <option value="Music">Music</option>
+      <option value="Festivals">Festivals</option>
+      <option value="Sports">Sports</option>
+      <option value="Fashion">Fashion</option>
+      <option value="Startups_And_Product_Launches">Product Launches</option>
+    </select>
+
     <select
       [(ngModel)]="selectedSortOption"
       name="sortOption"
-      (change)="onSortChange()"
+      (change)="onLogicChange()"
       style="width: max-content"
       class="form-select"
       aria-label="Default select example"
@@ -39,7 +51,7 @@
   </form>
 </section>
 <section class="cards">
-  @for (event of events; track event.id) {
+  @for (event of filteredEvents; track event.id) {
   <a [routerLink]="['event', event.id]" class="card">
     <img [src]="event.images[0]" class="card-img-top" alt="..." />
     <div class="card-body">

@@ -1,59 +1,89 @@
 <div class="register-form">
-  <form (ngSubmit)="updateEvent()">
+  <form [formGroup]="form" (ngSubmit)="updateEvent()">
     <div class="form-floating mb-3">
       <input
-        [(ngModel)]="eventUpdateDto.title"
+        formControlName="title"
         type="text"
         class="form-control"
-        name="title"
         id="title"
         placeholder="New Event"
       />
       <label for="title">Event Title</label>
+
+      @if (backendErrors['Title']) { @for (err of backendErrors['Title']; track
+      $index) {
+      <div class="text-danger">
+        <div>{{ err }}</div>
+      </div>
+      } }
     </div>
+
     <div class="form-floating mb-3">
       <input
-        [(ngModel)]="eventUpdateDto.description"
-        type="string"
+        formControlName="description"
+        type="text"
         class="form-control"
-        name="description"
         id="description"
-        placeholder="Add description for the event"
       />
       <label for="description">Event Description</label>
+
+      @if (backendErrors['Description']) { @for (err of
+      backendErrors['Description']; track $index) {
+      <div class="text-danger">
+        <div>{{ err }}</div>
+      </div>
+      } }
     </div>
+
     <div class="form-floating mb-3">
       <input
-        [(ngModel)]="eventUpdateDto.startDate"
-        type="datetime"
+        formControlName="startDate"
+        type="datetime-local"
         class="form-control"
-        name="startDate"
         id="startDate"
-        placeholder="2025/01/01"
       />
       <label for="startDate">Event Start Date</label>
+
+      @if (backendErrors['StartDate']) { @for (err of
+      backendErrors['StartDate']; track $index) {
+      <div class="text-danger">
+        <div>{{ err }}</div>
+      </div>
+      } }
     </div>
+
     <div class="form-floating mb-3">
       <input
-        [(ngModel)]="eventUpdateDto.endDate"
-        type="datetime"
+        formControlName="endDate"
+        type="datetime-local"
         class="form-control"
-        name="endDate"
         id="endDate"
-        placeholder="2025/01/01"
       />
       <label for="endDate">Event End Date</label>
+
+      @if (backendErrors['EndDate']) { @for (err of backendErrors['EndDate'];
+      track $index) {
+      <div class="text-danger">
+        <div>{{ err }}</div>
+      </div>
+      } }
     </div>
+
     <div class="form-floating">
       <input
-        [(ngModel)]="eventUpdateDto.capacity"
+        formControlName="capacity"
         type="number"
         class="form-control"
-        name="capacity"
         id="capacity"
-        placeholder="e.g 500"
       />
       <label for="capacity">Event Capacity</label>
+
+      @if (backendErrors['Capacity']) { @for (err of backendErrors['Capacity'];
+      track $index) {
+      <div class="text-danger">
+        <div>{{ err }}</div>
+      </div>
+      } }
     </div>
 
     <div style="display: flex; justify-content: flex-end" class="verify-button">

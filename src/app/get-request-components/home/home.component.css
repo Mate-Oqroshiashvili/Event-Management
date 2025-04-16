@@ -32,6 +32,10 @@
   font-size: 2rem;
 }
 
+.row {
+  row-gap: 40px;
+}
+
 h2 {
   font-weight: bold;
 }

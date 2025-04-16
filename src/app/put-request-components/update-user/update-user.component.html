@@ -1,37 +1,54 @@
 <div class="register-form">
-  <form (ngSubmit)="updateUser()">
+  <form [formGroup]="form" (ngSubmit)="updateUser()">
     <div class="form-floating mb-3">
       <input
-        [(ngModel)]="userUpdateDto.name"
         type="text"
         class="form-control"
-        name="name"
+        formControlName="name"
         id="name"
         placeholder="Jon doe"
       />
       <label for="name">Account Name</label>
+
+      @for (error of getErrorMessages('Name'); track $index) {
+      <div class="text-danger mt-1">
+        {{ error }}
+      </div>
+      }
     </div>
+
     <div class="form-floating mb-3">
       <input
-        [(ngModel)]="userUpdateDto.email"
         type="email"
         class="form-control"
-        name="email"
+        formControlName="email"
         id="email"
         placeholder="name@example.com"
       />
       <label for="email">Email address</label>
+
+      @for (error of getErrorMessages('Email'); track $index) {
+      <div class="text-danger mt-1">
+        {{ error }}
+      </div>
+      }
     </div>
+
     <div class="form-floating mb-3">
       <input
-        [(ngModel)]="userUpdateDto.phoneNumber"
         type="text"
         class="form-control"
-        name="number"
+        formControlName="phoneNumber"
         id="number"
         placeholder="555 555 555"
       />
       <label for="number">Phone Number</label>
+
+      @for (error of getErrorMessages('PhoneNumber'); track $index) {
+      <div class="text-danger mt-1">
+        {{ error }}
+      </div>
+      }
     </div>
 
     <div class="mb-3">
@@ -42,11 +59,10 @@
         id="imageInput"
         (change)="onFileSelected($event)"
         accept="image/*"
-        multiple
       />
     </div>
 
-    @if (imagePreview != '') {
+    @if (imagePreview) {
     <div class="preview-container d-flex flex-wrap gap-3 my-3">
       <div class="position-relative border rounded p-1">
         <button

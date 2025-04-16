@@ -1,27 +1,30 @@
 import { UserService, UserUpdateDto } from './../../services/user/user.service';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-update-user',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './update-user.component.html',
   styleUrl: './update-user.component.css',
 })
 export class UpdateUserComponent implements OnInit {
   userId: number = 0;
-  userUpdateDto: UserUpdateDto = {
-    name: '',
-    email: '',
-    phoneNumber: '',
-    profilePicture: undefined,
-  };
+  form!: FormGroup;
   imageFile: File | undefined;
   imagePreview: string = '';
+  backendErrors: { [key: string]: string[] } = {};
 
   constructor(
+    private fb: FormBuilder,
     private userService: UserService,
     private router: Router,
     private route: ActivatedRoute
@@ -31,56 +34,61 @@ export class UpdateUserComponent implements OnInit {
     this.route.parent?.paramMap.subscribe((data) => {
       this.userId = +data.get('userId')!;
     });
+
+    this.form = this.fb.group({
+      name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      phoneNumber: ['', Validators.required],
+    });
+
     this.getUserById();
   }
 
   getUserById() {
     this.userService.getUserById(this.userId).subscribe({
       next: (data: any) => {
-        this.userUpdateDto.name = data.userDto.name;
-        this.userUpdateDto.email = data.userDto.email;
-        this.userUpdateDto.phoneNumber = data.userDto.phoneNumber;
-        this.userUpdateDto.profilePicture = data.userDto.profilePicture;
+        this.form.patchValue({
+          name: data.userDto.name,
+          email: data.userDto.email,
+          phoneNumber: data.userDto.phoneNumber,
+        });
+        this.imagePreview = data.userDto.profilePicture || '';
       },
-      error: (err) => {
-        console.error(err);
-      },
-      complete: () => {
-        console.log('User fetched successfully!');
-      },
+      error: (err) => console.error(err),
     });
   }
 
   updateUser() {
-    this.userUpdateDto.profilePicture = this.imageFile;
-    console.log(this.userUpdateDto);
+    const userUpdateDto: UserUpdateDto = {
+      ...this.form.value,
+      profilePicture: this.imageFile,
+    };
+
     this.userService
-      .updateUserInformation(this.userId, this.userUpdateDto)
+      .updateUserInformation(this.userId, userUpdateDto)
       .subscribe({
-        next: (data: any) => {
-          console.log(data);
+        next: () => {
+          this.router.navigate(['/profile', this.userId, 'user-information']);
         },
         error: (err) => {
+          if (err.status === 400 && err.error?.errors) {
+            this.backendErrors = err.error.errors;
+          }
           console.error(err);
-        },
-        complete: () => {
-          this.router.navigate(['/profile', this.userId, 'user-information']);
         },
       });
   }
 
   onFileSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
-    if (target.files) {
-      Array.from(target.files).forEach((file) => {
-        this.imageFile = file;
+    if (target.files && target.files.length > 0) {
+      this.imageFile = target.files[0];
 
-        const reader = new FileReader();
-        reader.onload = (e: any) => {
-          this.imagePreview = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      });
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.imagePreview = e.target.result;
+      };
+      reader.readAsDataURL(this.imageFile);
 
       target.value = '';
     }
@@ -89,5 +97,9 @@ export class UpdateUserComponent implements OnInit {
   removeImage(): void {
     this.imageFile = undefined;
     this.imagePreview = '';
+  }
+
+  getErrorMessages(controlName: string): string[] {
+    return this.backendErrors[controlName] || [];
   }
 }
