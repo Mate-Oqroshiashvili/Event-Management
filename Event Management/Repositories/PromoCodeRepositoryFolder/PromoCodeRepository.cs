@@ -44,13 +44,23 @@ namespace Event_Management.Repositories.PromoCodeRepositoryFolder
 
         public async Task<PromoCodeDto> GetPromoCodeBySearchTermAsync(string searchTerm)
         {
-            var promoCode = await _context.PromoCodes
-                .Include(x => x.Event)
-                .FirstOrDefaultAsync(x => x.PromoCodeText.Equals(searchTerm, StringComparison.CurrentCultureIgnoreCase));
+            try
+            {
+                if (string.IsNullOrWhiteSpace(searchTerm))
+                    throw new BadRequestException("Search term should not be empty!");
 
-            var promoCodeDto = _mapper.Map<PromoCodeDto>(promoCode);
+                var promoCode = await _context.PromoCodes
+                    .Include(x => x.Event)
+                    .FirstOrDefaultAsync(x => x.PromoCodeText.ToLower() == searchTerm.ToLower()) ?? throw new NotFoundException("Promocode not found!");
 
-            return promoCodeDto;
+                var promoCodeDto = _mapper.Map<PromoCodeDto>(promoCode);
+
+                return promoCodeDto;
+            }
+            catch (Exception ex) 
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
         }
 
         public async Task<IEnumerable<PromoCodeDto>> GetPromoCodesByEventIdAsync(int eventId)

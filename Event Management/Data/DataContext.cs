@@ -27,6 +27,10 @@ namespace Event_Management.Data
                 .IsUnique(); // Ensure unique emails
 
             modelBuilder.Entity<User>()
+                .Property(u => u.RowVersion)
+                .IsRowVersion();
+
+            modelBuilder.Entity<User>()
                 .HasMany(u => u.Purchases)
                 .WithOne(p => p.User)
                 .HasForeignKey(p => p.UserId)

@@ -25,6 +25,7 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
                 .Include(x => x.Event)
                 .Include(x => x.Ticket)
                 .Include(x => x.User)
+                .Include(x => x.Purchase)
                 .ToListAsync();
 
             var participantDtos = _mapper.Map<IEnumerable<ParticipantDto>>(participants);
@@ -38,6 +39,7 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
                 .Include(x => x.Event)
                 .Include(x => x.Ticket)
                 .Include(x => x.User)
+                .Include(x => x.Purchase)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             var participantDto = _mapper.Map<ParticipantDto>(participant);
@@ -52,6 +54,7 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
                 .Include(x => x.Event)
                 .Include(x => x.Ticket)
                 .Include(x => x.User)
+                .Include(x => x.Purchase)
                 .ToListAsync();
 
             var participantDtos = _mapper.Map<IEnumerable<ParticipantDto>>(participants);
@@ -131,11 +134,12 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
             try
             {
                 var ticket = participant.Ticket ?? throw new NotFoundException("Ticket not found!");
-                var user = participant.User ?? throw new NotFoundException("User not found!");
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == participant.UserId) ?? throw new NotFoundException("User not found!");
 
                 // Ensure the purchase exists and is associated with this participant's ticket
                 var purchase = await _context.Purchases
                     .Include(p => p.Tickets)
+                    .Include(p => p.PromoCode)
                     .FirstOrDefaultAsync(p => p.Id == purchaseId && p.Tickets.Any(t => t.Id == participant.TicketId) && p.Participants.Any(x => x.Id == participantId)) ?? throw new NotFoundException("The provided purchase does not belong to this participant.");
 
                 // Refund the user before deleting anything
@@ -145,9 +149,14 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
                 if (purchase.isPromoCodeUsed && purchase.PromoCode != null)
                 {
                     refundAmount -= (refundAmount * purchase.PromoCode.SaleAmountInPercentages) / 100;
+                    user.Balance += refundAmount;
+                }
+                else
+                {
+                    user.Balance += refundAmount;
                 }
 
-                user.Balance += refundAmount;
+                _context.Entry(user).Property(u => u.Balance).IsModified = true;
 
                 // Remove the participant first
                 _context.Participants.Remove(participant);
@@ -157,17 +166,22 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
                 bool hasRemainingParticipants = await _context.Participants
                     .AnyAsync(p => p.PurchaseId == purchaseId);
 
+                // Always restore ticket quantity if applicable
+                if (ticket.Quantity < int.MaxValue)
+                {
+                    ticket.Quantity += 1;
+                }
+
+                // Always update ticket status if it was sold out
+                if (ticket.Status == TicketStatus.SOLD_OUT)
+                {
+                    ticket.Status = TicketStatus.AVAILABLE;
+                }
+
+                // Then handle purchase deletion if no remaining participants
                 if (!hasRemainingParticipants)
                 {
                     _context.Purchases.Remove(purchase);
-                }
-                else
-                {
-                    // Restore ticket quantity if applicable
-                    if (ticket.Quantity < int.MaxValue) ticket.Quantity += 1;
-
-                    // Update ticket status if it was sold out
-                    if (ticket.Status == TicketStatus.SOLD_OUT) ticket.Status = TicketStatus.AVAILABLE;
                 }
 
                 // Check if the user has any other participants left
@@ -181,6 +195,11 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
                 await transaction.CommitAsync();
 
                 return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                await transaction.RollbackAsync();
+                throw new InvalidOperationException("The user's balance was modified by another transaction. Please retry the refund.");
             }
             catch (Exception)
             {

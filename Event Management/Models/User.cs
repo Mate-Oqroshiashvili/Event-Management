@@ -1,4 +1,5 @@
 ﻿using Event_Management.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Event_Management.Models
 {
@@ -27,6 +28,9 @@ namespace Event_Management.Models
         public IEnumerable<Review> Reviews { get; set; } = new List<Review>();
         public IEnumerable<Comment> Comments { get; set; } = new List<Comment>();
         public List<UsedPromoCode> UsedPromoCodes { get; set; } = new List<UsedPromoCode>();
+
+        [Timestamp]
+        public byte[] RowVersion { get; set; } = new byte[8];
 
         public User()
         {

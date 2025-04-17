@@ -161,7 +161,7 @@ namespace Event_Management.Controllers
 
         [Authorize(Roles = "BASIC,PARTICIPANT,ORGANIZER")]
         [HttpPatch("add-balance/{userId}")]
-        public async Task<ActionResult<string>> AddBalance(int userId, decimal balanceToDeposit)
+        public async Task<ActionResult<string>> AddBalance(int userId, [FromBody] decimal balanceToDeposit)
         {
             try
             {
