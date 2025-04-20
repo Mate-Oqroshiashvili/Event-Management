@@ -11,9 +11,10 @@ namespace Event_Management.Validations.LocationValidations
         public LocationUpdateDtoValidator() 
         {
             RuleFor(l => l.Name)
-                .NotEmpty().WithMessage("Location name is required.")
-                .MaximumLength(100).WithMessage("Location name must not exceed 100 characters.")
-                .Must(name => name.Trim() == name).WithMessage("Location name should not have leading or trailing spaces.");
+               .NotEmpty().WithMessage("Location name is required.")
+               .MaximumLength(100).WithMessage("Location name must not exceed 100 characters.")
+               .Must(name => name == null || name.Trim() == name)
+               .WithMessage("Location name should not have leading or trailing spaces.");
 
             RuleFor(l => l.Address)
                 .NotEmpty().WithMessage("Address is required.")
@@ -25,9 +26,7 @@ namespace Event_Management.Validations.LocationValidations
 
             RuleFor(l => l.State)
                 .NotEmpty().WithMessage("State is required.")
-                .MaximumLength(100).WithMessage("State must not exceed 100 characters.")
-                .Must((dto, state) => IsValidState(dto.Country!, state))
-                .WithMessage("Invalid state for the selected country.");
+                .MaximumLength(100).WithMessage("State must not exceed 100 characters.");
 
             RuleFor(l => l.Country)
                 .NotEmpty().WithMessage("Country is required.")
@@ -36,49 +35,22 @@ namespace Event_Management.Validations.LocationValidations
             RuleFor(l => l.PostalCode)
                 .NotEmpty().WithMessage("Postal code is required.")
                 .Matches("^[0-9A-Za-z -]+$").WithMessage("Invalid postal code format.")
-                .MaximumLength(20).WithMessage("Postal code must not exceed 20 characters.")
-                .When(l => l.Country == "US", ApplyConditionTo.CurrentValidator)
-                .Matches(@"^\d{5}(-\d{4})?$").WithMessage("Invalid US postal code format.")
-                .When(l => l.Country == "CA", ApplyConditionTo.CurrentValidator)
-                .Matches(@"^[A-Za-z]\d[A-Za-z] ?\d[A-Za-z]\d$").WithMessage("Invalid Canadian postal code format.");
-
-            RuleFor(l => l.MaxCapacity)
-                .GreaterThan(0).WithMessage("Maximum capacity must be greater than zero.")
-                .LessThan(20000).WithMessage("Maximum capacity must be realistic (less than 20,000).");
-
-            RuleFor(l => l.RemainingCapacity)
-                .GreaterThan(0).WithMessage("Remaining capacity must be greater than zero.")
-                .LessThan(20000).WithMessage("Remaining capacity must be realistic (less than 20,000).");
-
-            RuleFor(l => l.AvailableStaff)
-                .GreaterThan(0).WithMessage("Number of available Staff must be greater than zero.")
-                .LessThan(500).WithMessage("Available staff count must be realistic (less than 500).");
-
-            RuleFor(l => l.BookedStaff)
-                .GreaterThan(0).WithMessage("Number of booked Staff must be greater than zero.")
-                .LessThan(l => l.AvailableStaff + 1).WithMessage("Booked staff count must be realistic.");
+                .MaximumLength(20).WithMessage("Postal code must not exceed 20 characters.");
 
             RuleFor(l => l.Description)
-                .MaximumLength(500).WithMessage("Description must not exceed 500 characters.")
+                .NotEmpty().WithMessage("Description is required!")
+                .MaximumLength(500).WithMessage("Description must not exceed 500 characters.");
+
+            RuleFor(l => l.Description)
                 .Must(desc => !desc.Contains("free") && !desc.Contains("discount") && !desc.Contains("spam"))
-                .WithMessage("Description contains forbidden words.");
+                .WithMessage("Description contains forbidden words.")
+                .When(l => !string.IsNullOrWhiteSpace(l.Description));
 
             RuleFor(l => l.Image)
                 .Must(file => file == null || _allowedFileExtensions.Contains(Path.GetExtension(file.FileName).ToLower()))
-                .WithMessage("Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed.")
+                .WithMessage("Invalid file type. Only JPG, JPEG, PNG, GIF and WEBP are allowed.")
                 .Must(file => file == null || file.Length <= _maxFileSizeInMB * 1024 * 1024)
                 .WithMessage($"File size cannot exceed {_maxFileSizeInMB} MB.");
-        }
-
-        private bool IsValidState(string country, string state)
-        {
-            var validStates = new Dictionary<string, List<string>>()
-            {
-                { "US", new List<string> { "California", "New York", "Texas", "Florida", "Illinois" } },
-                { "CA", new List<string> { "Ontario", "Quebec", "British Columbia", "Alberta", "Manitoba" } }
-            };
-
-            return string.IsNullOrEmpty(state) || (validStates.ContainsKey(country) && validStates[country].Contains(state));
         }
     }
 }

@@ -81,6 +81,12 @@ namespace Event_Management.Repositories.LocationRepositoryFolder
             var existingLocation = await _context.Locations.FirstOrDefaultAsync(l => l.Id == id);
             if (existingLocation == null) return false;
 
+            if (locationUpdateDto.Image != null) 
+            {
+                var imageUrl = await _imageRepository.GenerateImageSource(locationUpdateDto.Image);
+                existingLocation.ImageUrl = imageUrl;
+            }
+
             var location = _mapper.Map(locationUpdateDto, existingLocation);
 
             await _context.SaveChangesAsync();

@@ -72,6 +72,8 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
             return organizerDtos;
         }
 
+
+
         public async Task<OrganizerDto> AddOrganizerAsync(OrganizerCreateDto organizerCreateDto)
         {
             try
@@ -187,6 +189,11 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
         {
             var existingOrganizer = await _context.Organizers.FirstOrDefaultAsync(o => o.Id == id);
             if (existingOrganizer == null) return false;
+
+            if (organizerUpdateDto.Logo != null) 
+            {
+                var logoUrl = await _imageRepository.ChangeOrganizerLogoImage(id, organizerUpdateDto.Logo);
+            }
 
             _mapper.Map(organizerUpdateDto, existingOrganizer);
 

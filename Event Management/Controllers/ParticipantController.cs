@@ -85,25 +85,6 @@ namespace Event_Management.Controllers
         }
 
         [Authorize(Roles = "PARTICIPANT")]
-        [HttpPatch("change-ticket-type/{participantId}")]
-        public async Task<ActionResult<string>> ChangeTicketType(int participantId, [FromBody] TicketType ticketType)
-        {
-            try
-            {
-                if (!Enum.IsDefined(typeof(TicketType), ticketType))
-                    throw new BadRequestException("Invalid ticket type!");
-
-                var updated = await _ticketRepository.UpdateTicketTypeAsync(participantId, ticketType);
-
-                return !updated ? throw new NotFoundException("participant or ticket not found!") : Ok(new { message = "Ticket type updated successfully." });
-            }
-            catch (Exception ex)
-            {
-                throw new BadRequestException(ex.Message, ex.InnerException);
-            }
-        }
-
-        [Authorize(Roles = "PARTICIPANT")]
         [HttpDelete("request-the-refund/{participantId}&{purchaseId}")]
         public async Task<ActionResult<string>> RequestTheRefund(int participantId, int purchaseId)
         {

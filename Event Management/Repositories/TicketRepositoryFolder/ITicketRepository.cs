@@ -12,8 +12,7 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
         Task<TicketDto> GetTicketByIdAsync(int id);
         Task<TicketDto> AddTicketAsync(TicketCreateDto ticketCreateDto);
         Task<string> ValidateTicketByQRCodeImage(IFormFile uploadedQrCodeImage);
-        Task<bool> UpdateTicketAsync(int id, TicketUpdateDto ticketUpdateDto);
-        Task<bool> UpdateTicketTypeAsync(int participantId, TicketType ticketType);
-        Task<bool> DeleteTicketAsync(int id);
+        Task<string> UpdateTicketAsync(int id, TicketUpdateDto ticketUpdateDto);
+        Task<string> DeleteTicketAsync(int id);
     }
 }

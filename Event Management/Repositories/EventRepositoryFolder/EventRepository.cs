@@ -268,6 +268,84 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             }
         }
 
+        public async Task<EventAnalyticsDto> GetEventAnalyticsAsync(int organizerId, int eventId)
+        {
+            var eventData = await _context.Events
+                .Include(e => e.Participants)
+                .Include(e => e.Tickets).ThenInclude(t => t.Purchases)
+                .Include(e => e.PromoCodes)
+                .Include(e => e.Reviews)
+                .Include(e => e.Comments)
+                .Where(e => e.Id == eventId && e.OrganizerId == organizerId && e.Status != EventStatus.DELETED)
+                .Select(e => new EventAnalyticsDto
+                {
+                    EventId = e.Id,
+                    Title = e.Title,
+
+                    // Attendance
+                    TotalParticipants = e.Participants.Count(),
+                    AttendedParticipants = e.Participants.Count(p => p.Attendance == true),
+                    OccupancyRate = e.Capacity > 0
+                        ? (double)e.Participants.Count() / e.Capacity * 100
+                        : 0.0,
+
+                    // Tickets by Type
+                    VIPTicketCount = e.Tickets.Where(t => t.Type == TicketType.VIP).Sum(t => t.Quantity),
+                    BasicTicketCount = e.Tickets.Where(t => t.Type == TicketType.BASIC).Sum(t => t.Quantity),
+                    EarlyBirdTicketCount = e.Tickets.Where(t => t.Type == TicketType.EARLYBIRD).Sum(t => t.Quantity),
+                    TotalTicketQuantity = e.Tickets.Sum(t => t.Quantity),
+
+                    // Financials
+                    TotalTicketsSold = e.Participants.Count(),
+
+                    TotalRevenue = e.Tickets
+                        .SelectMany(t => t.Purchases)
+                        .Distinct()
+                        .Sum(p => p.TotalAmount),
+
+                    // Promo Codes
+                    PromoCodesUsed = e.Tickets
+                        .SelectMany(t => t.Purchases)
+                        .Where(p => p.isPromoCodeUsed)
+                        .Select(p => p.Id)
+                        .Distinct()
+                        .Count(),
+
+                    PurchasesWithPromoCode = e.Tickets
+                        .SelectMany(t => t.Purchases)
+                        .Where(p => p.isPromoCodeUsed)
+                        .Select(p => p.Id)
+                        .Distinct()
+                        .Count(),
+
+                    PurchasesWithoutPromoCode = e.Tickets
+                        .SelectMany(t => t.Purchases)
+                        .Where(p => !p.isPromoCodeUsed)
+                        .Select(p => p.Id)
+                        .Distinct()
+                        .Count(),
+
+                    AvailablePromoCodes = e.PromoCodes.Count(pc => pc.PromoCodeStatus == PromoCodeStatus.Available),
+                    OutOfStockPromoCodes = e.PromoCodes.Count(pc => pc.PromoCodeStatus == PromoCodeStatus.OutOfStock),
+                    TotalPromoCodes = e.PromoCodes.Count(),
+
+                    // Reviews & Comments
+                    ReviewCount = e.Reviews.Count(),
+                    AverageRating = e.Reviews.Any() ? e.Reviews.Average(r => r.StarCount) : 0.0,
+                    CommentCount = e.Comments.Count(),
+
+                    FiveStarCount = e.Reviews.Count(r => r.StarCount == 5),
+                    FourStarCount = e.Reviews.Count(r => r.StarCount == 4),
+                    ThreeStarCount = e.Reviews.Count(r => r.StarCount == 3),
+                    TwoStarCount = e.Reviews.Count(r => r.StarCount == 2),
+                    OneStarCount = e.Reviews.Count(r => r.StarCount == 1),
+                })
+                .FirstOrDefaultAsync();
+
+            return eventData;
+        }
+
+
         public async Task<EventDto> AddEventAsync(EventCreateDto eventCreateDto)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -367,7 +445,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                     throw new BadRequestException("User is neither speaker, nor artist. User should be artist or speaker to be added on event as one!");
 
                 if (@event.SpeakersAndArtists.Any(x => x.Id == userId))
-                    throw new BadRequestException("User is already added on event as speaker or an artist!");
+                    throw new BadRequestException("User is already added on event!");
 
                 @event.SpeakersAndArtists.Add(user);
                 await _context.SaveChangesAsync();
@@ -394,7 +472,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                 var user = await _context.Users.FindAsync(userId) ?? throw new NotFoundException("User not found!");
 
                 if (!@event.SpeakersAndArtists.Any(x => x.Id == userId))
-                    throw new BadRequestException("User not found on event as speaker or an artist!");
+                    throw new BadRequestException("User not found on event!");
 
                 @event.SpeakersAndArtists.Remove(user);
                 await _context.SaveChangesAsync();
@@ -563,7 +641,12 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             try
             {
                 var @event = await _context.Events
-                    .Include(x => x.Location)
+                    .Include(x => x.Participants)
+                    .Include(x => x.Tickets)
+                    .Include(e => e.Location)
+                    .Include(x => x.Organizer)
+                        .ThenInclude(x => x.User)
+                    .Include(x => x.SpeakersAndArtists)
                     .FirstOrDefaultAsync(x => x.Id == eventId);
                 if (@event == null) return false;
 

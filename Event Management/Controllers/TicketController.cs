@@ -117,9 +117,9 @@ namespace Event_Management.Controllers
         {
             try
             {
-                var isUpdated = await _ticketRepository.UpdateTicketAsync(ticketId, ticketUpdateDto);
+                var result = await _ticketRepository.UpdateTicketAsync(ticketId, ticketUpdateDto);
 
-                return !isUpdated ? throw new NotFoundException("Ticket update process failed!") : Ok(new { message = "Ticket updated successfully!" });
+                return result == null ? throw new NotFoundException("Ticket update process failed!") : Ok(new { message = result });
             }
             catch (Exception ex)
             {
@@ -133,9 +133,9 @@ namespace Event_Management.Controllers
         {
             try
             {
-                var isremoved = await _ticketRepository.DeleteTicketAsync(ticketId);
+                var result = await _ticketRepository.DeleteTicketAsync(ticketId);
 
-                return !isremoved ? throw new NotFoundException("Ticket deletion process failed!") : Ok(new { message = "Ticket removed successfully!" });
+                return result == null ? throw new NotFoundException("Ticket deletion process failed!") : Ok(new { message = result });
             }
             catch (Exception ex)
             {

@@ -8,6 +8,7 @@ using Event_Management.Repositories.ParticipantRepositoryFolder;
 using Microsoft.EntityFrameworkCore;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using System.Net.Sockets;
 using ZXing;
 using ZXing.Common;
 using ZXing.ImageSharp;
@@ -85,16 +86,23 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
 
         public async Task<TicketDto> GetTicketByIdAsync(int id)
         {
-            var ticket = await _context.Tickets
-                .Include(x => x.Participants)
-                .Include(x => x.Purchases)
-                .Include(x => x.Event)
-                .Include(x => x.Users)
-                .FirstOrDefaultAsync(x => x.Id == id);
+            try
+            {
+                var ticket = await _context.Tickets
+                    .Include(x => x.Participants)
+                    .Include(x => x.Purchases)
+                    .Include(x => x.Event)
+                    .Include(x => x.Users)
+                    .FirstOrDefaultAsync(x => x.Id == id) ?? throw new NotFoundException("Ticket not found!");
 
-            var ticketDto = _mapper.Map<TicketDto>(ticket);
+                var ticketDto = _mapper.Map<TicketDto>(ticket);
 
-            return ticketDto;
+                return ticketDto;
+            }
+            catch (Exception ex) 
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
         }
 
         public async Task<TicketDto> AddTicketAsync(TicketCreateDto ticketCreateDto)
@@ -112,6 +120,7 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
                         .ThenInclude(x => x.Participants)
                 .Include(e => e.Location)
                 .Include(e => e.Organizer)
+                    .ThenInclude(x => x.User)
                 .Include(e => e.SpeakersAndArtists)
                 .Include(e => e.PromoCodes)
                 .Include(e => e.Reviews)
@@ -133,6 +142,9 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
 
             if (threshold >= ticket.Event.Capacity)
                 throw new BadRequestException("Tickets capacity exceeds the event's maximum capacity!");
+            
+            if ((threshold + ticketCreateDto.Quantity) > ticket.Event.Capacity)
+                throw new BadRequestException("Tickets capacity exceeds the event's maximum capacity!");
 
             if (ticket.Event.StartDate <= DateTime.UtcNow + TimeSpan.FromHours(1) &&
                 ticket.Event.StartDate > DateTime.UtcNow)
@@ -144,16 +156,34 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
             if (ticket.Quantity > ticket.Event.Capacity)
                 throw new BadRequestException($"Ticket quantity should not exceed the event's max capacity of {ticket.Event.Capacity}.");
 
-            ticket.Users.Add(ticket.Event.Organizer.User);
+            var existingTicket = ticket.Event.Tickets.FirstOrDefault(
+                x => x.EventId == ticket.EventId && x.Price == ticket.Price && x.Type == ticket.Type
+            );
 
-            await _context.Tickets.AddAsync(ticket);
-            await _context.SaveChangesAsync();
+            if (existingTicket != null)
+            {
+                existingTicket.Quantity += ticket.Quantity;
 
-            ticket.Status = TicketStatus.AVAILABLE;
-            ticket.ExpiryDate = ticket.Event?.EndDate
-                ?? throw new BadRequestException("Event EndDate is required.");
+                if (existingTicket.Status == TicketStatus.SOLD_OUT)
+                    existingTicket.Status = TicketStatus.AVAILABLE;
 
-            await _context.SaveChangesAsync();
+                ticket = existingTicket;
+
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                ticket.Users.Add(ticket.Event.Organizer.User);
+
+                await _context.Tickets.AddAsync(ticket);
+                await _context.SaveChangesAsync();
+
+                ticket.Status = TicketStatus.AVAILABLE;
+                ticket.ExpiryDate = ticket.Event?.EndDate
+                    ?? throw new BadRequestException("Event EndDate is required.");
+
+                await _context.SaveChangesAsync();
+            }
 
             return _mapper.Map<TicketDto>(ticket);
         }
@@ -239,45 +269,54 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
             }
         }
 
-        public async Task<bool> UpdateTicketAsync(int id, TicketUpdateDto ticketUpdateDto)
+        public async Task<string> UpdateTicketAsync(int id, TicketUpdateDto ticketUpdateDto)
         {
-            var existingTicket = await _context.Tickets
-                .Include(x => x.Event)
-                .FirstOrDefaultAsync(t => t.Id == id);
-            if (existingTicket == null) return false;
+            try
+            {
+                var existingTicket = await _context.Tickets
+                    .Include(x => x.Event)
+                    .FirstOrDefaultAsync(t => t.Id == id) ?? throw new NotFoundException("Ticket not found!");
 
-            if (ticketUpdateDto.Quantity > existingTicket.Event.Capacity)
-                throw new BadRequestException($"Ticket quantity can not exceed the maximum event capacity! Event's maximum capacity is {existingTicket.Event.Capacity}.");
+                int threshold = 0;
 
-            _mapper.Map(ticketUpdateDto, existingTicket);
+                foreach (var item in existingTicket.Event.Tickets)
+                {
+                    threshold += item.Quantity;
+                    var purchase = item.Purchases.FirstOrDefault(x => x.Participants.Count != 0);
+                    if (purchase != null)
+                    {
+                        threshold += purchase.Participants.Count;
+                    }
+                }
 
-            await _context.SaveChangesAsync();
-            return true;
+                if (threshold >= existingTicket.Event.Capacity)
+                    throw new BadRequestException("Tickets capacity exceeds the event's maximum capacity!");
+
+                _mapper.Map(ticketUpdateDto, existingTicket);
+
+                await _context.SaveChangesAsync();
+                return "Ticket updated successfully!";
+            }
+            catch(Exception ex) 
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
         }
 
-        public async Task<bool> UpdateTicketTypeAsync(int participantId, TicketType ticketType)
+        public async Task<string> DeleteTicketAsync(int id)
         {
-            var existingParticipant = await _context.Participants
-                .Include(x => x.Ticket)
-                .FirstOrDefaultAsync(x => x.Id == participantId);
+            try
+            {
+                var ticket = await _context.Tickets.FindAsync(id) ?? throw new NotFoundException("Ticket not found!");
 
-            if (existingParticipant == null || existingParticipant.Ticket == null)
-                return false;
-
-            existingParticipant.Ticket.Type = ticketType;
-
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<bool> DeleteTicketAsync(int id)
-        {
-            var ticket = await _context.Tickets.FindAsync(id);
-            if (ticket == null) return false;
-
-            _context.Tickets.Remove(ticket);
-            await _context.SaveChangesAsync();
-            return true;
+                _context.Tickets.Remove(ticket);
+                await _context.SaveChangesAsync();
+                return "Ticket deleted successfully!";
+            }
+            catch (Exception ex) 
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
         }
 
         // Method to decode QR code from an image
