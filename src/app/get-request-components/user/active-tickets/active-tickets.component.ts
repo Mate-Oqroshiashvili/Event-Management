@@ -1,21 +1,20 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import {
   ParticipantDto,
   ParticipantService,
 } from '../../../services/participant/participant.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TicketStatus } from '../../../services/ticket/ticket.service';
 import { EventStatus } from '../../../services/event/event.service';
 
 @Component({
-  selector: 'app-user-participation-history',
+  selector: 'app-active-tickets',
   imports: [CommonModule],
-  templateUrl: './user-participation-history.component.html',
-  styleUrl: './user-participation-history.component.css',
+  templateUrl: './active-tickets.component.html',
+  styleUrl: './active-tickets.component.css',
 })
-export class UserParticipationHistoryComponent implements OnInit {
+export class ActiveTicketsComponent implements OnInit {
   userId: number = 0;
   participants: ParticipantDto[] = [];
   refunding: boolean = false;
@@ -37,7 +36,7 @@ export class UserParticipationHistoryComponent implements OnInit {
     this.participantService.getParticipantsByUserId(this.userId).subscribe({
       next: (data: any) => {
         const filtered = data.participantDtos.filter(
-          (x: ParticipantDto) => x.event.status == EventStatus.COMPLETED
+          (x: ParticipantDto) => x.event.status == EventStatus.PUBLISHED
         );
         this.participants = filtered;
         console.log(data);

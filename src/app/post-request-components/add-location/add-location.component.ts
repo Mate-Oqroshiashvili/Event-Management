@@ -4,75 +4,83 @@ import {
 } from './../../services/location/location.service';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-add-location',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './add-location.component.html',
   styleUrl: './add-location.component.css',
 })
 export class AddLocationComponent implements OnInit {
-  locationCreateDto: LocationCreateDto = {
-    name: '',
-    address: '',
-    city: '',
-    state: '',
-    country: '',
-    postalCode: '',
-    maxCapacity: 0,
-    availableStaff: 0,
-    description: '',
-    image: undefined,
-    isIndoor: false,
-    isAccessible: false,
-  };
+  locationForm!: FormGroup;
   imageFile: File | undefined;
   imagePreview: string = '';
+  serverErrors: { [key: string]: string[] } = {};
 
   constructor(
+    private fb: FormBuilder,
     private locationService: LocationService,
     private router: Router
   ) {}
 
-  ngOnInit(): void {}
-
-  addLocation() {
-    this.locationCreateDto.image = this.imageFile;
-
-    this.locationService.addLocation(this.locationCreateDto).subscribe({
-      next: (data: any) => {
-        console.log(data);
-      },
-      error: (err) => {
-        console.error(err);
-      },
-      complete: () => {
-        this.router.navigate(['/locations']);
-      },
+  ngOnInit(): void {
+    this.locationForm = this.fb.group({
+      name: ['', Validators.required],
+      address: ['', Validators.required],
+      city: ['', Validators.required],
+      state: ['', Validators.required],
+      country: ['', Validators.required],
+      postalCode: ['', Validators.required],
+      maxCapacity: [0, [Validators.required, Validators.min(1)]],
+      availableStaff: [0, [Validators.required, Validators.min(1)]],
+      description: [''],
+      isIndoor: [false],
+      isAccessible: [false],
     });
   }
 
   onFileSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
-    if (target.files) {
-      Array.from(target.files).forEach((file) => {
-        this.imageFile = file;
-
-        const reader = new FileReader();
-        reader.onload = (e: any) => {
-          this.imagePreview = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      });
-
-      target.value = '';
+    if (target.files?.length) {
+      this.imageFile = target.files[0];
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.imagePreview = e.target.result;
+      };
+      reader.readAsDataURL(this.imageFile);
     }
   }
 
   removeImage(): void {
     this.imageFile = undefined;
     this.imagePreview = '';
+  }
+
+  addLocation(): void {
+    const locationData = this.locationForm.value as LocationCreateDto;
+    locationData.image = this.imageFile;
+
+    this.locationService.addLocation(locationData).subscribe({
+      next: () => this.router.navigate(['/locations']),
+      error: (errorResponse) => {
+        console.error(errorResponse);
+        if (errorResponse.status === 400 && errorResponse.error?.errors) {
+          const validationErrors = errorResponse.error.errors;
+          this.serverErrors = {};
+          for (const field in validationErrors) {
+            if (validationErrors.hasOwnProperty(field)) {
+              this.serverErrors[field] = validationErrors[field];
+            }
+          }
+        }
+      },
+    });
   }
 }

@@ -9,6 +9,39 @@ import { UserDto } from '../user/user.service';
 import { CommentDto } from '../comment/comment.service';
 import { Observable } from 'rxjs';
 
+export interface EventAnalyticsDto {
+  eventId: number;
+  title: string;
+  totalParticipants: number;
+  attendedParticipants: number;
+  occupancyRate: number;
+  vipTicketCount: number;
+  basicTicketCount: number;
+  earlyBirdTicketCount: number;
+  totalTicketQuantity: number;
+  totalTicketsSold: number;
+  totalRevenue: number;
+  promoCodesUsed: number;
+  purchasesWithPromoCode: number;
+  purchasesWithoutPromoCode: number;
+  availablePromoCodes: number;
+  outOfStockPromoCodes: number;
+  totalPromoCodes: number;
+  reviewCount: number;
+  averageRating: number;
+  commentCount: number;
+  fiveStarCount: number;
+  fourStarCount: number;
+  threeStarCount: number;
+  twoStarCount: number;
+  oneStarCount: number;
+}
+
+export interface EventAnalyticsRequestDto {
+  OrganizerId: number;
+  EventId: number;
+}
+
 export enum EventStatus {
   DRAFT = 1,
   PUBLISHED = 2,
@@ -125,6 +158,15 @@ export class EventService {
     return this.http.get<EventDto[]>(
       `${this.apiUrl}Event/get-events-by-location-id/${locationId}`,
       {}
+    );
+  }
+
+  getAnalytics(
+    reqeust: EventAnalyticsRequestDto
+  ): Observable<EventAnalyticsDto> {
+    return this.http.post<EventAnalyticsDto>(
+      `${this.apiUrl}Event/get-analytics`,
+      reqeust
     );
   }
 

@@ -51,7 +51,7 @@
   </form>
 </section>
 <section class="cards">
-  @for (event of filteredEvents; track event.id) {
+  @if (!isLoading) { @for (event of filteredEvents; track event.id) {
   <a [routerLink]="['event', event.id]" class="card">
     <img [src]="event.images[0]" class="card-img-top" alt="..." />
     <div class="card-body">
@@ -68,5 +68,11 @@
       </p>
     </div>
   </a>
-  }
+  } }
 </section>
+
+@if(isLoading) {
+<div class="spinner">
+  <div class="spinner-border text-primary" role="status"></div>
+</div>
+}

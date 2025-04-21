@@ -1,1 +1,51 @@
-<p>add-ticket works!</p>
+<div class="add-ticket-form">
+  <form [formGroup]="ticketForm" (ngSubmit)="addTicket()">
+    <div class="form-floating mb-3">
+      <select formControlName="type" class="form-select" id="type">
+        <option value="0">Select Ticket Type</option>
+        <option [value]="1">Basic</option>
+        <option [value]="2">VIP</option>
+        <option [value]="3">Early Bird</option>
+      </select>
+      @if (getFieldErrors('Type')) {
+      <small class="text-danger" [innerHTML]="getFieldErrors('Type')"></small>
+      }
+      <label for="type">Ticket Type</label>
+    </div>
+
+    <div class="form-floating mb-3">
+      <input
+        formControlName="price"
+        type="number"
+        class="form-control"
+        id="price"
+        placeholder="Ticket Price"
+      />
+      @if (getFieldErrors('Price')) {
+      <small class="text-danger" [innerHTML]="getFieldErrors('Price')"></small>
+      }
+      <label for="price">Price ($)</label>
+    </div>
+
+    <div class="form-floating mb-3">
+      <input
+        formControlName="quantity"
+        type="number"
+        class="form-control"
+        id="quantity"
+        placeholder="Quantity"
+      />
+      @if (getFieldErrors('Quantity')) {
+      <small
+        class="text-danger"
+        [innerHTML]="getFieldErrors('Quantity')"
+      ></small>
+      }
+      <label for="quantity">Quantity</label>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end">
+      <button type="submit" class="btn btn-success mt-3">Add Ticket</button>
+    </div>
+  </form>
+</div>

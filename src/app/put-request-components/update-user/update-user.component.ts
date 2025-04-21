@@ -4,11 +4,11 @@ import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
-  FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-update-user',
@@ -31,7 +31,7 @@ export class UpdateUserComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.parent?.paramMap.subscribe((data) => {
+    this.route.paramMap.subscribe((data) => {
       this.userId = +data.get('userId')!;
     });
 
@@ -68,13 +68,20 @@ export class UpdateUserComponent implements OnInit {
       .updateUserInformation(this.userId, userUpdateDto)
       .subscribe({
         next: () => {
-          this.router.navigate(['/profile', this.userId, 'user-information']);
+          this.router.navigate(['/profile', this.userId]);
         },
         error: (err) => {
           if (err.status === 400 && err.error?.errors) {
             this.backendErrors = err.error.errors;
           }
           console.error(err);
+        },
+        complete: () => {
+          Swal.fire(
+            'Success',
+            'User information updated sucessfully!',
+            'success'
+          );
         },
       });
   }

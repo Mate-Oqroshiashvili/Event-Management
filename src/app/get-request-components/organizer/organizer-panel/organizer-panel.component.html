@@ -1,33 +1,150 @@
-<section class="header">
-  <ul class="nav">
+<section class="top">
+  <img
+    [src]="organizer.logoUrl"
+    alt="Profile Picture"
+    class="img-thumbnail"
+    width="150"
+  />
+  <div class="main-information">
+    <div class="card shadow-sm rounded-4 p-4">
+      <div class="card-body">
+        <div
+          class="d-flex justify-content-between align-items-start flex-wrap-reverse mb-3"
+        >
+          <div class="top-side">
+            <h1
+              style="
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap-reverse;
+                gap: 10px;
+              "
+              class="card-title mb-0"
+            >
+              <p style="white-space: nowrap; margin: 0px">
+                {{ organizer.name }}
+              </p>
+            </h1>
+            <span style="font-size: 1.2rem" class="badge bg-success mt-3">
+              ORGANIZER
+            </span>
+          </div>
+
+          <div style="margin-left: auto; margin-bottom: auto" class="dropdown">
+            <button
+              class="btn btn-light border mb-2"
+              type="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a routerLink="/events/add-event" class="dropdown-item"
+                  ><i class="bi bi-calendar-plus-fill me-2"></i>Add New Event</a
+                >
+              </li>
+              <li>
+                <a [routerLink]="['update-organizer']" class="dropdown-item"
+                  ><i class="bi bi-pencil-square me-2"></i>Update Organizer</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <p class="card-text mb-3">
+          <i class="bi bi-house-door-fill me-2"></i>Address:
+          {{ organizer.address }}
+        </p>
+        <p class="card-text mb-3">
+          <i class="bi bi-envelope-fill me-2"></i>Email: {{ organizer.email }}
+        </p>
+        <p class="card-text mb-3">
+          <i class="bi bi-telephone-fill me-2"></i>Phone Number:
+          {{ organizer.phoneNumber }}
+        </p>
+        <p class="card-text mb-3">
+          <i class="bi bi-calendar-check-fill me-2"></i>Organizer Since:
+          {{ organizer.createdAt | date : "yyyy-MM-dd" }}
+        </p>
+
+        @if (organizer.isVerified) {
+        <p class="card-text mb-3">
+          <i class="bi bi-patch-check-fill me-2"></i>Verification Status:
+          Verified
+        </p>
+        } @else {
+        <p class="card-text mb-3">
+          <i class="bi bi-patch-exclamation-fill me-2"></i>Verification Status:
+          Not Verified
+        </p>
+        }
+        <p class="card-text">
+          <i class="bi bi-geo-alt-fill me-2"></i>Related Locations:
+          {{ organizer.locations?.length }}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="tabs mt-5 mb-4">
+  <ul class="nav nav-tabs">
     <li class="nav-item">
       <a
-        style="width: max-content; white-space: nowrap; color: #167347"
-        routerLink="/events/add-event"
         class="nav-link"
-        >Add New Event</a
+        [class.active]="resultType === 'analytics'"
+        (click)="getOrganizerAnalytics()"
+        href="javascript:void(0)"
+        >Organizer Analytics</a
       >
     </li>
     <li class="nav-item">
-      <button class="nav-link" (click)="getDrafted()">Drafted Events</button>
+      <a
+        class="nav-link"
+        [class.active]="resultType === 'drafted'"
+        (click)="getDrafted()"
+        href="javascript:void(0)"
+        >Drafted Events</a
+      >
     </li>
     <li class="nav-item">
-      <button class="nav-link" (click)="getPublished()">
-        Published Events
-      </button>
+      <a
+        class="nav-link"
+        [class.active]="resultType === 'published'"
+        (click)="getPublished()"
+        href="javascript:void(0)"
+        >Published Events</a
+      >
     </li>
     <li class="nav-item">
-      <button class="nav-link" (click)="getCompleted()">
-        Completed Events
-      </button>
+      <a
+        class="nav-link"
+        [class.active]="resultType === 'completed'"
+        (click)="getCompleted()"
+        href="javascript:void(0)"
+        >Completed Events</a
+      >
     </li>
     <li class="nav-item">
-      <button class="nav-link" (click)="getRemoved()">Removed Events</button>
+      <a
+        class="nav-link"
+        [class.active]="resultType === 'removed'"
+        (click)="getRemoved()"
+        href="javascript:void(0)"
+        >Removed Events</a
+      >
     </li>
   </ul>
 </section>
 
-@if (result.length != 0) {
+@if (isLoading) {
+<div class="spinner">
+  <div class="spinner-border text-primary" role="status"></div>
+</div>
+} @else if (result.length) {
 <section class="cards">
   @for (event of result; track event.id) {
   <div
@@ -40,7 +157,7 @@
     class="card"
   >
     <a [routerLink]="['/events/event', event.id]">
-      <img [src]="event.images[0]" class="card-img-top" alt="..." />
+      <img [src]="event.images[0]" class="card-img-top" alt="Event Image" />
       <div class="card-body">
         <h5 class="card-title mb-3">{{ event.title }}</h5>
 
@@ -60,24 +177,37 @@
       <button (click)="publishEvent(event.id)" class="btn btn-light">
         Publish Event
       </button>
-      } @if (resultType === 'drafted' || resultType === 'removed' || resultType
-      === 'published') {
+      } @if ( resultType === 'drafted' || resultType === 'removed' || resultType
+      === 'published' ) {
       <a [routerLink]="['reschedule-event', event.id]" class="btn btn-warning"
         >Reschedule Event</a
       >
+      <a
+        [routerLink]="[event.id, 'add-ticket']"
+        class="btn btn-success text-light"
+        >Add Ticket</a
+      >
       } @if (resultType === 'drafted') {
       <a
-        [routerLink]="['add-artist-on-event', event.id]"
-        class="btn btn-success"
+        [routerLink]="[
+          '/',
+          'organizer-panel',
+          organizerId,
+          { outlets: { 'add-modal': ['add-artist-on-event', event.id] } }
+        ]"
+        class="btn btn-success text-light"
+        >Add Artists</a
       >
-        Add Artist
-      </a>
       <a
-        [routerLink]="['add-speaker-on-event', event.id]"
-        class="btn btn-success"
+        [routerLink]="[
+          '/',
+          'organizer-panel',
+          organizerId,
+          { outlets: { 'add-modal': ['add-speaker-on-event', event.id] } }
+        ]"
+        class="btn btn-success text-light"
+        >Add Speakers</a
       >
-        Add Speaker
-      </a>
       } @if (resultType === 'drafted' || resultType === 'published') {
       <button (click)="deleteEvent(event.id)" class="btn btn-danger">
         Delete Event
@@ -87,6 +217,151 @@
   </div>
   }
 </section>
+}@else if (resultType === 'analytics') {
+<section class="analytics mt-4 container">
+  <h2 class="mb-5">Analytics for All Events</h2>
+
+  <div class="container mb-4 p-0">
+    <input
+      style="border: 1px solid #dee2e6"
+      type="text"
+      class="form-control-lg"
+      placeholder="Search events by title..."
+      [(ngModel)]="analyticsSearchTerm"
+    />
+  </div>
+
+  @for (eventAnalyticsData of filteredAnalyticsData; track $index) {
+  <div class="event-section border rounded p-4 mb-5 shadow-sm">
+    <h1 style="text-align: center" class="mb-5 text-primary">
+      {{ eventAnalyticsData.title }} - Analytics
+    </h1>
+
+    <div class="row mb-4">
+      <!-- Tickets -->
+      <div class="col-md-6 mb-4">
+        <h5 style="text-align: center">Ticket Types Distribution</h5>
+        <div style="width: max-content; margin: auto">
+          <div
+            class="circle"
+            [ngStyle]="{
+              background: generateTicketTypeGradientFromData(eventAnalyticsData)
+            }"
+          ></div>
+
+          <ul class="legend mt-3">
+            <li>
+              <span style="background-color: #007bff"></span> Basic Tickets ({{
+                eventAnalyticsData.basicTicketCount
+              }})
+            </li>
+            <li>
+              <span style="background-color: #ffc107"></span> VIP Tickets ({{
+                eventAnalyticsData.vipTicketCount
+              }})
+            </li>
+            <li>
+              <span style="background-color: #28a745"></span> Early Bird Tickets
+              ({{ eventAnalyticsData.earlyBirdTicketCount }})
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Ratings -->
+      <div class="col-md-6">
+        <h5>Rating Breakdown</h5>
+        <ul class="list-group">
+          <li class="list-group-item">
+            ⭐ 5 Stars: {{ eventAnalyticsData.fiveStarCount }}
+          </li>
+          <li class="list-group-item">
+            ⭐ 4 Stars: {{ eventAnalyticsData.fourStarCount }}
+          </li>
+          <li class="list-group-item">
+            ⭐ 3 Stars: {{ eventAnalyticsData.threeStarCount }}
+          </li>
+          <li class="list-group-item">
+            ⭐ 2 Stars: {{ eventAnalyticsData.twoStarCount }}
+          </li>
+          <li class="list-group-item">
+            ⭐ 1 Star : {{ eventAnalyticsData.oneStarCount }}
+          </li>
+          <li class="list-group-item">
+            📊 Average Rating: {{ eventAnalyticsData.averageRating }}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Promo -->
+      <div class="col-md-6 mb-4">
+        <h5>Promo Code Usage</h5>
+        <ul class="list-group">
+          <li class="list-group-item">
+            Total Promo Codes: {{ eventAnalyticsData.totalPromoCodes }}
+          </li>
+          <li class="list-group-item">
+            Used: {{ eventAnalyticsData.promoCodesUsed }}
+          </li>
+          <li class="list-group-item">
+            Available: {{ eventAnalyticsData.availablePromoCodes }}
+          </li>
+          <li class="list-group-item">
+            Used for Purchases:
+            {{ eventAnalyticsData.purchasesWithPromoCode }}
+          </li>
+          <li class="list-group-item">
+            Purchases Without Code:
+            {{ eventAnalyticsData.purchasesWithoutPromoCode }}
+          </li>
+        </ul>
+      </div>
+
+      <!-- Summary -->
+      <div class="col-md-6">
+        <h5>Event Summary</h5>
+        <ul class="list-group">
+          <li class="list-group-item">
+            Total Revenue: ${{ eventAnalyticsData.totalRevenue }}
+          </li>
+          <li class="list-group-item">
+            Total Tickets Sold: {{ eventAnalyticsData.totalTicketsSold }}
+          </li>
+          <li class="list-group-item">
+            Occupancy Rate: {{ eventAnalyticsData.occupancyRate * 100 }}%
+          </li>
+          <li class="list-group-item">
+            Participants: {{ eventAnalyticsData.totalParticipants }}
+          </li>
+          <li class="list-group-item">
+            Attended: {{ eventAnalyticsData.attendedParticipants }}
+          </li>
+          <li class="list-group-item">
+            Comments: {{ eventAnalyticsData.commentCount }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  }
+</section>
 } @else {
 <h1 class="text-center">No event found!</h1>
+} @if (modalActive) {
+<div
+  class="modal fade show d-block p-5"
+  tabindex="-1"
+  style="background-color: rgba(0, 0, 0, 0.5)"
+>
+  <div
+    class="modal-dialog modal-dialog-centered"
+    style="margin: auto; max-width: 605px"
+  >
+    <div class="modal-content">
+      <router-outlet [name]="'add-modal'"></router-outlet>
+    </div>
+  </div>
+</div>
 }

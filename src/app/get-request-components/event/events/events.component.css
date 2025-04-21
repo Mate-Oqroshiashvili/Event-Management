@@ -39,3 +39,15 @@ a {
   justify-content: flex-start;
   gap: 20px;
 }
+
+.spinner {
+  height: 50vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner-border {
+  margin: auto;
+}

@@ -29,7 +29,7 @@ export interface TicketCreateDto {
 export interface TicketUpdateDto {
   price?: number;
   quantity?: number;
-  status?: TicketStatus;
+  type?: TicketType;
 }
 
 export interface TicketDto {
@@ -40,7 +40,7 @@ export interface TicketDto {
   status: TicketStatus;
   qrCodeData: string;
   qrCodeImageUrl: string;
-  event: EventDto;
+  event: EventDto | null;
   users: UserDto[];
   purchases: PurchaseDto[];
   participants: ParticipantDto[];
@@ -79,9 +79,10 @@ export class TicketService {
 
   addTicket(ticketCreateDto: TicketCreateDto): Observable<TicketDto> {
     const formData = new FormData();
-    Object.keys(ticketCreateDto).forEach((key) => {
-      formData.append(key, (ticketCreateDto as any)[key]);
-    });
+    formData.append('eventId', ticketCreateDto.eventId.toString());
+    formData.append('type', Number(ticketCreateDto.type).toString());
+    formData.append('price', Number(ticketCreateDto.price).toString());
+    formData.append('quantity', Number(ticketCreateDto.quantity).toString());
     return this.http.post<TicketDto>(
       `${this.apiUrl}Ticket/add-ticket`,
       formData

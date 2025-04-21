@@ -13,14 +13,12 @@ import { UpdatePromoCodeComponent } from './put-request-components/update-promo-
 import { UpdateTicketComponent } from './put-request-components/update-ticket/update-ticket.component';
 import { UpdateUserComponent } from './put-request-components/update-user/update-user.component';
 import { SearchResultComponent } from './get-request-components/event/search-result/search-result.component';
-import { ProfileComponent } from './get-request-components/user/profile/profile.component';
 import { UserInfoComponent } from './get-request-components/user/user-info/user-info.component';
 import { UserAnalyticsComponent } from './get-request-components/user/user-analytics/user-analytics.component';
 import { UserParticipationHistoryComponent } from './get-request-components/user/user-participation-history/user-participation-history.component';
 import { ReviewsUserAddedComponent } from './get-request-components/user/reviews-user-added/reviews-user-added.component';
 import { CommentsUserAddedComponent } from './get-request-components/user/comments-user-added/comments-user-added.component';
 import { OrganizerPanelComponent } from './get-request-components/organizer/organizer-panel/organizer-panel.component';
-import { AvailablePromoCodesComponent } from './get-request-components/event/available-promo-codes/available-promo-codes.component';
 import { EventsComponent } from './get-request-components/event/events/events.component';
 import { EventPageComponent } from './get-request-components/event/event-page/event-page.component';
 import { LocationsComponent } from './get-request-components/location/locations/locations.component';
@@ -28,15 +26,16 @@ import { LocationPageComponent } from './get-request-components/location/locatio
 import { OrganizersComponent } from './get-request-components/organizer/organizers/organizers.component';
 import { OrganizerPageComponent } from './get-request-components/organizer/organizer-page/organizer-page.component';
 import { PromoCodesComponent } from './get-request-components/organizer/promo-codes/promo-codes.component';
-import { TicketsComponent } from './get-request-components/organizer/tickets/tickets.component';
 import { AddEventComponent } from './post-request-components/add-event/add-event.component';
 import { AddLocationComponent } from './post-request-components/add-location/add-location.component';
 import { AddOrganizerComponent } from './post-request-components/add-organizer/add-organizer.component';
-import { AddOrganizerOnLocationComponent } from './post-request-components/add-organizer-on-location/add-organizer-on-location.component';
 import { AddArtistOnEventComponent } from './post-request-components/add-artist-on-event/add-artist-on-event.component';
 import { AddSpeakerOnEventComponent } from './post-request-components/add-speaker-on-event/add-speaker-on-event.component';
 import { registerGuard } from './services/guards/register.guard';
 import { RescheduleEventComponent } from './put-request-components/reschedule-event/reschedule-event.component';
+import { TicketModalComponent } from './modals/ticket-modal/ticket-modal.component';
+import { AddTicketComponent } from './post-request-components/add-ticket/add-ticket.component';
+import { ActiveTicketsComponent } from './get-request-components/user/active-tickets/active-tickets.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -53,45 +52,78 @@ export const routes: Routes = [
   },
   {
     path: 'profile/:userId',
-    component: ProfileComponent,
+    component: UserInfoComponent,
     canActivate: [authGuard],
     canActivateChild: [authGuard],
     children: [
       {
-        path: 'register-as-organizer',
-        component: AddOrganizerComponent,
-      },
-      {
-        path: 'user-information',
-        component: UserInfoComponent,
-      },
-      {
-        path: 'user-information/update-user',
-        component: UpdateUserComponent,
-      },
-      {
         path: 'user-analytics',
         component: UserAnalyticsComponent,
+        outlet: 'bottom',
+      },
+      {
+        path: 'active-tickets',
+        component: ActiveTicketsComponent,
+        outlet: 'bottom',
       },
       {
         path: 'participation-history',
         component: UserParticipationHistoryComponent,
+        outlet: 'bottom',
       },
-      { path: 'reviews', component: ReviewsUserAddedComponent },
+      {
+        path: 'reviews',
+        component: ReviewsUserAddedComponent,
+        outlet: 'bottom',
+      },
       {
         path: 'comments',
         component: CommentsUserAddedComponent,
+        outlet: 'bottom',
+      },
+      {
+        path: '',
+        redirectTo: 'user-analytics',
+        pathMatch: 'full',
+        outlet: 'bottom',
       },
     ],
   },
   {
-    path: 'organizer-panel/:organizerId',
-    component: OrganizerPanelComponent,
+    path: 'profile/:userId/update-user',
+    component: UpdateUserComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'profile/:userId/register-as-organizer',
+    component: AddOrganizerComponent,
     canActivate: [authGuard],
   },
   {
     path: 'organizer-panel/:organizerId',
     component: OrganizerPanelComponent,
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'add-artist-on-event/:eventId',
+        outlet: 'add-modal',
+        component: AddArtistOnEventComponent,
+      },
+      {
+        path: 'add-speaker-on-event/:eventId',
+        outlet: 'add-modal',
+        component: AddSpeakerOnEventComponent,
+      },
+    ],
+  },
+  {
+    path: 'organizer-panel/:organizerId/update-organizer',
+    component: UpdateOrganizerComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'organizer-panel/:organizerId/:eventId/add-ticket',
+    component: AddTicketComponent,
     canActivate: [authGuard],
   },
   {
@@ -100,23 +132,8 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
-    path: 'organizer-panel/:organizerId/add-artist-on-event/:eventId',
-    component: AddArtistOnEventComponent,
-    canActivate: [authGuard],
-  },
-  {
-    path: 'organizer-panel/:organizerId/add-speaker-on-event/:eventId',
-    component: AddSpeakerOnEventComponent,
-    canActivate: [authGuard],
-  },
-  {
     path: 'admin-panel',
     component: AdminPanelComponent,
-    canActivate: [authGuard],
-  },
-  {
-    path: 'available-promo-codes',
-    component: AvailablePromoCodesComponent,
     canActivate: [authGuard],
   },
   { path: 'events', component: EventsComponent, canActivate: [authGuard] },
@@ -129,6 +146,13 @@ export const routes: Routes = [
     path: 'events/event/:eventId',
     component: EventPageComponent,
     canActivate: [authGuard],
+    children: [
+      {
+        path: 'ticket-page/:ticketId',
+        component: TicketModalComponent,
+        outlet: 'modal',
+      },
+    ],
   },
   {
     path: 'events/event/:eventId/update-event',
@@ -138,6 +162,11 @@ export const routes: Routes = [
   {
     path: 'events/event/:eventId/update-event-images',
     component: UpdateImagesComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'events/event/:eventId/update-ticket/:ticketId',
+    component: UpdateTicketComponent,
     canActivate: [authGuard],
   },
   {
@@ -171,16 +200,6 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
-    path: 'organizers/organizer/:organizerId/add-organizer-on-specific-location',
-    component: AddOrganizerOnLocationComponent,
-    canActivate: [authGuard],
-  },
-  {
-    path: 'organizers/organizer/:organizerId/update-organizer',
-    component: UpdateOrganizerComponent,
-    canActivate: [authGuard],
-  },
-  {
     path: 'organizers/organizer/:organizerId/promo-codes',
     component: PromoCodesComponent,
     canActivate: [authGuard],
@@ -188,16 +207,6 @@ export const routes: Routes = [
   {
     path: 'organizers/organizer/:organizerId/promo-codes/update-promo-code/:promoCodeId',
     component: UpdatePromoCodeComponent,
-    canActivate: [authGuard],
-  },
-  {
-    path: 'organizers/organizer/:organizerId/tickets',
-    component: TicketsComponent,
-    canActivate: [authGuard],
-  },
-  {
-    path: 'organizers/organizer/:organizerId/tickets/update-ticket/:ticketId',
-    component: UpdateTicketComponent,
     canActivate: [authGuard],
   },
   { path: '**', component: NotFoundComponent },

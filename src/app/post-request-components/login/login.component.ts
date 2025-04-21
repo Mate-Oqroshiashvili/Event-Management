@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 export class LoginComponent {
   loginForm: FormGroup;
   serverErrors: any = {};
+  errorMessage: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -35,6 +36,9 @@ export class LoginComponent {
         console.error(err);
         if (err.status === 400 && err.error && err.error.errors) {
           this.serverErrors = err.error.errors;
+        }
+        if (err.error.Message) {
+          this.errorMessage = err.error.Message;
         }
       },
       complete: () => {

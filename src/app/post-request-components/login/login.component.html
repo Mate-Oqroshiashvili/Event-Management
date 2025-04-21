@@ -35,7 +35,9 @@
       @if (serverErrors?.Password) { @for (err of serverErrors.Password; track
       $index) {
       <div class="text-danger mt-1">{{ err }}</div>
-      } }
+      } } @if (errorMessage){
+      <div class="text-danger mt-1">{{ errorMessage }}</div>
+      }
     </div>
 
     <div class="text-end">

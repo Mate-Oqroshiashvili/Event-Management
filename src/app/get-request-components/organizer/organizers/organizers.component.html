@@ -1,5 +1,5 @@
 <section class="cards">
-  @for (organizer of organizers; track organizer.id) {
+  @if (!isLoading) { @for (organizer of organizers; track organizer.id) {
   <a [routerLink]="['/organizers/organizer', organizer.id]" class="card custom">
     <div class="top">
       <img [src]="organizer.logoUrl" alt="" />
@@ -35,5 +35,11 @@
       </h5>
     </div>
   </a>
-  }
+  } }
 </section>
+
+@if(isLoading) {
+<div class="spinner">
+  <div class="spinner-border text-primary" role="status"></div>
+</div>
+}

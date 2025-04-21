@@ -9,16 +9,20 @@ import {
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { OrganizerService } from '../../../services/organizer/organizer.service';
 import { ImageService } from '../../../services/image/image.service';
+import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-user-info',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './user-info.component.html',
   styleUrl: './user-info.component.css',
 })
 export class UserInfoComponent implements OnInit {
   userId: number = 0;
   userRole: string = '';
+  userType: string = '';
+  isVerified: boolean = false;
   user: UserDto = {
     id: 0,
     name: '',
@@ -42,6 +46,12 @@ export class UserInfoComponent implements OnInit {
   imageFile: File | undefined;
   imagePreview: string = '';
 
+  balanceToAdd: number = 0;
+
+  activeBottomTab = 'user-analytics';
+
+  addingBalance: boolean = false;
+
   constructor(
     private userService: UserService,
     private organizerService: OrganizerService,
@@ -51,7 +61,7 @@ export class UserInfoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.parent?.paramMap.subscribe((data) => {
+    this.route.paramMap.subscribe((data) => {
       const userIdParam = data.get('userId');
       if (userIdParam) {
         this.userId = +userIdParam;
@@ -59,6 +69,14 @@ export class UserInfoComponent implements OnInit {
       } else {
         console.error('User ID not found in route parameters');
       }
+    });
+
+    this.route.children.forEach((child) => {
+      child.url.subscribe((segments) => {
+        const bottomSegment =
+          child.outlet === 'bottom' ? segments[0]?.path : null;
+        if (bottomSegment) this.activeBottomTab = bottomSegment;
+      });
     });
   }
 
@@ -158,6 +176,85 @@ export class UserInfoComponent implements OnInit {
 
       target.value = '';
     }
+  }
+
+  updateAddingBalance() {
+    this.addingBalance = true;
+  }
+
+  cancelAddBalance() {
+    this.addingBalance = false;
+  }
+
+  addBalance() {
+    let message = '';
+
+    this.userService.addBalance(this.userId, this.balanceToAdd).subscribe({
+      next: (data: any) => {
+        message = data.message;
+        console.log(data);
+      },
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => {
+        Swal.fire('Success!', message, 'success');
+        this.addingBalance = false;
+        this.balanceToAdd = 0;
+        this.getUserById();
+      },
+    });
+  }
+
+  registerAsArtist() {
+    this.userService.changeUserType(this.userId, UserType.ARTIST).subscribe({
+      next: (data: any) => {
+        console.log(data);
+      },
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => {
+        this.userService.logout();
+      },
+    });
+  }
+
+  registerAsSpeaker() {
+    this.userService.changeUserType(this.userId, UserType.SPEAKER).subscribe({
+      next: (data: any) => {
+        console.log(data);
+      },
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => {
+        this.userService.logout();
+      },
+    });
+  }
+
+  getBackToBasic() {
+    this.userService.changeUserType(this.userId, UserType.BASIC).subscribe({
+      next: (data: any) => {
+        console.log(data);
+      },
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => {
+        this.userService.logout();
+      },
+    });
+  }
+
+  setActiveBottomTab(tab: string) {
+    this.activeBottomTab = tab;
+  }
+
+  generateBottomLink(bottomTab: string): any[] {
+    const outlets: any = { bottom: [bottomTab] };
+    return [{ outlets }];
   }
 
   removeImage(): void {

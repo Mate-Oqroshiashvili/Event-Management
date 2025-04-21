@@ -1,1 +1,124 @@
-<p>update-organizer works!</p>
+<div class="update-organizer-form">
+  <form [formGroup]="organizerForm" (ngSubmit)="updateOrganizer()">
+    <div class="form-floating mb-3">
+      <input
+        type="text"
+        class="form-control"
+        id="name"
+        placeholder="Name"
+        formControlName="name"
+      />
+      <label for="name">Organizer Name</label>
+      @for (error of backendErrors.Name; track $index) { @if
+      (backendErrors.Name) {
+      <div class="text-danger small">
+        {{ error }}
+      </div>
+      } }
+    </div>
+
+    <div class="form-floating mb-3">
+      <textarea
+        class="form-control"
+        id="description"
+        formControlName="description"
+        placeholder="Description"
+        style="min-height: 100px"
+      ></textarea>
+      <label for="description">Organizer Description</label>
+      @for (error of backendErrors.Description; track $index) { @if
+      (backendErrors.Description) {
+      <div class="text-danger small">
+        {{ error }}
+      </div>
+      } }
+    </div>
+
+    <div class="form-floating mb-3">
+      <input
+        type="text"
+        class="form-control"
+        id="address"
+        placeholder="Address"
+        formControlName="address"
+      />
+      <label for="address">Organizer Address</label>
+      @for (error of backendErrors.Address; track $index) { @if
+      (backendErrors.Address) {
+      <div class="text-danger small">
+        {{ error }}
+      </div>
+      } }
+    </div>
+
+    <div class="form-floating mb-3">
+      <input
+        type="text"
+        class="form-control"
+        id="city"
+        placeholder="City"
+        formControlName="city"
+      />
+      <label for="city">Organizer City</label>
+      @for (error of backendErrors.City; track $index) { @if
+      (backendErrors.City) {
+      <div class="text-danger small">
+        {{ error }}
+      </div>
+      } }
+    </div>
+
+    <div class="form-floating mb-3">
+      <input
+        type="text"
+        class="form-control"
+        id="country"
+        placeholder="Country"
+        formControlName="country"
+      />
+      <label for="country">Organizer Country</label>
+      @for (error of backendErrors.Country; track $index) { @if
+      (backendErrors.Country) {
+      <div class="text-danger small">
+        {{ error }}
+      </div>
+      } }
+    </div>
+
+    <div class="mb-3">
+      <label for="imageInput" class="form-label">Upload Logo</label>
+      <input
+        class="form-control form-control-lg"
+        type="file"
+        id="imageInput"
+        (change)="onFileSelected($event)"
+        accept="image/*"
+      />
+      @for (error of backendErrors.Logo; track $index) { @if
+      (backendErrors.Logo) {
+      <div class="text-danger small">
+        {{ error }}
+      </div>
+      } }
+    </div>
+
+    @if (imagePreview) {
+    <div class="preview-container d-flex flex-wrap gap-3 my-3">
+      <div class="position-relative border rounded p-1">
+        <img
+          [src]="imagePreview"
+          alt="Preview"
+          class="img-thumbnail"
+          style="width: 120px; height: 120px; object-fit: cover"
+        />
+      </div>
+    </div>
+    }
+
+    <div class="d-flex justify-content-end">
+      <button type="submit" class="btn btn-warning mt-3">
+        Update Organizer
+      </button>
+    </div>
+  </form>
+</div>

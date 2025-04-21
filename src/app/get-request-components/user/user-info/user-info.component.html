@@ -11,33 +11,64 @@
         width="150"
       />
 
-      <div *ngIf="imagePreview" class="mt-2 d-flex justify-content-center">
+      @if (imagePreview) {
+      <div class="mt-2 d-flex justify-content-center">
         <button class="btn btn-success me-2" (click)="changeProfilePicture()">
           Save
         </button>
         <button class="btn btn-danger" (click)="removeImage()">Cancel</button>
       </div>
+      }
     </div>
 
     <div class="main-information">
-      <div class="card">
+      <div class="card shadow-sm rounded-4 p-4">
         <div class="card-body">
-          <div class="card-header-custom">
-            <h1 class="card-title">{{ user.name }}</h1>
+          <div
+            class="d-flex justify-content-between align-items-start flex-wrap-reverse mb-3"
+          >
+            <div class="top-side">
+              <h1
+                style="
+                  display: flex;
+                  align-items: center;
+                  flex-wrap: wrap-reverse;
+                  gap: 10px;
+                "
+                class="card-title mb-0"
+              >
+                <p style="white-space: nowrap; margin: 0px">{{ user.name }}</p>
+              </h1>
+              <span
+                style="font-size: 1.2rem"
+                class="badge mt-3"
+                [ngClass]="{
+                  'bg-primary': getUserRole(user.role) === 'ADMIN',
+                  'bg-success': getUserRole(user.role) === 'ORGANIZER',
+                  'bg-warning': getUserRole(user.role) === 'PARTICIPANT',
+                  'bg-secondary': getUserRole(user.role) === 'BASIC'
+                }"
+              >
+                {{ getUserRole(user.role) }}
+              </span>
+            </div>
 
-            <div class="dropdown mt-1">
+            <div
+              style="margin-left: auto; margin-bottom: auto"
+              class="dropdown"
+            >
               <button
-                class="btn btn-secondary"
+                class="btn btn-light border mb-2"
                 type="button"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
                 <i class="bi bi-three-dots-vertical"></i>
               </button>
-              <ul class="dropdown-menu">
+              <ul class="dropdown-menu dropdown-menu-end">
                 <li>
                   <button class="dropdown-item" (click)="fileInput.click()">
-                    Update Profile Picture
+                    <i class="bi bi-image-fill me-2"></i>Update Profile Picture
                   </button>
                   <input
                     type="file"
@@ -48,49 +79,201 @@
                   />
                 </li>
                 <li>
-                  <a [routerLink]="['update-user']" class="dropdown-item"
-                    >Update User</a
-                  >
+                  <a
+                    class="dropdown-item"
+                    [routerLink]="['/profile', userId, 'update-user']"
+                    [queryParams]="{}"
+                    [state]="{}"
+                    [routerLinkActive]="'active'"
+                    [routerLinkActiveOptions]="{ exact: true }"
+                    [routerLink]="[
+                      {
+                        outlets: {
+                          primary: ['update-user'],
+                          bottom: null
+                        }
+                      }
+                    ]"
+                    ><i class="bi bi-person-fill me-2"></i>Update User
+                  </a>
                 </li>
-                @if(getUserRole(user.role) === "ORGANIZER"){
+                @if (getUserRole(user.role) !== "ORGANIZER") {
+                <li>
+                  <a
+                    class="dropdown-item"
+                    [routerLink]="['register-as-organizer']"
+                  >
+                    <i class="bi bi-person-gear me-2"></i>Register As Organizer
+                  </a>
+                </li>
+                } @if(getUserRole(user.role) === "ORGANIZER") {
                 <li>
                   <button (click)="removeAsOrganizer()" class="dropdown-item">
-                    Remove User As Organizer
+                    <i class="bi bi-x-circle-fill text-danger me-2"></i>Remove
+                    User As Organizer
+                  </button>
+                </li>
+                } @if (getUserType(user.userType) !== "ARTIST") {
+                <li>
+                  <button (click)="registerAsArtist()" class="dropdown-item">
+                    <i class="bi bi-mic-fill me-2"></i>Register As Artist
+                  </button>
+                </li>
+                } @else {
+                <li>
+                  <button (click)="getBackToBasic()" class="dropdown-item">
+                    <i class="bi bi-x-circle-fill text-danger me-2"></i>Remove
+                    As Artist
+                  </button>
+                </li>
+                } @if (getUserType(user.userType) !== "SPEAKER") {
+                <li>
+                  <button (click)="registerAsSpeaker()" class="dropdown-item">
+                    <i class="bi bi-megaphone-fill me-2"></i>Register As Speaker
+                  </button>
+                </li>
+                } @else {
+                <li>
+                  <button (click)="getBackToBasic()" class="dropdown-item">
+                    <i class="bi bi-x-circle-fill text-danger me-2"></i>Remove
+                    As Speaker
                   </button>
                 </li>
                 }
+
                 <li>
-                  <button (click)="deleteUser()" class="dropdown-item">
-                    Delete User
+                  <button
+                    (click)="deleteUser()"
+                    class="dropdown-item text-danger"
+                  >
+                    <i class="bi bi-trash3 me-2"></i>Delete User
                   </button>
                 </li>
               </ul>
             </div>
           </div>
 
-          <p class="card-text">Email: {{ user.email }}</p>
-          <p class="card-text">Phone Number: {{ user.phoneNumber }}</p>
           <p class="card-text">
-            User Role: {{ getUserRole(user.role).toLowerCase() }}
+            <i class="bi bi-envelope-fill me-2"></i>Email: {{ user.email }}
           </p>
           <p class="card-text">
-            User Type: {{ getUserType(user.userType).toLowerCase() }}
+            <i class="bi bi-telephone-fill me-2"></i>Phone:
+            {{ user.phoneNumber }}
           </p>
-          <p class="card-text">Balance: {{ user.balance }}</p>
-          @if (user.isLoggedIn) {
-          <p class="card-text">Online Status: Online</p>
-          } @else {
-          <p class="card-text">Online Status: Offline</p>
-          }
+          <p class="card-text">
+            <i class="bi bi-person-badge-fill me-2"></i>User Role:
+            {{ getUserRole(user.role).toLowerCase() }}
+          </p>
+          <p class="card-text mb-2">
+            <i class="bi bi-person-vcard me-2"></i>User Type:
+            {{ getUserType(user.userType).toLowerCase() }}
+          </p>
+          <div class="card-text d-flex align-items-center flex-wrap gap-2 mb-2">
+            <i class="bi bi-cash-coin me-2"></i>
+            <span>Balance: ${{ user.balance }}</span>
+
+            @if (!addingBalance) {
+            <button
+              class="btn btn-success btn-sm ms-2"
+              (click)="updateAddingBalance()"
+            >
+              <i style="font-size: 1.2rem" class="bi bi-plus"></i>
+            </button>
+            } @if (addingBalance) {
+            <div class="d-flex align-items-center gap-2">
+              <input
+                type="text"
+                id="balanceToAdd"
+                name="balanceToAdd"
+                [(ngModel)]="balanceToAdd"
+                class="form-control"
+                style="width: 120px"
+                placeholder="e.g 1000"
+              />
+              <button
+                (click)="cancelAddBalance()"
+                class="btn btn-secondary btn-sm"
+              >
+                Cancel
+              </button>
+              <button (click)="addBalance()" class="btn btn-success btn-sm">
+                Add
+              </button>
+            </div>
+            }
+          </div>
+
+          <p class="card-text">
+            <i
+              class="bi"
+              [ngClass]="{
+                'bi-circle-fill text-success': user.isLoggedIn,
+                'bi-circle-fill text-secondary': !user.isLoggedIn
+              }"
+            ></i>
+            Online Status:
+            {{ user.isLoggedIn ? "Online" : "Offline" }}
+          </p>
         </div>
       </div>
     </div>
   </section>
+
   <section class="bottom">
-    <h1>
-      need to add collapse for update logic, also should add button for account
-      deletion. Also should check if logged in user is viewing the profile, if
-      so then balance should be displayed, otherwise balance should be hidden.
-    </h1>
+    <ul class="nav nav-tabs mt-5">
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          [routerLink]="generateBottomLink('user-analytics')"
+          [ngClass]="{ active: activeBottomTab === 'user-analytics' }"
+          (click)="setActiveBottomTab('user-analytics')"
+          >User Analytics</a
+        >
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          [routerLink]="generateBottomLink('active-tickets')"
+          [ngClass]="{ active: activeBottomTab === 'active-tickets' }"
+          (click)="setActiveBottomTab('active-tickets')"
+          >Active Tickets</a
+        >
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          [routerLink]="generateBottomLink('participation-history')"
+          [ngClass]="{ active: activeBottomTab === 'participation-history' }"
+          (click)="setActiveBottomTab('participation-history')"
+          >Participation History</a
+        >
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          [routerLink]="generateBottomLink('reviews')"
+          [ngClass]="{ active: activeBottomTab === 'reviews' }"
+          (click)="setActiveBottomTab('reviews')"
+          >Reviewed Events</a
+        >
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          [routerLink]="generateBottomLink('comments')"
+          [ngClass]="{ active: activeBottomTab === 'comments' }"
+          (click)="setActiveBottomTab('comments')"
+          >Commented Events</a
+        >
+      </li>
+    </ul>
   </section>
+
+  @if ( activeBottomTab === 'user-analytics' || activeBottomTab ===
+  'participation-history' || activeBottomTab === 'reviews' || activeBottomTab
+  === 'comments' || activeBottomTab === 'active-tickets' ) {
+  <div class="content">
+    <router-outlet name="bottom"></router-outlet>
+  </div>
+  }
 </div>

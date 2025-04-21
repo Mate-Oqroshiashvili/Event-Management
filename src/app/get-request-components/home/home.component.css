@@ -58,3 +58,7 @@ a {
     transform: translateY(-10px);
   }
 }
+
+.spinner-border {
+  margin: auto;
+}

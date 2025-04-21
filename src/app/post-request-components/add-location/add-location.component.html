@@ -1,104 +1,92 @@
 <div class="add-location-form">
-  <form (ngSubmit)="addLocation()">
-    <div class="form-floating mb-3">
+  <form [formGroup]="locationForm" (ngSubmit)="addLocation()">
+    <div
+      class="form-floating mb-3"
+      *ngFor="
+        let field of [
+          'name',
+          'address',
+          'city',
+          'state',
+          'country',
+          'postalCode'
+        ]
+      "
+    >
       <input
-        [(ngModel)]="locationCreateDto.name"
+        *ngIf="field !== 'address'; else addressField"
         type="text"
         class="form-control"
-        name="name"
-        id="name"
-        placeholder="Location Name"
+        [formControlName]="field"
+        [id]="field"
+        [placeholder]="field"
       />
-      <label for="name">Location Name</label>
+      <ng-template #addressField>
+        <textarea
+          class="form-control"
+          formControlName="address"
+          id="address"
+          placeholder="Address"
+        ></textarea>
+      </ng-template>
+      <label [for]="field">{{ field | titlecase }}</label>
+
+      <div
+        class="text-danger small"
+        *ngIf="serverErrors[field.charAt(0).toUpperCase() + field.slice(1)]"
+      >
+        <div
+          *ngFor="
+            let msg of serverErrors[
+              field.charAt(0).toUpperCase() + field.slice(1)
+            ]
+          "
+        >
+          {{ msg }}
+        </div>
+      </div>
     </div>
-    <div class="form-floating mb-3">
-      <textarea
-        [(ngModel)]="locationCreateDto.address"
-        type="text"
-        class="form-control"
-        name="address"
-        id="address"
-        placeholder="Location Address"
-      ></textarea>
-      <label for="address">Location Address</label>
-    </div>
-    <div class="form-floating mb-3">
-      <input
-        [(ngModel)]="locationCreateDto.city"
-        type="text"
-        class="form-control"
-        name="city"
-        id="city"
-        placeholder="City"
-      />
-      <label for="city">City</label>
-    </div>
-    <div class="form-floating mb-3">
-      <input
-        [(ngModel)]="locationCreateDto.state"
-        type="text"
-        class="form-control"
-        name="state"
-        id="state"
-        placeholder="State"
-      />
-      <label for="state">State</label>
-    </div>
+
     <div class="form-floating mb-3">
       <input
-        [(ngModel)]="locationCreateDto.country"
-        type="text"
-        class="form-control"
-        name="country"
-        id="country"
-        placeholder="Country"
-      />
-      <label for="country">Country</label>
-    </div>
-    <div class="form-floating mb-3">
-      <input
-        [(ngModel)]="locationCreateDto.postalCode"
-        type="text"
-        class="form-control"
-        name="postalCode"
-        id="postalCode"
-        placeholder="Postal Code"
-      />
-      <label for="postalCode">Postal Code</label>
-    </div>
-    <div class="form-floating mb-3">
-      <input
-        [(ngModel)]="locationCreateDto.maxCapacity"
         type="number"
         class="form-control"
-        name="capacity"
-        id="capacity"
-        placeholder="e.g 500"
+        formControlName="maxCapacity"
+        id="maxCapacity"
+        placeholder="Capacity"
       />
-      <label for="capacity">Maximum Capacity</label>
+      <label for="maxCapacity">Maximum Capacity</label>
+      <div class="text-danger small" *ngIf="serverErrors['MaxCapacity']">
+        <div *ngFor="let msg of serverErrors['MaxCapacity']">{{ msg }}</div>
+      </div>
     </div>
+
     <div class="form-floating mb-3">
       <input
-        [(ngModel)]="locationCreateDto.availableStaff"
         type="number"
         class="form-control"
-        name="staff"
-        id="staff"
-        placeholder="e.g 20"
+        formControlName="availableStaff"
+        id="availableStaff"
+        placeholder="Staff"
       />
-      <label for="staff">Available Staff</label>
+      <label for="availableStaff">Available Staff</label>
+      <div class="text-danger small" *ngIf="serverErrors['AvailableStaff']">
+        <div *ngFor="let msg of serverErrors['AvailableStaff']">{{ msg }}</div>
+      </div>
     </div>
+
     <div class="form-floating mb-3">
       <textarea
-        [(ngModel)]="locationCreateDto.description"
-        type="text"
         class="form-control"
-        name="description"
+        formControlName="description"
         id="description"
-        placeholder="e.g 20"
+        placeholder="Description"
         style="min-height: 100px"
       ></textarea>
-      <label for="description">Location Description</label>
+      <label for="description">Description</label>
+      <div class="text-danger small" *ngIf="serverErrors['Description']">
+        <div *ngFor="let msg of serverErrors['Description']">{{ msg }}</div>
+      </div>
     </div>
 
     <div class="mb-3">
@@ -109,17 +97,20 @@
         id="imageInput"
         (change)="onFileSelected($event)"
         accept="image/*"
-        multiple
       />
+      <div class="text-danger small" *ngIf="serverErrors['Image']">
+        <div *ngFor="let msg of serverErrors['Image']">{{ msg }}</div>
+      </div>
     </div>
 
-    @if (imagePreview != '') {
-    <div class="preview-container d-flex flex-wrap gap-3 my-3">
+    <div
+      *ngIf="imagePreview"
+      class="preview-container d-flex flex-wrap gap-3 my-3"
+    >
       <div class="position-relative border rounded p-1">
         <button
           type="button"
           class="btn-close position-absolute top-0 end-0 m-1"
-          aria-label="Close"
           (click)="removeImage()"
         ></button>
         <img
@@ -130,40 +121,29 @@
         />
       </div>
     </div>
-    }
 
     <div class="form-floating mb-3">
-      <select
-        [(ngModel)]="locationCreateDto.isIndoor"
-        name="isIndoor"
-        id="isIndoor"
-        class="form-select form-select-lg mb-3"
-        aria-label="Large select example"
-      >
-        <option value="true">True</option>
-        <option value="false">false</option>
+      <select class="form-select" formControlName="isIndoor" id="isIndoor">
+        <option [value]="true">True</option>
+        <option [value]="false">False</option>
       </select>
       <label for="isIndoor">Is Indoor</label>
     </div>
 
     <div class="form-floating mb-3">
       <select
-        [(ngModel)]="locationCreateDto.isAccessible"
-        name="isAccessible"
+        class="form-select"
+        formControlName="isAccessible"
         id="isAccessible"
-        class="form-select form-select-lg mb-3"
-        aria-label="Large select example"
       >
-        <option value="true">True</option>
-        <option value="false">false</option>
+        <option [value]="true">True</option>
+        <option [value]="false">False</option>
       </select>
       <label for="isAccessible">Is Accessible</label>
     </div>
 
-    <div style="display: flex; justify-content: flex-end" class="verify-button">
-      <button type="submit" style="float: right" class="btn btn-success mt-3">
-        Add Location
-      </button>
+    <div class="d-flex justify-content-end">
+      <button type="submit" class="btn btn-success mt-3">Add Location</button>
     </div>
   </form>
 </div>

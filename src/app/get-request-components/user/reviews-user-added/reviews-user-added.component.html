@@ -1,4 +1,5 @@
-<div class="reviews my-5">
+@if (reviews.length != 0) {
+<div class="reviews">
   <h1>Reviews</h1>
   <div class="cards my-3">
     @for (item of reviews; track $index) {
@@ -9,3 +10,6 @@
     }
   </div>
 </div>
+} @else {
+<h1 class="text-center">No Review Found!</h1>
+}

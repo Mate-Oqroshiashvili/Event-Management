@@ -146,24 +146,54 @@
         <h2>Tickets</h2>
         <div class="cards">
           @for (item of tickets; track $index) {
-          <div
+          <a
+            [routerLink]="[
+              {
+                outlets: {
+                  modal: ['ticket-page', item.id]
+                }
+              }
+            ]"
+            [queryParamsHandling]="'preserve'"
             [ngClass]="{
               basic: item.type === 1,
               vip: item.type === 2,
               earlyBird: item.type === 3
             }"
+            style="text-decoration: none"
             class="card p-4"
           >
-            <i *ngIf="item.type === 1" class="bi bi-ticket-perforated-fill"></i>
-            <i *ngIf="item.type === 2" class="bi bi-award-fill"></i>
-            <i *ngIf="item.type === 3" class="bi bi-lightning-fill"></i>
+            @if (item.type === 1) {
+            <i class="bi bi-ticket-perforated-fill"></i>
+            } @if (item.type === 2) {
+            <i class="bi bi-award-fill"></i>
+            } @if (item.type === 3) {
+            <i class="bi bi-lightning-fill"></i>
+            }
             <div class="ticket-body">
               <h3>
                 Ticket Type: {{ getTicketStatus(item.type).toLowerCase() }}
               </h3>
-              <p style="margin: 0px">Price: {{ item.price }}</p>
+              <div class="update-group">
+                <p style="margin: 0px">Price: {{ item.price }}</p>
+                @if (event.organizer?.user?.id == userId) {
+                <a
+                  [routerLink]="['update-ticket', item.id]"
+                  class="btn btn-light"
+                >
+                  Update Ticket
+                </a>
+                <button
+                  (click)="onDeleteTicketClick($event, item.id)"
+                  type="button"
+                  class="btn btn-light"
+                >
+                  Remove Ticket
+                </button>
+                }
+              </div>
             </div>
-          </div>
+          </a>
           }
         </div>
       </div>
@@ -362,7 +392,7 @@
           }
         </div>
         @if (!editing) {
-        <div class="add-comment" *ngIf="!editing">
+        <div class="add-comment">
           <form [formGroup]="addCommentForm" (ngSubmit)="addComment()">
             <div class="input-group mb-3">
               <input
@@ -387,7 +417,7 @@
         </div>
 
         } @else {
-        <div class="edit-comment" *ngIf="editing">
+        <div class="edit-comment">
           <form [formGroup]="editCommentForm" (ngSubmit)="editComment()">
             <div class="input-group mb-3">
               <input
@@ -425,3 +455,20 @@
     </div>
   </section>
 </div>
+
+@if (modalActive) {
+<div
+  class="modal fade show d-block p-5"
+  tabindex="-1"
+  style="background-color: rgba(0, 0, 0, 0.5)"
+>
+  <div
+    class="modal-dialog modal-dialog-centered"
+    style="margin: auto; max-width: 605px"
+  >
+    <div class="modal-content">
+      <router-outlet name="modal"></router-outlet>
+    </div>
+  </div>
+</div>
+}

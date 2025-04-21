@@ -28,7 +28,7 @@
 <section class="container my-5" id="upcomingEvents">
   <h2 class="text-center mb-5">Upcoming Events</h2>
   <div class="row">
-    @for (item of upcoming; track $index) {
+    @if (!isUpcomingLoading) { @for (item of upcoming; track $index) {
     <a [routerLink]="['/events/event', item.id]" class="col-md-4">
       <div class="card event-card">
         <img [src]="item.images[0]" class="card-img-top" />
@@ -47,6 +47,8 @@
         </div>
       </div>
     </a>
+    } } @else {
+    <div class="spinner-border text-primary" role="status"></div>
     }
   </div>
 </section>
@@ -54,7 +56,7 @@
 <section class="container my-5" id="popularEvents">
   <h2 class="text-center mb-5">Popular Events</h2>
   <div class="row">
-    @for (item of popular; track $index) {
+    @if (!isPopularLoading) {@for (item of popular; track $index) {
     <a [routerLink]="['/events/event', item.id]" class="col-md-4">
       <div class="card event-card">
         <img [src]="item.images[0]" class="card-img-top" />
@@ -73,6 +75,8 @@
         </div>
       </div>
     </a>
+    } } @else {
+    <div class="spinner-border text-primary" role="status"></div>
     }
   </div>
 </section>

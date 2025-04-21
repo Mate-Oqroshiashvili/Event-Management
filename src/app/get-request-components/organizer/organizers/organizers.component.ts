@@ -14,6 +14,8 @@ import {
 export class OrganizersComponent implements OnInit {
   organizers: OrganizerDto[] = [];
 
+  isLoading: boolean = false;
+
   constructor(private organizerSevice: OrganizerService) {}
 
   ngOnInit(): void {
@@ -21,6 +23,8 @@ export class OrganizersComponent implements OnInit {
   }
 
   getAllOrganizers() {
+    this.isLoading = true;
+
     this.organizerSevice.getAllOrganizers().subscribe({
       next: (data: any) => {
         this.organizers = data.organizerDtos;
@@ -30,6 +34,7 @@ export class OrganizersComponent implements OnInit {
         console.error(err);
       },
       complete: () => {
+        this.isLoading = false;
         console.log('Organizers fetched successfully!');
       },
     });

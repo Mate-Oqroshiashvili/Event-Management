@@ -17,6 +17,8 @@ export class LocationsComponent implements OnInit {
   locations: LocationDto[] = [];
   role: string = '';
 
+  isLoading: boolean = false;
+
   constructor(
     private userService: UserService,
     private locationService: LocationService
@@ -28,6 +30,8 @@ export class LocationsComponent implements OnInit {
   }
 
   getAllLocations() {
+    this.isLoading = true;
+
     this.locationService.getAllLocations().subscribe({
       next: (data: any) => {
         this.locations = data.locations;
@@ -37,6 +41,7 @@ export class LocationsComponent implements OnInit {
         console.error(err);
       },
       complete: () => {
+        this.isLoading = false;
         console.log('Locations fetched successfully!');
       },
     });

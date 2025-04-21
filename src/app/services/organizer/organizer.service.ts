@@ -16,14 +16,11 @@ export interface OrganizerCreateDto {
 
 export interface OrganizerUpdateDto {
   name?: string;
-  email?: string;
-  phoneNumber?: string;
   description?: string;
   logo?: File;
   address?: string;
   city?: string;
   country?: string;
-  isVerified?: boolean;
 }
 
 export interface OrganizerDto {

@@ -1,0 +1,150 @@
+<div class="ticket-info p-4">
+  <div class="top d-flex justify-content-between align-items-center mb-3">
+    <h4 class="m-0">
+      {{ ticket.event?.title }} -
+      <span class="badge bg-secondary"
+        >{{ getTicketType(ticket.type) }} Ticket</span
+      >
+    </h4>
+    <button
+      class="btn-close"
+      (click)="closeModal()"
+      aria-label="Close"
+    ></button>
+  </div>
+
+  <div *ngIf="ticket.event?.images?.length" class="mb-3">
+    <div
+      id="eventImagesCarousel"
+      class="carousel slide"
+      data-bs-ride="carousel"
+    >
+      <div class="carousel-inner rounded">
+        <div
+          *ngFor="let img of ticket.event?.images; let i = index"
+          class="carousel-item"
+          [class.active]="i === 0"
+        >
+          <img [src]="img" class="d-block w-100" alt="Event Image" />
+        </div>
+      </div>
+      <button
+        class="carousel-control-prev"
+        type="button"
+        data-bs-target="#eventImagesCarousel"
+        data-bs-slide="prev"
+      >
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button
+        class="carousel-control-next"
+        type="button"
+        data-bs-target="#eventImagesCarousel"
+        data-bs-slide="next"
+      >
+        <span class="carousel-control-next-icon"></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="main-info mb-3">
+      <p><strong>Price:</strong> ${{ ticket.price }}</p>
+      <p><strong>Available Quantity:</strong> {{ ticket.quantity }}</p>
+      <p>
+        <strong>Status:</strong>
+        {{
+          ticket.status === 1
+            ? "Available"
+            : ticket.status === 2
+            ? "Sold Out"
+            : "Canceled"
+        }}
+      </p>
+      <p>
+        <strong>Start:</strong> {{ ticket.event?.startDate | date : "medium" }}
+      </p>
+      <p><strong>End:</strong> {{ ticket.event?.endDate | date : "medium" }}</p>
+      <p><strong>Description:</strong> {{ ticket.event?.description }}</p>
+    </div>
+
+    <div class="user-info mb-3" *ngIf="ticket.users?.length">
+      <h5 class="mb-2">Organizer Info</h5>
+      <div class="d-flex align-items-center gap-2">
+        <img
+          [src]="ticket.users[0].profilePicture"
+          alt="User"
+          width="48"
+          height="48"
+          class="rounded-circle border"
+        />
+        <div>
+          <p class="m-0">
+            <strong>{{ ticket.users[0].name }}</strong>
+          </p>
+          <p class="m-0 small text-muted">{{ ticket.users[0].email }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="purchase">
+      <h5 class="mb-2">Purchase Ticket</h5>
+      <form
+        (ngSubmit)="purchaseTicket()"
+        #purchaseForm="ngForm"
+        class="d-flex flex-column gap-2"
+      >
+        <div class="form-group">
+          <label for="quantity">Quantity</label>
+          <input
+            type="number"
+            id="quantity"
+            name="quantity"
+            [(ngModel)]="purchaseQuantity"
+            class="form-control"
+            [max]="ticket.quantity"
+            min="1"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="quantity">Promo Code</label>
+          <div class="group">
+            <input
+              type="text"
+              id="promoCode"
+              name="promoCode"
+              [(ngModel)]="promoCode"
+              class="form-control"
+              placeholder="PROMOCODE"
+            />
+            <button
+              type="button"
+              (click)="getPromoCode()"
+              class="btn btn-outline-success"
+            >
+              Apply Promo Code
+            </button>
+          </div>
+
+          @if(promoErrorMessage) {
+          <div class="text-danger small">
+            {{ promoErrorMessage }}
+          </div>
+          } @if(promoSuccessMessage) {
+          <div class="text-success small">
+            {{ promoSuccessMessage }}
+          </div>
+          }
+        </div>
+        <button
+          type="submit"
+          class="btn btn-success"
+          [disabled]="!purchaseForm.form.valid"
+        >
+          Purchase (${{ calculatePrice(ticket.price) }})
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

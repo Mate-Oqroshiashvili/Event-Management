@@ -1,3 +1,8 @@
+.reviews,
+.text-center {
+  padding: 20px;
+}
+
 .cards {
   padding: 20px 0px;
   display: grid;

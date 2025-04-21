@@ -114,3 +114,10 @@ a {
 .events .card:hover {
   transform: scale(1.02);
 }
+
+.group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}

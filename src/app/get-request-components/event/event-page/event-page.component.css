@@ -162,6 +162,27 @@ p {
   color: #00bfa5;
 }
 
+.basic .ticket-body a,
+.basic .ticket-body button {
+  background-color: #d35400 !important;
+  border: none;
+  box-shadow: 0 4px 20px rgba(255, 123, 0, 0.3);
+}
+
+.vip .ticket-body a,
+.vip .ticket-body button {
+  background-color: #ffd700 !important;
+  border: none;
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+}
+
+.earlyBird .ticket-body a,
+.earlyBird .ticket-body button {
+  background-color: #00bfa5 !important;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 191, 165, 0.3);
+}
+
 .location .card.custom {
   background-color: #37474f;
   color: #eceff1;
@@ -209,4 +230,28 @@ p {
 .star-rating i:hover {
   transform: scale(1.2);
   transition: transform 0.2s ease;
+}
+
+.update-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.tickets .card {
+  position: relative;
+}
+
+.tickets .ticket-body a {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  z-index: 10000 !important;
+}
+
+.tickets .ticket-body button {
+  position: absolute;
+  right: 160px;
+  bottom: 24px;
+  z-index: 10000 !important;
 }

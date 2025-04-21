@@ -4,7 +4,7 @@
   }
 </div>
 <section class="cards">
-  @for (location of locations; track location.id) {
+  @if (!isLoading) { @for (location of locations; track location.id) {
   <a [routerLink]="['location', location.id]" class="card">
     <div class="top">
       <img [src]="location.imageUrl" alt="" />
@@ -36,5 +36,11 @@
       </h5>
     </div>
   </a>
-  }
+  } }
 </section>
+
+@if(isLoading) {
+<div class="spinner">
+  <div class="spinner-border text-primary" role="status"></div>
+</div>
+}

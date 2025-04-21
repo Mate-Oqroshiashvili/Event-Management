@@ -67,16 +67,6 @@ export class ParticipantService {
     );
   }
 
-  changeTicketType(
-    participantId: number,
-    ticketType: TicketType
-  ): Observable<string> {
-    return this.http.patch<string>(
-      `${this.apiUrl}Participant/change-ticket-type/${participantId}`,
-      { ticketType }
-    );
-  }
-
   requestTheRefund(
     participantId: number,
     purchaseId: number

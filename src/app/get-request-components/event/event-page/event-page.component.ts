@@ -10,7 +10,12 @@ import {
   EventStatus,
 } from '../../../services/event/event.service';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  Router,
+  RouterModule,
+} from '@angular/router';
 import {
   TicketDto,
   TicketService,
@@ -18,14 +23,10 @@ import {
 } from '../../../services/ticket/ticket.service';
 import { UserService, UserType } from '../../../services/user/user.service';
 import { jwtDecode } from 'jwt-decode';
-import {
-  CommentDto,
-  CommentService,
-} from '../../../services/comment/comment.service';
+import { CommentService } from '../../../services/comment/comment.service';
 import {
   FormBuilder,
   FormGroup,
-  FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -33,10 +34,12 @@ import {
   ReviewCreateDto,
   ReviewService,
 } from '../../../services/review/review.service';
+import { filter } from 'rxjs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-event-page',
-  imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule],
   templateUrl: './event-page.component.html',
   styleUrl: './event-page.component.css',
 })
@@ -64,15 +67,7 @@ export class EventPageComponent implements OnInit {
     category: EventCategory.IT_And_Technologies,
   };
   tickets: TicketDto[] = [];
-  commentCreateDto: CommentCreateDto = {
-    commentContent: '',
-    userId: 0,
-    eventId: 0,
-  };
   reviewsResult: number = 0;
-  commentUpdateDto: CommentUpdateDto = {
-    commentContent: '',
-  };
 
   addCommentForm!: FormGroup;
   editCommentForm!: FormGroup;
@@ -90,6 +85,8 @@ export class EventPageComponent implements OnInit {
   stars = Array(5).fill(0);
   selectedRating: number = 0;
   hoverRating: number = 0;
+
+  modalActive = false;
 
   constructor(
     private fb: FormBuilder,
@@ -122,6 +119,14 @@ export class EventPageComponent implements OnInit {
         console.error('Event ID not found in route parameters');
       }
     });
+
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.modalActive = !!this.route.children.find(
+          (r) => r.outlet === 'modal'
+        );
+      });
   }
 
   getEventById() {
@@ -171,14 +176,20 @@ export class EventPageComponent implements OnInit {
   }
 
   deleteEvent() {
+    let message = '';
+
     this.eventService.removeEvent(this.eventId).subscribe({
       next: (data: any) => {
+        message = data.message;
         console.log(data);
       },
       error: (err) => {
+        message = err.error.Message;
+        Swal.fire('Oops!', message, 'error');
         console.error(err);
       },
       complete: () => {
+        Swal.fire('Success', message, 'success');
         this.router.navigate(['/events']);
       },
     });
@@ -257,18 +268,20 @@ export class EventPageComponent implements OnInit {
   }
 
   deleteComment(commentId: number, userId: number) {
-    console.log(commentId);
-    console.log(userId);
+    let message = '';
 
     this.commentService.removeComment(commentId, userId).subscribe({
       next: (data: any) => {
+        message = data.message;
         console.log(data);
       },
       error: (err) => {
+        message = err.error.Message;
+        Swal.fire('Oops!', message, 'error');
         console.error(err);
       },
       complete: () => {
-        this.getEventById();
+        Swal.fire('Success!', message, 'success');
       },
     });
   }
@@ -278,17 +291,63 @@ export class EventPageComponent implements OnInit {
     this.reviewDto.eventId = this.eventId;
     this.reviewDto.starCount = this.selectedRating;
 
+    let message = '';
+    let messages: string[] = [];
+
     this.reviewService.addReview(this.reviewDto).subscribe({
       next: (data: any) => {
         console.log(data);
       },
       error: (err) => {
+        if (err.error.Message) {
+          message = err.error.Message;
+          Swal.fire('Oops!', message, 'error');
+        } else if (err.error.errors) {
+          err.error.errors.StarCount.forEach((element: any) => {
+            messages.push(element);
+          });
+          message = messages.join('<br>');
+          Swal.fire('Oops!', message, 'error');
+        } else {
+          Swal.fire('Oops!', 'Something went wrong!', 'error');
+        }
+        console.error(err);
+      },
+      complete: () => {
+        Swal.fire('Success!', 'Review Added Successfully!', 'success');
+        this.getEventById();
+      },
+    });
+  }
+
+  deleteTicket(ticketId: number) {
+    let message = '';
+
+    this.ticketService.removeTicket(ticketId).subscribe({
+      next: (data: any) => {
+        message = data.message;
+        console.log(data);
+      },
+      error: (err) => {
+        if (err.error.Message) {
+          message = err.error.Message;
+          Swal.fire('Oops!', message, 'error');
+        }
         console.error(err);
       },
       complete: () => {
         this.getEventById();
+        this.getTicketsByEventId();
+        Swal.fire('Success!', message, 'success');
       },
     });
+  }
+
+  onDeleteTicketClick(event: MouseEvent, ticketId: number): void {
+    event.stopPropagation();
+    event.preventDefault();
+
+    this.deleteTicket(ticketId);
   }
 
   getEventStatus(status: number): string {

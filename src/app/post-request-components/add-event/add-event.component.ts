@@ -9,7 +9,6 @@ import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
-  FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -28,17 +27,6 @@ import { jwtDecode } from 'jwt-decode';
 })
 export class AddEventComponent implements OnInit {
   userId: number = 0;
-  eventCreateDto: EventCreateDto = {
-    title: '',
-    description: '',
-    startDate: undefined,
-    endDate: undefined,
-    capacity: 0,
-    locationId: 0,
-    organizerId: 0,
-    category: EventCategory.No_Category,
-    images: [],
-  };
   organizer: OrganizerDto = {
     id: 0,
     name: '',

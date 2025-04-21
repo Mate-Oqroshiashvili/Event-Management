@@ -25,14 +25,9 @@ export interface LocationUpdateDto {
   state?: string;
   country?: string;
   postalCode?: string;
-  maxCapacity?: number;
-  remainingCapacity?: number;
-  availableStaff: number;
-  bookedStaff: number;
   description?: string;
   image?: File;
   isIndoor?: boolean;
-  isAccessible?: boolean;
 }
 
 export interface LocationDto {

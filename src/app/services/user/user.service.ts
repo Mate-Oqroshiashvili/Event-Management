@@ -159,9 +159,13 @@ export class UserService {
   }
 
   addBalance(userId: number, balance: number): Observable<string> {
-    return this.http.patch<string>(`${this.apiUrl}User/add-balance/${userId}`, {
+    return this.http.patch<string>(
+      `${this.apiUrl}User/add-balance/${userId}`,
       balance,
-    });
+      {
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   }
 
   changeLoginStatus(userId: number): Observable<boolean> {

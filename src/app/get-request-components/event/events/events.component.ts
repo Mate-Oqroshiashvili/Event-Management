@@ -25,6 +25,8 @@ export class EventsComponent implements OnInit {
   selectedSortOption: string = '';
   selectedCategoryOption: string = '';
 
+  isLoading: boolean = false;
+
   constructor(
     private userService: UserService,
     private eventService: EventService,
@@ -37,6 +39,8 @@ export class EventsComponent implements OnInit {
   }
 
   getPublishedEvents() {
+    this.isLoading = true;
+
     this.eventService.getPublishedEvents().subscribe({
       next: (data: any) => {
         this.events = data.events;
@@ -46,6 +50,7 @@ export class EventsComponent implements OnInit {
         console.error(err);
       },
       complete: () => {
+        this.isLoading = false;
         console.log('Fetched the events successfully!');
       },
     });

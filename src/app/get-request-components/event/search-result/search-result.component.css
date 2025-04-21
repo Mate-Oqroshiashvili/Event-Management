@@ -33,3 +33,10 @@ p {
 a {
   text-decoration: none;
 }
+
+.message {
+  height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

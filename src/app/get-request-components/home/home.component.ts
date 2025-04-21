@@ -20,6 +20,9 @@ export class HomeComponent implements OnInit {
   reviewsResult: number = 0;
   isLoggedIn$: boolean = false;
 
+  isUpcomingLoading: boolean = false;
+  isPopularLoading: boolean = false;
+
   constructor(
     private eventService: EventService,
     private userService: UserService
@@ -36,6 +39,8 @@ export class HomeComponent implements OnInit {
   }
 
   getUpcomingEvents() {
+    this.isUpcomingLoading = true;
+
     this.eventService.getPublishedEvents().subscribe({
       next: (data: any) => {
         this.upcoming = data.events
@@ -51,12 +56,15 @@ export class HomeComponent implements OnInit {
         console.error(err);
       },
       complete: () => {
+        this.isUpcomingLoading = false;
         console.log('Upcoming events fetched successfully!');
       },
     });
   }
 
   getPopularEvents() {
+    this.isPopularLoading = true;
+
     this.eventService.getPublishedEvents().subscribe({
       next: (data: any) => {
         this.popular = data.events
@@ -78,6 +86,7 @@ export class HomeComponent implements OnInit {
         console.error(err);
       },
       complete: () => {
+        this.isPopularLoading = false;
         console.log('Popular events fetched successfully!');
       },
     });
