@@ -9,7 +9,9 @@ namespace Event_Management.Helpers
         public PromoCodeMappingProfile() 
         {
             CreateMap<PromoCode, PromoCodeCreateDto>().ReverseMap();
-            CreateMap<PromoCode, PromoCodeDto>().ReverseMap();
+            CreateMap<PromoCode, PromoCodeDto>()
+                .ForMember(dest => dest.Event, opt => opt.MapFrom(src => src.Event))
+                .ReverseMap();
             CreateMap<PromoCode, PromoCodeUpdateDto>().ReverseMap();
             CreateMap<UsedPromoCode, UsedPromoCodeDto>().ReverseMap();
         }

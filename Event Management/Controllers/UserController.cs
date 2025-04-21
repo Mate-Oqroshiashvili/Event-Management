@@ -7,6 +7,7 @@ using Event_Management.Repositories.CodeRepositoryFolder;
 using Event_Management.Repositories.UserRepositoryFolder;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Event_Management.Controllers
 {
@@ -23,6 +24,37 @@ namespace Event_Management.Controllers
             _userRepository = userRepository;
             _authRepository = authRepository;
             _codeRepository = codeRepository;
+        }
+
+        [HttpGet("get-user-analytics/{userId}")]
+        public async Task<ActionResult<UserAnalyticsDto>> GetAnalytics(int userId)
+        {
+            try
+            {
+                var analytics = await _userRepository.GetUserAnalyticsAsync(userId);
+                if (analytics == null)
+                    return NotFound("User not found");
+
+                return Ok(analytics);
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [HttpGet("get-admin-analytics")]
+        public async Task<ActionResult<AdminAnalyticsDto>> GetAdminAnalytics()
+        {
+            try
+            {
+                var analytics = await _userRepository.GetAdminAnalyticsAsync();
+                return Ok(analytics);
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
         }
 
         [Authorize(Roles = "ADMINISTRATOR")]
@@ -76,7 +108,7 @@ namespace Event_Management.Controllers
         {
             try
             {
-                var speakers = await _userRepository.GetSpeakers();
+                var speakers = await _userRepository.GetSpeakersAsync();
 
                 return speakers == null ? throw new NotFoundException("Speakers can't be found!") : Ok(new { speakers });
             }
@@ -91,7 +123,7 @@ namespace Event_Management.Controllers
         {
             try
             {
-                var artists = await _userRepository.GetArtists();
+                var artists = await _userRepository.GetArtistsAsync();
 
                 return artists == null ? throw new NotFoundException("Artists can't be found!") : Ok(new { artists });
             }
@@ -185,9 +217,9 @@ namespace Event_Management.Controllers
         {
             try
             {
-                var updated = await _userRepository.UpdateLoginStatus(userId);
+                var updated = await _userRepository.UpdateLoginStatusAsync(userId);
 
-                return !updated ? throw new NotFoundException("User not found!") : Ok(new { updated ,message = "Login status updated successfully." });
+                return !updated ? throw new NotFoundException("User not found!") : Ok(new { updated, message = "Login status updated successfully." });
             }
             catch (Exception ex)
             {

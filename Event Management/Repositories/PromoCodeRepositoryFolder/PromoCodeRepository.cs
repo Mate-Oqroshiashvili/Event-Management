@@ -24,6 +24,7 @@ namespace Event_Management.Repositories.PromoCodeRepositoryFolder
         {
             var promoCodes = await _context.PromoCodes
                 .Include(x => x.Event)
+                    .ThenInclude(x => x.Organizer)
                 .ToListAsync();
 
             var promoCodeDtos = _mapper.Map<IEnumerable<PromoCodeDto>>(promoCodes);
@@ -35,6 +36,7 @@ namespace Event_Management.Repositories.PromoCodeRepositoryFolder
         {
             var promoCode = await _context.PromoCodes
                 .Include(x => x.Event)
+                    .ThenInclude(x => x.Organizer)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             var promoCodeDto = _mapper.Map<PromoCodeDto>(promoCode);
@@ -68,6 +70,7 @@ namespace Event_Management.Repositories.PromoCodeRepositoryFolder
             var promoCodes = await _context.PromoCodes
                 .Where(p => p.EventId == eventId && p.Event.Status != EventStatus.DELETED && p.Event.Status != EventStatus.DRAFT)
                 .Include(x => x.Event)
+                    .ThenInclude(x => x.Organizer)
                 .ToListAsync();
 
             var promoCodeDtos = _mapper.Map<IEnumerable<PromoCodeDto>>(promoCodes);

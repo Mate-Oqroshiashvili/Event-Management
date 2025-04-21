@@ -1,4 +1,5 @@
-﻿using Event_Management.Models.Enums;
+﻿using Event_Management.Models.Dtos.EventDtos;
+using Event_Management.Models.Enums;
 
 namespace Event_Management.Models.Dtos.PromoCodeDtos
 {
@@ -9,5 +10,8 @@ namespace Event_Management.Models.Dtos.PromoCodeDtos
         public string PromoCodeText { get; set; }
         public int SaleAmountInPercentages { get; set; }
         public PromoCodeStatus PromoCodeStatus { get; set; }
+        public int PromoCodeAmount { get; set; }
+
+        public EventDto Event { get; set; }
     }
 }

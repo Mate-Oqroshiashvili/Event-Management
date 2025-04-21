@@ -22,6 +22,85 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             _mapper = mapper;
         }
 
+        public async Task<UserAnalyticsDto> GetUserAnalyticsAsync(int userId)
+        {
+            var user = await _context.Users
+                .Include(u => u.Purchases)
+                    .ThenInclude(x => x.Participants)
+                .Include(u => u.Tickets)
+                    .ThenInclude(u => u.Users)
+                .Include(u => u.Comments)
+                .Include(u => u.Reviews)
+                .Include(u => u.UsedPromoCodes)
+                .Include(u => u.Participants)
+                .Include(u => u.Organizer)
+                .FirstOrDefaultAsync(u => u.Id == userId) 
+                ?? throw new NotFoundException("User not found!");
+
+            var totalSpent = user.Purchases
+                .Where(p => p.Status == PurchaseStatus.COMPLETED)
+                .Sum(p => p.TotalAmount);
+
+            var totalTickets = user.Purchases
+                .Where(p => p.Status == PurchaseStatus.COMPLETED)
+                .Sum(x => x.Participants.Count());
+
+            var eventsWithAttendance = await _context.Tickets
+                .Where(t => t.Participants.Any(p => p.UserId == userId && p.Attendance == true))
+                .Select(t => t.EventId)
+                .Distinct()
+                .CountAsync();
+
+            var artistOrSpeakerEvents = await _context.Events
+                .CountAsync(e => e.SpeakersAndArtists.Any(u => u.Id == userId));
+
+            var dto = new UserAnalyticsDto
+            {
+                TotalBalance = user.Balance,
+                TotalSpent = totalSpent,
+                TotalPurchases = user.Purchases.Count(),
+                TotalTicketsBought = totalTickets,
+                EventsParticipatedIn = eventsWithAttendance,
+                EventsAsArtistOrSpeaker = artistOrSpeakerEvents,
+                TotalComments = user.Comments.Count(),
+                TotalReviews = user.Reviews.Count(),
+                UsedPromoCodesCount = user.UsedPromoCodes.Count()
+            };
+
+            return dto;
+        }
+
+        public async Task<AdminAnalyticsDto> GetAdminAnalyticsAsync()
+        {
+            var dto = new AdminAnalyticsDto
+            {
+                TotalUsers = await _context.Users.CountAsync(),
+                TotalOrganizers = await _context.Users.CountAsync(u => u.Role == Role.ORGANIZER),
+                TotalParticipants = await _context.Users.CountAsync(u => u.Role == Role.PARTICIPANT),
+                TotalArtists = await _context.Users.CountAsync(u => u.UserType == UserType.ARTIST),
+                TotalSpeakers = await _context.Users.CountAsync(u => u.UserType == UserType.SPEAKER),
+
+                TotalEvents = await _context.Events.CountAsync(),
+                DraftedEvents = await _context.Events.CountAsync(e => e.Status == EventStatus.DRAFT),
+                PublishedEvents = await _context.Events.CountAsync(e => e.Status == EventStatus.PUBLISHED),
+                CompletedEvents = await _context.Events.CountAsync(e => e.Status == EventStatus.COMPLETED),
+                DeletedEvents = await _context.Events.CountAsync(e => e.Status == EventStatus.DELETED),
+
+                TotalRevenue = await _context.Purchases
+                    .Where(p => p.Status == PurchaseStatus.COMPLETED)
+                    .SumAsync(p => (decimal?)p.TotalAmount) ?? 0,
+
+                TotalUserBalances = await _context.Users.SumAsync(u => (decimal?)u.Balance) ?? 0,
+
+                TotalComments = await _context.Comments.CountAsync(),
+                TotalReviews = await _context.Reviews.CountAsync(),
+                TotalPromoCodes = await _context.PromoCodes.CountAsync()
+            };
+
+            return dto;
+        }
+
+
         public async Task<IEnumerable<UserDto>> GetUsersAsync()
         {
             var users = await _context.Users
@@ -73,7 +152,7 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             return userDto;
         }
 
-        public async Task<IEnumerable<UserDto>> GetSpeakers()
+        public async Task<IEnumerable<UserDto>> GetSpeakersAsync()
         {
             var speakers = await _context.Users
                 .Include(x => x.Participants)
@@ -91,7 +170,7 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             return speakerDtos;
         }
 
-        public async Task<IEnumerable<UserDto>> GetArtists()
+        public async Task<IEnumerable<UserDto>> GetArtistsAsync()
         {
             var artists = await _context.Users
                 .Include(x => x.Participants)
@@ -157,7 +236,7 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             return true;
         }
 
-        public async Task<bool> UpdateLoginStatus(int id)
+        public async Task<bool> UpdateLoginStatusAsync(int id)
         {
             var existingUser = await _context.Users.FindAsync(id);
             if (existingUser == null) return false;

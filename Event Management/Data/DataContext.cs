@@ -167,7 +167,7 @@ namespace Event_Management.Data
                 .HasOne(upc => upc.PromoCode)
                 .WithMany(pc => pc.UsedPromoCodes)
                 .HasForeignKey(upc => upc.PromoCodeId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevent deleting PromoCode if used
+                .OnDelete(DeleteBehavior.Cascade); // Prevent deleting PromoCode if used
 
             // ---- UsedPromoCode Configurations ----
 
