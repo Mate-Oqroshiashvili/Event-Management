@@ -1,1 +1,46 @@
-<p>user-analytics works!</p>
+@if (analytics) {
+<div class="container mt-5">
+  <h2 class="mb-4">User Analytics Overview</h2>
+
+  <div class="row justify-content-center">
+    <div class="col-md-6 mb-4">
+      <h5 class="text-center">Spending vs Balance</h5>
+      <div
+        class="circle mx-auto"
+        [ngStyle]="{ background: balanceSpendingGradient }"
+      ></div>
+      <ul class="legend mt-3">
+        <li>
+          <span style="background-color: #28a745"></span> Remaining Balance (${{
+            analytics.totalBalance
+          }})
+        </li>
+        <li>
+          <span style="background-color: #dc3545"></span> Total Spent (${{
+            analytics.totalSpent
+          }})
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row mt-2">
+    @for (stat of stats; track $index) {
+    <div class="col-md-4 mb-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5>{{ stat.label }}</h5>
+          <p class="fw-bold">{{ stat.value }}</p>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</div>
+} @if (!analytics) {
+<div class="text-center mt-5">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+}

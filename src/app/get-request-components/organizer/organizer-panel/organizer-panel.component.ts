@@ -21,14 +21,18 @@ import {
   OrganizerDto,
   OrganizerService,
 } from '../../../services/organizer/organizer.service';
-import { Role } from '../../../services/user/user.service';
 import { FormsModule } from '@angular/forms';
+import {
+  PromoCodeDto,
+  PromoCodeService,
+} from '../../../services/promo-code/promo-code.service';
+import { TicketService } from '../../../services/ticket/ticket.service';
 
 @Component({
   selector: 'app-organizer-panel',
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './organizer-panel.component.html',
-  styleUrl: './organizer-panel.component.css',
+  styleUrls: ['./organizer-panel.component.css', './responsive.css'],
 })
 export class OrganizerPanelComponent implements OnInit {
   organizerId: number = 0;
@@ -48,6 +52,7 @@ export class OrganizerPanelComponent implements OnInit {
     locations: null,
   };
   result: EventDto[] = [];
+  promoCodes: PromoCodeDto[] = [];
   resultType: string = 'drafted';
   reviewsResult: number = 0;
 
@@ -60,9 +65,14 @@ export class OrganizerPanelComponent implements OnInit {
 
   analyticsSearchTerm: string = '';
 
+  selectedFile: File | null = null;
+  validationResult: string | null = null;
+
   constructor(
     private organizerService: OrganizerService,
     private eventService: EventService,
+    private promoCodeService: PromoCodeService,
+    private ticketService: TicketService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -201,6 +211,47 @@ export class OrganizerPanelComponent implements OnInit {
     return this.reviewsResult;
   }
 
+  getPromoCodes() {
+    this.isLoading = true;
+
+    this.promoCodeService.getAllPromoCodes().subscribe({
+      next: (data: any) => {
+        this.result = [];
+
+        this.promoCodes = data.promoCodes.filter(
+          (x: PromoCodeDto) => x.event.organizer?.id === this.organizerId
+        );
+      },
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => {
+        this.resultType = 'promo-codes';
+        this.isLoading = false;
+        console.log('Fetched promo codes successfully!');
+      },
+    });
+  }
+
+  deletePromoCode(id: number) {
+    let message = '';
+
+    this.promoCodeService.removePromoCode(id).subscribe({
+      next: (data: any) => {
+        message = data.message;
+        console.log(data);
+      },
+      error: (err) => {
+        console.error(err);
+        Swal.fire('Oops1', err.error.Message, 'error');
+      },
+      complete: () => {
+        Swal.fire('Success!', message, 'success');
+        this.getPromoCodes();
+      },
+    });
+  }
+
   getCategory(category: number): string {
     let categoryText = EventCategory[category] ?? 'Unknown Status';
     let result = categoryText.replaceAll('_', ' ');
@@ -312,5 +363,33 @@ export class OrganizerPanelComponent implements OnInit {
       #28a745 ${vipEnd}% ${earlyEnd}%,
       #e0e0e0 ${earlyEnd}% 100%
     )`;
+  }
+
+  toValidateTicket() {
+    this.result = [];
+    this.resultType = 'validate-ticket';
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+    }
+  }
+
+  onValidateTicket(event: Event): void {
+    event.preventDefault();
+    if (this.selectedFile) {
+      this.ticketService.validateTicket(this.selectedFile).subscribe({
+        next: (result: any) => {
+          console.log(result);
+          this.validationResult = result.result;
+        },
+        error: (err) => {
+          console.error(err);
+          this.validationResult = err.error.Message;
+        },
+      });
+    }
   }
 }

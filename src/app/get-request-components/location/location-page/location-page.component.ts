@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import {
   LocationDto,
   LocationService,
@@ -23,7 +23,7 @@ import Swal from 'sweetalert2';
   selector: 'app-location-page',
   imports: [CommonModule, RouterModule],
   templateUrl: './location-page.component.html',
-  styleUrl: './location-page.component.css',
+  styleUrls: ['./location-page.component.css', './responsive.css'],
 })
 export class LocationPageComponent implements OnInit {
   organizerId: number = 0;
@@ -59,7 +59,8 @@ export class LocationPageComponent implements OnInit {
     private locationService: LocationService,
     private eventService: EventService,
     private organizerService: OrganizerService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -71,7 +72,9 @@ export class LocationPageComponent implements OnInit {
         this.getLocationById();
         this.getEventsByLocationId();
         this.getOrganizersByLocationId();
-        this.getOrganizer();
+        if (this.role == 'ORGANIZER') {
+          this.getOrganizer();
+        }
       } else {
         console.error('Location ID not found in route parameters');
       }
@@ -185,6 +188,24 @@ export class LocationPageComponent implements OnInit {
       message = 'Organizer Id not found!';
       Swal.fire('Oops!', message, 'error');
     }
+  }
+
+  deleteLocation() {
+    let message = '';
+
+    this.locationService.removeLocation(this.locationId).subscribe({
+      next: (data: any) => {
+        message = data.message;
+      },
+      error: (err) => {
+        message = err.error.Message;
+        Swal.fire('Oops!', message, 'error');
+      },
+      complete: () => {
+        Swal.fire('Success', message, 'success');
+        this.router.navigate(['/locations']);
+      },
+    });
   }
 
   alert() {

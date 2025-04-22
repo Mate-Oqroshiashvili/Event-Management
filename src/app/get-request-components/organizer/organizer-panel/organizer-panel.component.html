@@ -1,10 +1,5 @@
 <section class="top">
-  <img
-    [src]="organizer.logoUrl"
-    alt="Profile Picture"
-    class="img-thumbnail"
-    width="150"
-  />
+  <img [src]="organizer.logoUrl" alt="Profile Picture" class="img-thumbnail" />
   <div class="main-information">
     <div class="card shadow-sm rounded-4 p-4">
       <div class="card-body">
@@ -91,7 +86,7 @@
 </section>
 
 <section class="tabs mt-5 mb-4">
-  <ul class="nav nav-tabs">
+  <ul style="justify-content: space-evenly; gap: 10px" class="nav nav-tabs">
     <li class="nav-item">
       <a
         class="nav-link"
@@ -135,6 +130,24 @@
         (click)="getRemoved()"
         href="javascript:void(0)"
         >Removed Events</a
+      >
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        [class.active]="resultType === 'promo-codes'"
+        (click)="getPromoCodes()"
+        href="javascript:void(0)"
+        >Promo Codes</a
+      >
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        [class.active]="resultType === 'validate-ticket'"
+        (click)="toValidateTicket()"
+        href="javascript:void(0)"
+        >Validate Ticket</a
       >
     </li>
   </ul>
@@ -217,7 +230,78 @@
   </div>
   }
 </section>
-}@else if (resultType === 'analytics') {
+} @else if(resultType === 'promo-codes'){
+<div class="container mt-4">
+  <div class="row">
+    @if (promoCodes.length != 0) { @for (promo of promoCodes; track $index) {
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title text-success">
+            {{ promo.promoCodeText.toUpperCase() }}
+          </h5>
+          <h6 class="card-subtitle mb-2 text-muted">
+            Event: {{ promo.event.title }}
+          </h6>
+
+          <p class="card-text mb-1">
+            <strong>Sale:</strong> {{ promo.saleAmountInPercentages }}%
+          </p>
+
+          <p class="card-text mb-1">
+            <strong class="me-2">Status:</strong>
+            <span
+              class="text-light"
+              style="
+                margin: 0;
+                padding: 6px 10px;
+                text-align: center;
+                border-radius: 6px;
+                display: inline-block;
+                line-height: 1;
+                vertical-align: middle;
+              "
+              [ngClass]="{
+                'badge bg-success': promo.promoCodeStatus === 1,
+                'badge bg-danger': promo.promoCodeStatus === 2
+              }"
+            >
+              {{ promo.promoCodeStatus === 1 ? "Available" : "Out of Stock" }}
+            </span>
+          </p>
+
+          <p class="card-text mb-1">
+            <strong>Promo Code Amount:</strong> {{ promo.promoCodeAmount }}
+          </p>
+
+          <p class="card-text mb-4">
+            <strong>Event ID:</strong> {{ promo.eventId }}
+          </p>
+
+          <div style="display: grid; grid-template-rows: 1fr 1fr; gap: 20px">
+            <a
+              [routerLink]="['update-promo-code', promo.id]"
+              class="btn btn-warning"
+              >Update Promo Code</a
+            >
+            <button (click)="deletePromoCode(promo.id)" class="btn btn-danger">
+              Delete Promo Code
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    } } @else {
+    <div
+      style="height: 30vh"
+      class="d-flex justify-content-center elign-items-center"
+    >
+      <h1 style="margin: auto">No Promo Code Found!</h1>
+    </div>
+    }
+  </div>
+</div>
+} @else if (resultType === 'analytics') {
 <section class="analytics mt-4 container">
   <h2 class="mb-5">Analytics for All Events</h2>
 
@@ -347,6 +431,39 @@
   </div>
   }
 </section>
+} @else if(resultType === 'validate-ticket') {
+<div class="container mt-4">
+  <h2 style="text-align: center" class="mb-4 mt-5">Validate Ticket</h2>
+
+  <form
+    (submit)="onValidateTicket($event)"
+    class="p-4 border rounded shadow-sm bg-light"
+  >
+    <div class="mb-3">
+      <label for="qrCodeImage" class="form-label">Upload QR Code</label>
+      <input
+        type="file"
+        class="form-control"
+        id="qrCodeImage"
+        (change)="onFileSelected($event)"
+        accept="image/*"
+        required
+      />
+    </div>
+
+    <button
+      type="submit"
+      class="btn btn-primary w-100"
+      [disabled]="!selectedFile"
+    >
+      Validate Ticket
+    </button>
+  </form>
+
+  <div *ngIf="validationResult" class="alert alert-info mt-4">
+    {{ validationResult }}
+  </div>
+</div>
 } @else {
 <h1 class="text-center">No event found!</h1>
 } @if (modalActive) {

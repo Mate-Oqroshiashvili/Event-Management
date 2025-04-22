@@ -17,3 +17,9 @@ form {
   max-width: 100%;
   overflow-x: auto;
 }
+
+@media screen and (max-width: 768px) {
+  .update-location-form {
+    width: 80vw;
+  }
+}

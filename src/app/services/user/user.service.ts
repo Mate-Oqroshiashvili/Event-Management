@@ -25,6 +25,36 @@ export enum UserType {
   SPEAKER = 3,
 }
 
+export interface AdminAnalyticsDto {
+  totalUsers: number;
+  totalOrganizers: number;
+  totalParticipants: number;
+  totalArtists: number;
+  totalSpeakers: number;
+  totalEvents: number;
+  draftedEvents: number;
+  publishedEvents: number;
+  completedEvents: number;
+  deletedEvents: number;
+  totalRevenue: number;
+  totalUserBalances: number;
+  totalComments: number;
+  totalReviews: number;
+  totalPromoCodes: number;
+}
+
+export interface UserAnalyticsDto {
+  totalBalance: number;
+  totalSpent: number;
+  totalPurchases: number;
+  totalTicketsBought: number;
+  eventsParticipatedIn: number;
+  eventsAsArtistOrSpeaker: number;
+  totalComments: number;
+  totalReviews: number;
+  usedPromoCodesCount: number;
+}
+
 export interface UsedPromoCodeDto {
   id: number;
   promoCodeId: number;
@@ -97,6 +127,18 @@ export class UserService {
     if (isPlatformBrowser(this.platformId)) {
       this.isAuthenticatedSubject.next(this.hasValidToken());
     }
+  }
+
+  getAdminAnalytics(): Observable<AdminAnalyticsDto> {
+    return this.http.get<AdminAnalyticsDto>(
+      `${this.apiUrl}User/get-admin-analytics`
+    );
+  }
+
+  getUserAnalytics(userId: number): Observable<UserAnalyticsDto> {
+    return this.http.get<UserAnalyticsDto>(
+      `${this.apiUrl}User/get-user-analytics/${userId}`
+    );
   }
 
   getAllUsers(): Observable<UserDto[]> {

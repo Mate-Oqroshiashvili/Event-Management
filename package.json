@@ -23,6 +23,8 @@
     "@angular/platform-server": "^19.2.4",
     "@angular/router": "^19.2.4",
     "@angular/ssr": "^19.2.5",
+    "@aspnet/signalr": "^1.0.27",
+    "@microsoft/signalr": "^8.0.7",
     "bootstrap-icons": "^1.11.3",
     "express": "^4.18.2",
     "jwt-decode": "^4.0.0",

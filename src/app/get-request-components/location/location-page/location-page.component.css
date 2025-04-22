@@ -8,15 +8,16 @@
 .top {
   height: 100% !important;
   display: grid;
-  grid-template-columns: 0.5fr 1fr;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
   gap: 40px;
 }
 
 .top img {
   width: 100% !important;
-  height: 100% !important;
+  height: auto !important;
   object-fit: fill;
-  border-radius: 50%;
+  border-radius: 20px;
 }
 
 .main-information {
@@ -102,12 +103,18 @@ a {
 }
 
 .card.custom .top {
-  grid-template-columns: 0.3fr 1fr;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+  gap: 0px;
 }
 
 .card.custom img {
-  border-radius: 50%;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: fill;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 }
 
 .card.custom:hover,

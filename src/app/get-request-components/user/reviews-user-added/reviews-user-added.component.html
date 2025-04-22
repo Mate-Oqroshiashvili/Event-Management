@@ -1,15 +1,23 @@
 @if (reviews.length != 0) {
-<div class="reviews">
-  <h1>Reviews</h1>
-  <div class="cards my-3">
+<div class="reviews container my-5">
+  <h1 class="text-center mb-4">Reviews</h1>
+  <div class="row g-4">
     @for (item of reviews; track $index) {
-    <div class="card">
-      <h3>{{ item.id }}: {{ item.user.name }}</h3>
-      <p>Starcount: {{ item.starCount }}</p>
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="card-title fw-bold text-primary">
+            #{{ item.id }} - {{ item.user.name }}
+          </h5>
+          <p class="card-text mb-2">
+            ⭐ Star Count: <strong>{{ item.starCount }}</strong>
+          </p>
+        </div>
+      </div>
     </div>
     }
   </div>
 </div>
 } @else {
-<h1 class="text-center">No Review Found!</h1>
+<h1 class="text-center text-muted mt-5">No Review Found!</h1>
 }

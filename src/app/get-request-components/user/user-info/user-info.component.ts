@@ -11,12 +11,13 @@ import { OrganizerService } from '../../../services/organizer/organizer.service'
 import { ImageService } from '../../../services/image/image.service';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { ParticipantService } from '../../../services/participant/participant.service';
 
 @Component({
   selector: 'app-user-info',
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './user-info.component.html',
-  styleUrl: './user-info.component.css',
+  styleUrls: ['./user-info.component.css', './responsive.css'],
 })
 export class UserInfoComponent implements OnInit {
   userId: number = 0;
@@ -55,6 +56,7 @@ export class UserInfoComponent implements OnInit {
   constructor(
     private userService: UserService,
     private organizerService: OrganizerService,
+    private participantService: ParticipantService,
     private imageService: ImageService,
     private route: ActivatedRoute,
     private router: Router
@@ -77,6 +79,10 @@ export class UserInfoComponent implements OnInit {
           child.outlet === 'bottom' ? segments[0]?.path : null;
         if (bottomSegment) this.activeBottomTab = bottomSegment;
       });
+    });
+
+    this.participantService.refund$.subscribe(() => {
+      this.getUserById();
     });
   }
 

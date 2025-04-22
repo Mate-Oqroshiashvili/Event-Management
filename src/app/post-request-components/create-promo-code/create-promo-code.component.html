@@ -1,1 +1,61 @@
-<p>create-promo-code works!</p>
+<div class="promo-form-container">
+  <form [formGroup]="promoForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="promoCodeText">Promo Code Text</label>
+      <input
+        type="text"
+        id="promoCodeText"
+        class="form-control"
+        formControlName="promoCodeText"
+      />
+      @if (promoForm.get('promoCodeText')?.touched &&
+      promoForm.get('promoCodeText')?.invalid) {
+      <div class="text-danger">
+        Promo Code must be exactly 8 letters or numbers.
+      </div>
+      } @for (error of serverErrors['PromoCodeText']; track $index) {
+      <div class="text-danger">
+        {{ error }}
+      </div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="saleAmountInPercentages">Sale %</label>
+      <input
+        type="number"
+        id="saleAmountInPercentages"
+        class="form-control"
+        formControlName="saleAmountInPercentages"
+      />
+      @if ( promoForm.get('saleAmountInPercentages')?.touched &&
+      promoForm.get('saleAmountInPercentages')?.invalid) {
+      <div class="text-danger">Sale amount must be between 0 and 100.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="promoCodeAmount">Promo Code Quantity</label>
+      <input
+        type="number"
+        id="promoCodeAmount"
+        class="form-control"
+        formControlName="promoCodeAmount"
+      />
+      @if (promoForm.get('promoCodeAmount')?.touched &&
+      promoForm.get('promoCodeAmount')?.invalid) {
+      <div class="text-danger">Quantity must be at least 1.</div>
+      } @for (error of serverErrors['PromoCodeText']; track $index) {
+      <div class="text-danger">
+        {{ error }}
+      </div>
+      }
+    </div>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-success mt-3" type="submit">
+        Create Promo Code
+      </button>
+    </div>
+  </form>
+</div>

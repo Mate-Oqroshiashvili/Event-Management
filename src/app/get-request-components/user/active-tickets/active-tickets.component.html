@@ -19,7 +19,10 @@
         <strong>End:</strong>
         {{ participant.ticket.event?.endDate | date : "medium" }}
       </p>
-      <p><strong>Price:</strong> {{ participant.ticket.price | currency }}</p>
+      <p>
+        <strong>Price:</strong>
+        {{ participant.ticket.price | currency }}
+      </p>
       <p>
         <strong>Status:</strong>
         {{ participant.attendance ? "Attended" : "Not Attended" }}
@@ -40,5 +43,7 @@
   }
 </div>
 @if (participants.length == 0) {
-<h1 class="text-center">No Active Ticket Found!</h1>
+<div class="d-flex justify-content-center align-items-center">
+  <h1 style="margin: auto">No Active Ticket Found!</h1>
+</div>
 }

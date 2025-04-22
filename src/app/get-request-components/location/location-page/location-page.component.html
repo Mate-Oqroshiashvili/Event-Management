@@ -1,4 +1,14 @@
 <div class="location-page">
+  @if (role == "ADMINISTRATOR") {
+  <div class="d-flex justify-content-between align-items-center mb-5">
+    <a [routerLink]="['update-location']" class="btn btn-warning"
+      >Update Event</a
+    >
+    <button (click)="deleteLocation()" type="button" class="btn btn-danger">
+      Delete Event
+    </button>
+  </div>
+  }
   <section class="top">
     <img [src]="location.imageUrl" alt="" />
     <div class="main-information">
@@ -94,11 +104,11 @@
                   {{ organizer.name }}
                 </h3>
                 @if (organizer.isVerified) {
-                <p class="card-text mb-4" style="margin: 0px">
+                <p class="card-text" style="margin: 0px">
                   Verification Status: Verified
                 </p>
                 } @else {
-                <p class="card-text mb-4" style="margin: 0px">
+                <p class="card-text" style="margin: 0px">
                   Verification Status: Not Verified
                 </p>
                 }

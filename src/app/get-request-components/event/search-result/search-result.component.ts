@@ -12,7 +12,7 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-search-result',
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './search-result.component.html',
-  styleUrl: './search-result.component.css',
+  styleUrls: ['./search-result.component.css', './resposnive.css'],
 })
 export class SearchResultComponent implements OnInit {
   searchTerm: string = '';

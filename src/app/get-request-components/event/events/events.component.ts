@@ -14,7 +14,7 @@ import { jwtDecode } from 'jwt-decode';
   selector: 'app-events',
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './events.component.html',
-  styleUrl: './events.component.css',
+  styleUrls: ['./events.component.css', './responsive.css'],
 })
 export class EventsComponent implements OnInit {
   role: string = '';

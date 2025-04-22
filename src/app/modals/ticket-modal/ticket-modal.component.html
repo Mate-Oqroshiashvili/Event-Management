@@ -142,7 +142,12 @@
           class="btn btn-success"
           [disabled]="!purchaseForm.form.valid"
         >
-          Purchase (${{ calculatePrice(ticket.price) }})
+          @if (!isPurchasing) { Purchase (${{ calculatePrice(ticket.price) }})
+          }@else {
+          <div class="spinner">
+            <div class="spinner-border text-warning" role="status"></div>
+          </div>
+          }
         </button>
       </form>
     </div>

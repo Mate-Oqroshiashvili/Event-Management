@@ -8,13 +8,17 @@
 .event-page .top {
   height: 100% !important;
   display: grid;
-  grid-template-columns: 0.8fr 1fr;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
   gap: 40px;
+}
+
+.carousel {
+  margin: auto;
 }
 
 .carousel-item {
   width: 100% !important;
-  height: 50vh !important;
 }
 
 .carousel-inner {
@@ -89,6 +93,7 @@ img {
 
 .card.custom .top {
   grid-template-columns: 0.3fr 1fr;
+  grid-template-rows: 1fr;
   gap: 20px;
 }
 

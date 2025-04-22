@@ -19,3 +19,13 @@ form {
   margin-top: 0.25rem;
   display: block;
 }
+
+@media screen and (max-width: 768px) {
+  .update-form {
+    width: 80vw;
+  }
+
+  form {
+    padding: 1rem;
+  }
+}

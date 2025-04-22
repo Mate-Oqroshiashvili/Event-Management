@@ -1,19 +1,7 @@
-.comments,
-.text-center {
-  padding: 20px;
-}
-
 .cards {
   padding: 20px 0px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto;
-  gap: 20px;
 }
 
 .card {
   padding: 10px;
-  display: grid;
-  grid-template-columns: 1fr;
-  column-gap: 20px;
 }

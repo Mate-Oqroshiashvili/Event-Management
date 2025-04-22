@@ -67,6 +67,7 @@ export class ActiveTicketsComponent implements OnInit {
         },
         complete: () => {
           this.refunding = false;
+          this.participantService.notifyRefundCompleted();
           Swal.fire('Sucess!', message, 'success');
           this.getParticipants();
         },

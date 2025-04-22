@@ -25,7 +25,6 @@ import { LocationsComponent } from './get-request-components/location/locations/
 import { LocationPageComponent } from './get-request-components/location/location-page/location-page.component';
 import { OrganizersComponent } from './get-request-components/organizer/organizers/organizers.component';
 import { OrganizerPageComponent } from './get-request-components/organizer/organizer-page/organizer-page.component';
-import { PromoCodesComponent } from './get-request-components/organizer/promo-codes/promo-codes.component';
 import { AddEventComponent } from './post-request-components/add-event/add-event.component';
 import { AddLocationComponent } from './post-request-components/add-location/add-location.component';
 import { AddOrganizerComponent } from './post-request-components/add-organizer/add-organizer.component';
@@ -36,9 +35,13 @@ import { RescheduleEventComponent } from './put-request-components/reschedule-ev
 import { TicketModalComponent } from './modals/ticket-modal/ticket-modal.component';
 import { AddTicketComponent } from './post-request-components/add-ticket/add-ticket.component';
 import { ActiveTicketsComponent } from './get-request-components/user/active-tickets/active-tickets.component';
+import { adminGuard } from './services/guards/admin.guard';
+import { organizerGuard } from './services/guards/organizer.guard';
+import { CreatePromoCodeComponent } from './post-request-components/create-promo-code/create-promo-code.component';
+import { promoGuard } from './services/guards/promo.guard';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '', component: HomeComponent, canDeactivate: [promoGuard] },
   {
     path: 'register',
     component: RegisterComponent,
@@ -102,7 +105,8 @@ export const routes: Routes = [
   {
     path: 'organizer-panel/:organizerId',
     component: OrganizerPanelComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard, organizerGuard],
+    canActivateChild: [authGuard, organizerGuard],
     children: [
       {
         path: 'add-artist-on-event/:eventId',
@@ -119,28 +123,38 @@ export const routes: Routes = [
   {
     path: 'organizer-panel/:organizerId/update-organizer',
     component: UpdateOrganizerComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard, organizerGuard],
   },
   {
     path: 'organizer-panel/:organizerId/:eventId/add-ticket',
     component: AddTicketComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard, organizerGuard],
   },
   {
     path: 'organizer-panel/:organizerId/reschedule-event/:eventId',
     component: RescheduleEventComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard, organizerGuard],
+  },
+  {
+    path: 'organizer-panel/:organizerId/update-promo-code/:promoCodeId',
+    component: UpdatePromoCodeComponent,
+    canActivate: [authGuard, organizerGuard],
   },
   {
     path: 'admin-panel',
     component: AdminPanelComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard, adminGuard],
+  },
+  {
+    path: 'admin-panel/add-location',
+    component: AddLocationComponent,
+    canActivate: [authGuard, adminGuard],
   },
   { path: 'events', component: EventsComponent, canActivate: [authGuard] },
   {
     path: 'events/add-event',
     component: AddEventComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard, organizerGuard],
   },
   {
     path: 'events/event/:eventId',
@@ -155,28 +169,28 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'events/event/:eventId/create-promo-code',
+    component: CreatePromoCodeComponent,
+    canActivate: [authGuard, organizerGuard],
+  },
+  {
     path: 'events/event/:eventId/update-event',
     component: UpdateEventComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard, organizerGuard],
   },
   {
     path: 'events/event/:eventId/update-event-images',
     component: UpdateImagesComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard, organizerGuard],
   },
   {
     path: 'events/event/:eventId/update-ticket/:ticketId',
     component: UpdateTicketComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard, organizerGuard],
   },
   {
     path: 'locations',
     component: LocationsComponent,
-    canActivate: [authGuard],
-  },
-  {
-    path: 'locations/add-location',
-    component: AddLocationComponent,
     canActivate: [authGuard],
   },
   {
@@ -187,7 +201,7 @@ export const routes: Routes = [
   {
     path: 'locations/location/:locationId/update-location',
     component: UpdateLocationComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard, adminGuard],
   },
   {
     path: 'organizers',
@@ -197,16 +211,6 @@ export const routes: Routes = [
   {
     path: 'organizers/organizer/:organizerId',
     component: OrganizerPageComponent,
-    canActivate: [authGuard],
-  },
-  {
-    path: 'organizers/organizer/:organizerId/promo-codes',
-    component: PromoCodesComponent,
-    canActivate: [authGuard],
-  },
-  {
-    path: 'organizers/organizer/:organizerId/promo-codes/update-promo-code/:promoCodeId',
-    component: UpdatePromoCodeComponent,
     canActivate: [authGuard],
   },
   { path: '**', component: NotFoundComponent },

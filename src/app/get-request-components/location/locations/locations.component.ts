@@ -11,7 +11,7 @@ import { UserService } from '../../../services/user/user.service';
   selector: 'app-locations',
   imports: [RouterModule],
   templateUrl: './locations.component.html',
-  styleUrl: './locations.component.css',
+  styleUrls: ['./locations.component.css', './responsive.css'],
 })
 export class LocationsComponent implements OnInit {
   locations: LocationDto[] = [];

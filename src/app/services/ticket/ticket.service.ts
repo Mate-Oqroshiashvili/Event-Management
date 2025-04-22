@@ -90,9 +90,12 @@ export class TicketService {
   }
 
   validateTicket(qrCodeImage: File): Observable<string> {
+    const formData = new FormData();
+    formData.append('qrCodeImage', qrCodeImage);
+
     return this.http.post<string>(
       `${this.apiUrl}Ticket/validate-ticket`,
-      qrCodeImage
+      formData
     );
   }
 

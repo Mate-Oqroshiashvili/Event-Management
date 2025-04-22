@@ -28,7 +28,7 @@
 <section class="container my-5" id="upcomingEvents">
   <h2 class="text-center mb-5">Upcoming Events</h2>
   <div class="row">
-    @if (!isUpcomingLoading) { @for (item of upcoming; track $index) {
+    @if (!isLoading) { @for (item of upcoming; track $index) {
     <a [routerLink]="['/events/event', item.id]" class="col-md-4">
       <div class="card event-card">
         <img [src]="item.images[0]" class="card-img-top" />
@@ -56,7 +56,7 @@
 <section class="container my-5" id="popularEvents">
   <h2 class="text-center mb-5">Popular Events</h2>
   <div class="row">
-    @if (!isPopularLoading) {@for (item of popular; track $index) {
+    @if (!isLoading) {@for (item of popular; track $index) {
     <a [routerLink]="['/events/event', item.id]" class="col-md-4">
       <div class="card event-card">
         <img [src]="item.images[0]" class="card-img-top" />
@@ -80,6 +80,43 @@
     }
   </div>
 </section>
+
+<section class="container my-5 d-flex justify-content-center">
+  <div class="content">
+    <h2 class="text-center mb-4">We Got a Gift For You!</h2>
+    <div class="d-flex justify-content-center mb-4">
+      <i class="bi bi-arrow-down"></i>
+    </div>
+
+    <div class="promo-card shadow text-center">
+      <h5 class="promo-title">🎁 Special Offer</h5>
+
+      <div *ngIf="nextPromoFormatted" class="text-center text-muted mb-2">
+        Next available promo: {{ nextPromoFormatted }}
+      </div>
+
+      <ng-container *ngIf="promoCode; else acquireBtn">
+        <div class="promo-code-text">
+          {{ promoCode.promoCodeText.toUpperCase() }}
+        </div>
+        <div class="promo-timer mt-2" *ngIf="countdown > 0">
+          Expires in: {{ countdownDisplay }}
+        </div>
+      </ng-container>
+
+      <ng-template #acquireBtn>
+        <button
+          class="btn btn-outline-primary"
+          (click)="getRandomPromoCode()"
+          [disabled]="isPromoButtonDisabled"
+        >
+          Get Your Promo Code
+        </button>
+      </ng-template>
+    </div>
+  </div>
+</section>
+
 } @else {
 <section class="container d-flex justify-content-center my-5">
   <div class="content">

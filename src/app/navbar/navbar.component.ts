@@ -9,7 +9,7 @@ import { OrganizerService } from '../services/organizer/organizer.service';
   selector: 'app-navbar',
   imports: [CommonModule, RouterModule],
   templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.css',
+  styleUrls: ['./navbar.component.css', './responsive.css'],
 })
 export class NavbarComponent implements OnInit {
   isLoggedIn$: boolean = false;

@@ -9,7 +9,7 @@ import {
   selector: 'app-organizers',
   imports: [RouterModule],
   templateUrl: './organizers.component.html',
-  styleUrl: './organizers.component.css',
+  styleUrls: ['./organizers.component.css', './resposnive.css'],
 })
 export class OrganizersComponent implements OnInit {
   organizers: OrganizerDto[] = [];

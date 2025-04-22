@@ -45,13 +45,6 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-img {
-  border-top-right-radius: 12px;
-  border-top-left-radius: 12px;
-  height: 250px;
-  object-fit: cover;
-}
-
 h1 {
   font-size: 2.5rem;
   font-weight: 600;
@@ -102,12 +95,18 @@ a {
 }
 
 .card.custom .top {
-  grid-template-columns: 0.3fr 1fr;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+  gap: 0px;
 }
 
 .card.custom img {
-  border-radius: 50%;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: fill;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 8px !important;
 }
 
 .card.custom:hover,

@@ -1,0 +1,25 @@
+.circle {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+}
+
+.legend {
+  list-style: none;
+  padding-left: 0;
+  text-align: center;
+}
+.legend li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+.legend span {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 0.5rem;
+  border-radius: 3px;
+}

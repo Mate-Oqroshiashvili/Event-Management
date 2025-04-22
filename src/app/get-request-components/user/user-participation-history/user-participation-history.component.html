@@ -19,7 +19,10 @@
         <strong>End:</strong>
         {{ participant.ticket.event?.endDate | date : "medium" }}
       </p>
-      <p><strong>Price:</strong> {{ participant.ticket.price | currency }}</p>
+      <p>
+        <strong>Price:</strong>
+        {{ participant.purchase.totalAmount | currency }}
+      </p>
       <p>
         <strong>Status:</strong>
         {{ participant.attendance ? "Attended" : "Not Attended" }}

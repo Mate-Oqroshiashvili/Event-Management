@@ -1,0 +1,39 @@
+@media screen and (min-width: 1400px) {
+  .hero {
+    max-width: 1320px;
+    margin: auto;
+    padding: 250px 20px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  h1 {
+    font-size: 36px !important;
+  }
+
+  h5 {
+    font-size: 18px !important;
+  }
+}
+
+@media screen and (max-width: 425px) {
+  h1 {
+    font-size: 32px !important;
+  }
+
+  h5 {
+    font-size: 16px !important;
+  }
+}
+
+@media screen and (max-width: 360px) {
+  .hero {
+    padding: 200px 20px;
+  }
+}
+
+@media screen and (max-width: 345px) {
+  .hero {
+    padding: 150px 20px;
+  }
+}

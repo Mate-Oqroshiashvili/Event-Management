@@ -11,7 +11,7 @@
   padding: 30px;
   display: grid;
   grid-template-rows: 1fr auto;
-  gap: 60px;
+  gap: 40px;
   text-decoration: none;
   border: none;
   border-radius: 20px;
@@ -29,8 +29,8 @@
 
 .card .top {
   display: grid;
-  grid-template-columns: 0.6fr 1fr;
-  gap: 20px;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
 }
 
 .card img {
@@ -38,7 +38,7 @@
   height: 100% !important;
   object-fit: fill;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  border-radius: 50%;
+  border-radius: 8px;
 }
 
 p {

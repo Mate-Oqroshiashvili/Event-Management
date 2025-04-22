@@ -1,0 +1,167 @@
+@media screen and (min-width: 2100px) {
+  .cards {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 60px;
+  }
+
+  .organizers .cards {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media screen and (min-width: 1600px) {
+  .cards {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 50px;
+  }
+
+  .organizers .cards {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media screen and (max-width: 1100px) {
+  .cards {
+    gap: 20px;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 60px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+  }
+}
+
+@media screen and (max-width: 670px) {
+  .cards,
+  .organizers .cards {
+    padding: 40px 80px;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 40px;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .cards,
+  .organizers .cards {
+    padding: 40px;
+  }
+
+  .card.custom {
+    padding: 20px;
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .cards,
+  .organizers .cards {
+    padding: 40px 20px;
+  }
+}
+
+@media screen and (min-width: 1540px) {
+  .location-page {
+    width: 1500px;
+    margin: auto;
+  }
+
+  .organizers .cards {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media screen and (max-width: 1540px) and (min-width: 1140px) {
+  .location-page {
+    width: 1100px;
+    margin: auto;
+  }
+}
+
+@media screen and (max-width: 1140px) {
+  .location-page {
+    width: auto;
+    margin: auto;
+  }
+
+  .card.custom .top {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    gap: 0px;
+  }
+
+  .group img {
+    border-radius: 8px !important;
+    height: auto !important;
+  }
+}
+
+@media screen and (max-width: 830px) {
+  .group {
+    grid-template-columns: 1fr;
+  }
+
+  .top img {
+    height: auto !important;
+  }
+
+  .group img {
+    border-radius: 50% !important;
+    height: 120px !important;
+  }
+
+  .card-title {
+    font-size: 32px !important;
+  }
+
+  .main-information p {
+    font-size: 18px !important;
+  }
+
+  .px-5 {
+    padding: 12px 2rem !important;
+  }
+}
+
+@media screen and (max-width: 550px) {
+  .card.custom h3,
+  .card h5 {
+    font-size: 20px !important;
+  }
+
+  .card.custom p,
+  .card p {
+    font-size: 16px !important;
+  }
+
+  .card.custom .text p,
+  .card .text p {
+    margin-bottom: 0px !important;
+  }
+
+  .card-title {
+    font-size: 24px !important;
+  }
+
+  .main-information p {
+    font-size: 16px !important;
+  }
+
+  .group img {
+    border-radius: 8px !important;
+    height: auto !important;
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .location-page {
+    padding: 40px 20px;
+  }
+}

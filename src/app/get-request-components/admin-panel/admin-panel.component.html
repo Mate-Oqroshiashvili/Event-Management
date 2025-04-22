@@ -1,1 +1,123 @@
-<p>admin-panel works!</p>
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Admin Analytics Dashboard</h2>
+    <button class="btn btn-primary" (click)="onAddLocation()">
+      Add New Location
+    </button>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-4">
+      <h5 class="text-center">User Roles Distribution</h5>
+      <div
+        class="circle mx-auto"
+        [ngStyle]="{ background: userRoleGradient }"
+      ></div>
+      <ul class="legend mt-3">
+        <li>
+          <span style="background-color: #007bff"></span> Users ({{
+            analytics.totalUsers
+          }})
+        </li>
+        <li>
+          <span style="background-color: #ffc107"></span> Organizers ({{
+            analytics.totalOrganizers
+          }})
+        </li>
+        <li>
+          <span style="background-color: #28a745"></span> Participants ({{
+            analytics.totalParticipants
+          }})
+        </li>
+      </ul>
+    </div>
+
+    <div class="col-md-6 mb-4">
+      <h5 class="text-center">Event Status Breakdown</h5>
+      <div
+        class="circle mx-auto"
+        [ngStyle]="{ background: eventStatusGradient }"
+      ></div>
+      <ul class="legend mt-3">
+        <li>
+          <span style="background-color: #6c757d"></span> Draft ({{
+            analytics.draftedEvents
+          }})
+        </li>
+        <li>
+          <span style="background-color: #17a2b8"></span> Published ({{
+            analytics.publishedEvents
+          }})
+        </li>
+        <li>
+          <span style="background-color: #28a745"></span> Completed ({{
+            analytics.completedEvents
+          }})
+        </li>
+        <li>
+          <span style="background-color: #dc3545"></span> Deleted ({{
+            analytics.deletedEvents
+          }})
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5>Total Revenue</h5>
+          <p class="fw-bold">${{ analytics.totalRevenue.toFixed(2) }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5>Total User Balances</h5>
+          <p class="fw-bold">${{ analytics.totalUserBalances.toFixed(2) }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5>Total Events</h5>
+          <p class="fw-bold">{{ analytics.totalEvents }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-2">
+    <div class="col-md-4 mb-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5>Total Comments</h5>
+          <p class="fw-bold">{{ analytics.totalComments }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5>Total Reviews</h5>
+          <p class="fw-bold">{{ analytics.totalReviews }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5>Total Promo Codes</h5>
+          <p class="fw-bold">{{ analytics.totalPromoCodes }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

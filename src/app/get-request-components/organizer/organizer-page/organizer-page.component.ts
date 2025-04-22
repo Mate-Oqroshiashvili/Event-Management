@@ -20,7 +20,7 @@ import {
   selector: 'app-organizer-page',
   imports: [CommonModule, RouterModule],
   templateUrl: './organizer-page.component.html',
-  styleUrl: './organizer-page.component.css',
+  styleUrls: ['./organizer-page.component.css', './responsive.css'],
 })
 export class OrganizerPageComponent implements OnInit {
   organizerId: number = 0;
@@ -107,7 +107,7 @@ export class OrganizerPageComponent implements OnInit {
         console.error(err);
       },
       complete: () => {
-        console.log('Locations fetched successfully!');
+        console.log('Events fetched successfully!');
       },
     });
   }

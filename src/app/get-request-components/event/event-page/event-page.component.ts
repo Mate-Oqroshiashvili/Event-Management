@@ -1,5 +1,6 @@
 import {
   CommentCreateDto,
+  CommentDto,
   CommentUpdateDto,
 } from './../../../services/comment/comment.service';
 import { CommonModule } from '@angular/common';
@@ -21,7 +22,12 @@ import {
   TicketService,
   TicketType,
 } from '../../../services/ticket/ticket.service';
-import { UserService, UserType } from '../../../services/user/user.service';
+import {
+  Role,
+  UserDto,
+  UserService,
+  UserType,
+} from '../../../services/user/user.service';
 import { jwtDecode } from 'jwt-decode';
 import { CommentService } from '../../../services/comment/comment.service';
 import {
@@ -36,12 +42,13 @@ import {
 } from '../../../services/review/review.service';
 import { filter } from 'rxjs';
 import Swal from 'sweetalert2';
+import { CommentSocketService } from '../../../services/web sockets/comment-socket.service';
 
 @Component({
   selector: 'app-event-page',
   imports: [CommonModule, RouterModule, ReactiveFormsModule],
   templateUrl: './event-page.component.html',
-  styleUrl: './event-page.component.css',
+  styleUrls: ['./event-page.component.css', './responsive.css'],
 })
 export class EventPageComponent implements OnInit {
   loggedInUserRole: string = '';
@@ -95,6 +102,7 @@ export class EventPageComponent implements OnInit {
     private ticketService: TicketService,
     private commentService: CommentService,
     private reviewService: ReviewService,
+    private commentSocket: CommentSocketService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -127,6 +135,62 @@ export class EventPageComponent implements OnInit {
           (r) => r.outlet === 'modal'
         );
       });
+
+    this.commentSocket.startConnection();
+
+    this.socketMethods();
+  }
+
+  socketMethods() {
+    this.commentSocket.comment$.subscribe((data) => {
+      if (data?.commentDto && data?.commentDto.eventId === this.eventId) {
+        // Add the comment from this.event.comments
+        let comment: CommentDto = data?.commentDto;
+        let user: UserDto = {
+          id: data?.userObject?.id,
+          name: data?.userObject?.name,
+          email: '',
+          phoneNumber: '',
+          profilePicture: data?.userObject?.profilePicture,
+          role: data?.userObject?.role,
+          userType: data?.userObject?.userType,
+          balance: 0,
+          codeExpiration: undefined,
+          isLoggedIn: false,
+          organizer: null,
+          tickets: [],
+          purchases: [],
+          participants: [],
+          reviews: [],
+          comments: [],
+          usedPromoCodes: [],
+        };
+        console.log(user);
+        comment.user = user;
+        console.log(comment);
+        this.event.comments.push(comment);
+      }
+    });
+
+    this.commentSocket.deletedComment$.subscribe((commentId) => {
+      if (commentId != null) {
+        // Remove the comment from this.event.comments
+        this.event.comments = this.event.comments.filter(
+          (c) => c.id !== commentId
+        );
+      }
+    });
+
+    // Update the comment in this.event.comments
+    this.commentSocket.updatedComment$.subscribe((data) => {
+      if (data?.id && data?.commentContent && data?.eventId === this.eventId) {
+        // Update the comment in the UI
+        const index = this.event.comments.findIndex((c) => c.id === data.id);
+        if (index !== -1) {
+          this.event.comments[index].commentContent = data.commentContent;
+        }
+      }
+    });
   }
 
   getEventById() {
@@ -181,7 +245,6 @@ export class EventPageComponent implements OnInit {
     this.eventService.removeEvent(this.eventId).subscribe({
       next: (data: any) => {
         message = data.message;
-        console.log(data);
       },
       error: (err) => {
         message = err.error.Message;
@@ -214,7 +277,6 @@ export class EventPageComponent implements OnInit {
         console.error(err);
       },
       complete: () => {
-        this.getEventById();
         this.addCommentForm.reset();
       },
     });
@@ -273,7 +335,6 @@ export class EventPageComponent implements OnInit {
     this.commentService.removeComment(commentId, userId).subscribe({
       next: (data: any) => {
         message = data.message;
-        console.log(data);
       },
       error: (err) => {
         message = err.error.Message;

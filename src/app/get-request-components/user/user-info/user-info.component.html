@@ -1,5 +1,5 @@
 <div class="user-page">
-  <section class="top">
+  <section class="top container">
     <div
       style="display: grid; grid-template-rows: 1fr auto; gap: 20px"
       class="imageAndButtons"
@@ -101,7 +101,14 @@
                 <li>
                   <a
                     class="dropdown-item"
-                    [routerLink]="['register-as-organizer']"
+                    [routerLink]="[
+                      {
+                        outlets: {
+                          primary: ['register-as-organizer'],
+                          bottom: null
+                        }
+                      }
+                    ]"
                   >
                     <i class="bi bi-person-gear me-2"></i>Register As Organizer
                   </a>
@@ -219,8 +226,11 @@
     </div>
   </section>
 
-  <section class="bottom">
-    <ul class="nav nav-tabs mt-5">
+  <section class="bottom container">
+    <ul
+      style="justify-content: space-evenly; gap: 10px"
+      class="nav nav-tabs mt-5"
+    >
       <li class="nav-item">
         <a
           class="nav-link"

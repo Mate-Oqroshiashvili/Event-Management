@@ -16,3 +16,9 @@ form {
   font-size: 0.9rem;
   margin-top: 0.25rem;
 }
+
+@media screen and (max-width: 768px) {
+  .update-organizer-form {
+    width: 80vw;
+  }
+}

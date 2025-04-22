@@ -57,6 +57,8 @@ export class TicketModalComponent implements OnInit {
   promoSuccessMessage: string = '';
   saleAmountInPercentage: number = 0;
 
+  isPurchasing: boolean = false;
+
   constructor(
     private userService: UserService,
     private ticketService: TicketService,
@@ -97,6 +99,8 @@ export class TicketModalComponent implements OnInit {
   }
 
   purchaseTicket() {
+    this.isPurchasing = true;
+
     this.ticketPurchaseRequest.quantity = this.purchaseQuantity;
     this.ticketPurchaseRequest.ticketId = this.ticketId;
 
@@ -126,6 +130,7 @@ export class TicketModalComponent implements OnInit {
         console.error(err);
       },
       complete: () => {
+        this.isPurchasing = false;
         Swal.fire('Success!', message, 'success');
         console.log('Ticket purchased successfully!');
         this.router.navigate(['/events/event', this.eventId]);

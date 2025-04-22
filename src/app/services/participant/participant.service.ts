@@ -5,7 +5,7 @@ import { PurchaseDto } from '../purchase/purchase.service';
 import { UserDto } from '../user/user.service';
 import { environment } from '../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 export interface ParticipantCreateDto {
   eventId: number;
@@ -34,7 +34,14 @@ export interface ParticipantDto {
 export class ParticipantService {
   private apiUrl: string = environment.apiUrl;
 
+  private refundSubject = new Subject<void>();
+  refund$ = this.refundSubject.asObservable();
+
   constructor(private http: HttpClient) {}
+
+  notifyRefundCompleted() {
+    this.refundSubject.next();
+  }
 
   getAllParticipants(): Observable<ParticipantDto[]> {
     return this.http.get<ParticipantDto[]>(

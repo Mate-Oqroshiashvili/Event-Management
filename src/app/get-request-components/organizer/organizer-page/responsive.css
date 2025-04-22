@@ -1,0 +1,286 @@
+@media screen and (min-width: 2100px) {
+  .cards {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 60px;
+  }
+
+  .locations .cards {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media screen and (min-width: 1600px) {
+  .cards {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 50px;
+  }
+
+  .locations .cards {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media screen and (max-width: 1100px) {
+  .cards {
+    gap: 20px;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 60px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+  }
+}
+
+@media screen and (max-width: 670px) {
+  .cards,
+  .locations .cards {
+    padding: 40px 80px;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 40px;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .cards,
+  .locations .cards {
+    padding: 40px;
+  }
+
+  .card.custom {
+    padding: 20px;
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .cards,
+  .locations .cards {
+    padding: 40px 20px;
+  }
+}
+
+@media screen and (max-width: 1140px) {
+  .top {
+    grid-template-columns: 0.85fr 1fr;
+  }
+
+  .card-title {
+    font-size: 36px;
+  }
+
+  .card-text {
+    font-size: 18px;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .top {
+    grid-template-columns: 0.9fr 1fr;
+  }
+
+  .card-title {
+    font-size: 32px;
+  }
+
+  .card-text {
+    margin-bottom: 8px !important;
+  }
+}
+
+@media screen and (max-width: 930px) {
+  .top {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .top-side p {
+    font-size: 28px;
+  }
+}
+
+@media screen and (max-width: 830px) {
+  .top {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1.7fr 1fr;
+  }
+
+  .top-side p {
+    font-size: 24px;
+  }
+}
+
+@media screen and (max-width: 790px) {
+  .top {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1.5fr 1fr;
+  }
+
+  .top-side p {
+    font-size: 21px;
+  }
+}
+
+@media screen and (max-width: 620px) {
+  .top {
+    grid-template-rows: 1.3fr 1fr;
+  }
+}
+
+@media screen and (max-width: 540px) {
+  .top {
+    grid-template-rows: 1.1fr 1fr;
+    gap: 0px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .top {
+    grid-template-rows: 1fr 1fr;
+  }
+}
+
+@media screen and (max-width: 410px) {
+  .top {
+    grid-template-rows: 0.95fr 1fr;
+  }
+}
+
+@media screen and (max-width: 380px) {
+  .top {
+    grid-template-rows: 0.95fr 1fr;
+  }
+
+  .top-side p {
+    font-size: 20px;
+  }
+}
+
+@media screen and (max-width: 367px) {
+  .top {
+    grid-template-rows: 0.88fr 1fr;
+  }
+}
+
+@media screen and (max-width: 340px) {
+  .top {
+    grid-template-rows: 0.82fr 1fr;
+  }
+}
+
+@media screen and (max-width: 330px) {
+  .top {
+    grid-template-rows: 0.83fr 1fr;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .user-page {
+    padding: 20px !important;
+  }
+}
+
+@media screen and (min-width: 1540px) {
+  .organizer-page {
+    width: 1500px;
+    margin: auto;
+  }
+
+  .organizers .cards {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media screen and (max-width: 1540px) and (min-width: 1140px) {
+  .organizer-page {
+    width: 1100px;
+    margin: auto;
+  }
+
+  .top {
+    grid-template-columns: 0.9fr 1fr;
+  }
+}
+
+@media screen and (max-width: 1140px) {
+  .organizer-page {
+    width: auto;
+    margin: auto;
+  }
+
+  .card.custom .top {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    gap: 0px;
+  }
+
+  .group img {
+    border-radius: 8px !important;
+    height: auto !important;
+  }
+}
+
+@media screen and (max-width: 830px) {
+  .group {
+    grid-template-columns: 1fr;
+  }
+
+  .group img {
+    border-radius: 50% !important;
+    height: 120px !important;
+  }
+
+  .card-title {
+    font-size: 32px !important;
+  }
+
+  .main-information p {
+    font-size: 18px !important;
+  }
+
+  .px-5 {
+    padding: 12px 2rem !important;
+  }
+}
+
+@media screen and (max-width: 550px) {
+  .card.custom h3,
+  .card h5 {
+    font-size: 20px !important;
+  }
+
+  .card.custom p,
+  .card p {
+    font-size: 16px !important;
+  }
+
+  .card.custom .text p,
+  .card .text p {
+    margin-bottom: 0px !important;
+  }
+
+  .card-title {
+    font-size: 24px !important;
+  }
+
+  .main-information p {
+    font-size: 16px !important;
+  }
+
+  .group img {
+    border-radius: 8px !important;
+    height: auto !important;
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .organizer-page {
+    padding: 40px 20px;
+  }
+}

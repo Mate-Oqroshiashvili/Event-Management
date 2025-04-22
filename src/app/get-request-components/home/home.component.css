@@ -3,7 +3,7 @@
     center/cover no-repeat;
   color: white;
   text-align: center;
-  padding: 250px 20px;
+  padding: 250px 40px;
 }
 
 .hero h1 {
@@ -61,4 +61,35 @@ a {
 
 .spinner-border {
   margin: auto;
+}
+
+.promo-card {
+  background-color: #f8fbff;
+  border: 2px dashed #007bff;
+  padding: 2rem;
+  border-radius: 1rem;
+  max-width: 400px;
+  width: 100%;
+  transition: all 0.3s ease-in-out;
+}
+
+.promo-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #007bff;
+  margin-bottom: 1.5rem;
+}
+
+.promo-code-text {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #343a40;
+  letter-spacing: 2px;
+  margin-bottom: 0.5rem;
+}
+
+.promo-timer {
+  font-size: 1rem;
+  color: #dc3545;
+  font-weight: 500;
 }

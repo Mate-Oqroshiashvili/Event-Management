@@ -1,0 +1,150 @@
+@media screen and (min-width: 1540px) {
+  .event-page {
+    width: 1500px;
+    margin: auto;
+  }
+}
+
+@media screen and (max-width: 1540px) and (min-width: 1140px) {
+  .event-page {
+    width: 1100px;
+    margin: auto;
+  }
+}
+
+@media screen and (max-width: 1140px) {
+  .event-page {
+    width: auto;
+    margin: auto;
+  }
+
+  .card.custom .top {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    gap: 0px;
+  }
+
+  .group img {
+    border-radius: 8px !important;
+    height: auto !important;
+  }
+
+  .tickets .ticket-body a,
+  .tickets .ticket-body button {
+    position: relative !important;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+  }
+
+  .update-group {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+}
+
+@media screen and (max-width: 830px) {
+  .group {
+    grid-template-columns: 1fr;
+  }
+
+  .card.custom .top {
+    grid-template-columns: 0.3fr 1fr;
+    grid-template-rows: 1fr;
+    gap: 20px;
+  }
+
+  .top img {
+    height: auto !important;
+  }
+
+  .carousel-item {
+    height: auto !important;
+  }
+
+  .group img {
+    border-radius: 50% !important;
+    height: 120px !important;
+  }
+
+  .tickets .cards {
+    width: 70%;
+    margin: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .card-title {
+    font-size: 32px !important;
+  }
+
+  .main-information p {
+    font-size: 18px !important;
+  }
+
+  .px-5 {
+    padding: 12px 2rem !important;
+  }
+}
+
+@media screen and (max-width: 550px) {
+  .tickets .cards {
+    width: 100%;
+  }
+
+  .card.custom h3 {
+    font-size: 20px !important;
+  }
+
+  .card.custom p {
+    font-size: 16px !important;
+  }
+
+  .card.custom .text p {
+    margin-bottom: 0px !important;
+  }
+
+  .card-title {
+    font-size: 24px !important;
+  }
+
+  .main-information p {
+    font-size: 16px !important;
+  }
+
+  .card.custom .top {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    gap: 0px;
+  }
+
+  .group img {
+    border-radius: 8px !important;
+    height: auto !important;
+  }
+
+  .px-5 {
+    padding: 8px 1.5rem !important;
+  }
+}
+
+@media screen and (max-width: 425px) {
+  .event-page {
+    padding: 40px 20px;
+  }
+
+  .comments .card {
+    grid-template-columns: auto;
+  }
+
+  .dropdown {
+    grid-column: -1/1;
+    grid-row: 1;
+    direction: rtl;
+  }
+
+  .px-5 {
+    padding: 6px 1rem !important;
+  }
+}
