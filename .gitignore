@@ -361,3 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Uploads folder where images are being stored
+Event Management/Uploads
+
+# Valid appsettings.json
+Event Management/appsettings.json
