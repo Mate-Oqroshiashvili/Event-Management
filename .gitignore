@@ -363,7 +363,8 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # Uploads folder where images are being stored
-Event Management/Uploads
+Event Management/Uploads/
 
 # Valid appsettings.json
 Event Management/appsettings.json
+Event Management/appsettings.Development.json
