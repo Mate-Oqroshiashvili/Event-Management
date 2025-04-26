@@ -27,13 +27,17 @@ namespace Event_Management.Controllers
         {
             try
             {
+                // Check if the locations are already cached in Redis
                 if (!string.IsNullOrEmpty(await _distributedCache.GetStringAsync("Locations")))
                 {
+                    // If cached, retrieve the locations from Redis
                     var redisResult = await _distributedCache.GetValue<List<LocationDto>>("Locations");
                     return Ok(redisResult);
                 }
 
+                // If not cached, retrieve the locations from the database
                 var locations = await _locationRepository.GetLocationsAsync();
+                // Cache the locations in Redis
                 await _distributedCache.SetValue("Locations", locations);
                 return locations == null ? throw new NotFoundException("Locations not found!") : Ok(new { locations });
             }
@@ -80,6 +84,7 @@ namespace Event_Management.Controllers
             try
             {
                 var location = await _locationRepository.AddLocationAsync(locationCreateDto);
+                // Clear the cache after adding a new location
                 await _distributedCache.RemoveAsync("Locations");
                 return location == null ? throw new NotFoundException("Something went wrong during location addition process!") : Ok(new { location });
             }
@@ -96,6 +101,7 @@ namespace Event_Management.Controllers
             try
             {
                 var updated = await _locationRepository.UpdateLocationAsync(locationId, locationUpdateDto);
+                // Clear the cache after updating a location
                 await _distributedCache.RemoveAsync("Locations");
                 return !updated ? throw new NotFoundException("Something went wrong during location update process!") : Ok(new { message = "Location updated successfully!" });
             }
@@ -112,6 +118,7 @@ namespace Event_Management.Controllers
             try
             {
                 var removed = await _locationRepository.DeleteLocationAsync(locationId);
+                // Clear the cache after removing a location
                 await _distributedCache.RemoveAsync("Locations");
                 return !removed ? throw new NotFoundException("Something went wrong during location removal process!") : Ok(new { message = "Location removed successfully!" });
             }
