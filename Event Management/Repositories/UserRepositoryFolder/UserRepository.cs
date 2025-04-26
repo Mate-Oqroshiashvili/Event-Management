@@ -5,6 +5,8 @@ using Event_Management.Models;
 using Event_Management.Models.Dtos.UserDtos;
 using Event_Management.Models.Enums;
 using Event_Management.Repositories.ImageRepositoryFolder;
+using Event_Management.Web_Sockets;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Event_Management.Repositories.UserRepositoryFolder
@@ -13,12 +15,14 @@ namespace Event_Management.Repositories.UserRepositoryFolder
     {
         private readonly DataContext _context; // Database context for accessing the database
         private readonly IImageRepository _imageRepository; // Image repository for handling image-related operations
+        private readonly IHubContext<UserHub> _hubContext; // Hub context for sending messages to clients
         private readonly IMapper _mapper; // AutoMapper for mapping between DTOs and entities
 
-        public UserRepository(DataContext context, IImageRepository imageRepository, IMapper mapper)
+        public UserRepository(DataContext context, IImageRepository imageRepository, IHubContext<UserHub> hubContext, IMapper mapper)
         {
             _context = context;
             _imageRepository = imageRepository;
+            _hubContext = hubContext;
             _mapper = mapper;
         }
 
@@ -36,7 +40,7 @@ namespace Event_Management.Repositories.UserRepositoryFolder
                 .Include(u => u.UsedPromoCodes)
                 .Include(u => u.Participants)
                 .Include(u => u.Organizer)
-                .FirstOrDefaultAsync(u => u.Id == userId) 
+                .FirstOrDefaultAsync(u => u.Id == userId)
                 ?? throw new NotFoundException("User not found!");
 
             var totalSpent = user.Purchases
@@ -232,8 +236,9 @@ namespace Event_Management.Repositories.UserRepositoryFolder
                 ?? throw new NotFoundException("User not found!");
 
             user.Balance += balanceToDeposit;
-
             await _context.SaveChangesAsync();
+
+            await _hubContext.Clients.User(user.Id.ToString()).SendAsync("GetBalance", user.Balance);
 
             return user.Balance;
         }
@@ -247,7 +252,7 @@ namespace Event_Management.Repositories.UserRepositoryFolder
 
             _mapper.Map(userUpdateDto, existingUser);
 
-            if (userUpdateDto.ProfilePicture != null) 
+            if (userUpdateDto.ProfilePicture != null)
             {
                 var imageSource = await _imageRepository.GenerateImageSource(userUpdateDto.ProfilePicture);
                 existingUser.ProfilePicture = imageSource;

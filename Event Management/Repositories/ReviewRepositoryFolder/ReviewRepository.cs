@@ -2,20 +2,26 @@
 using Event_Management.Data;
 using Event_Management.Exceptions;
 using Event_Management.Models;
+using Event_Management.Models.Dtos.CommentDtos;
 using Event_Management.Models.Dtos.ReviewDtos;
+using Event_Management.Web_Sockets;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.ComponentModel.Design;
 
 namespace Event_Management.Repositories.ReviewRepositoryFolder
 {
     public class ReviewRepository : IReviewRepository
     {
         private readonly DataContext _context; // Database context for accessing the database
+        private readonly IHubContext<ReviewHub> _hubContext; // Hub context for sending messages to clients
         private readonly IMapper _mapper; // AutoMapper for mapping between DTOs and entities
 
-        public ReviewRepository(DataContext context, IMapper mapper)
+        public ReviewRepository(DataContext context, IHubContext<ReviewHub> hubContext, IMapper mapper)
         {
             _context = context;
+            _hubContext = hubContext;
             _mapper = mapper;
         }
 
@@ -128,6 +134,21 @@ namespace Event_Management.Repositories.ReviewRepositoryFolder
 
                 var reviewDto = _mapper.Map<ReviewDto>(review);
 
+                var savedReview = await _context.Reviews
+                .Include(c => c.User)
+                .FirstOrDefaultAsync(c => c.Id == review.Id);
+
+                var userObject = new
+                {
+                    Id = savedReview?.User.Id,
+                    ProfilePicture = savedReview?.User.ProfilePicture,
+                    Name = savedReview?.User.Name,
+                    Role = savedReview?.User.Role,
+                    UserType = savedReview?.User.UserType,
+                };
+
+                await _hubContext.Clients.All.SendAsync("ReceiveReview", new { reviewDto, userObject });
+
                 return reviewDto;
             }
             catch (Exception ex) 
@@ -148,7 +169,13 @@ namespace Event_Management.Repositories.ReviewRepositoryFolder
 
             _mapper.Map(reviewUpdateDto, existingReview);
 
+            var updatedReview = await _context.Reviews
+                .FindAsync(reviewId);
+
             await _context.SaveChangesAsync();
+
+            await _hubContext.Clients.All.SendAsync("ReceiveReviewForUpdate", new { updatedReview?.Id, updatedReview?.EventId, updatedReview?.StarCount });
+
             return true;
         }
 
@@ -164,6 +191,9 @@ namespace Event_Management.Repositories.ReviewRepositoryFolder
 
             _context.Reviews.Remove(review);
             await _context.SaveChangesAsync();
+
+            await _hubContext.Clients.All.SendAsync("ReceiveReviewIdForDeletion", reviewId);
+
             return true;
         }
     }

@@ -7,7 +7,8 @@ using Event_Management.Models.Dtos.UserDtos;
 using Event_Management.Models.Enums;
 using Event_Management.Repositories.CodeRepositoryFolder;
 using Event_Management.Repositories.ImageRepositoryFolder;
-using Microsoft.AspNetCore.Mvc;
+using Event_Management.Web_Sockets;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Event_Management.Repositories.EventRepositoryFolder
@@ -17,13 +18,15 @@ namespace Event_Management.Repositories.EventRepositoryFolder
         private readonly DataContext _context; // Database context for accessing the database
         private readonly ICodeRepository _codeRepository; // Code repository for handling promo codes
         private readonly IImageRepository _imageRepository; // Image repository for handling image uploads
+        private readonly IHubContext<EventHub> _hubContext; // Hub context for sending messages to clients
         private readonly IMapper _mapper; // AutoMapper instance for mapping between DTOs and entities
 
-        public EventRepository(DataContext context, ICodeRepository codeRepository, IImageRepository imageRepository, IMapper mapper)
+        public EventRepository(DataContext context, ICodeRepository codeRepository, IImageRepository imageRepository, IHubContext<EventHub> hubContext, IMapper mapper)
         {
             _context = context;
             _codeRepository = codeRepository;
             _imageRepository = imageRepository;
+            _hubContext = hubContext;
             _mapper = mapper;
         }
 
@@ -35,6 +38,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             {
                 var events = await _context.Events
                     .Where(x => x.Status == EventStatus.PUBLISHED)
+                    .Include(x => x.Organizer)
                     .Include(x => x.Reviews)
                         .ThenInclude(x => x.User)
                     .Include(x => x.Tickets)
@@ -59,6 +63,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             {
                 var events = await _context.Events
                     .Where(x => x.Status == EventStatus.DRAFT)
+                    .Include(x => x.Organizer)
                     .Include(x => x.Tickets)
                     .Include(x => x.SpeakersAndArtists)
                     .Include(x => x.Reviews)
@@ -83,6 +88,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             {
                 var events = await _context.Events
                     .Where(x => x.Status == EventStatus.COMPLETED)
+                    .Include(x => x.Organizer)
                     .Include(x => x.Reviews)
                         .ThenInclude(x => x.User)
                     .ToListAsync() ?? throw new NotFoundException("Events not found!");
@@ -105,6 +111,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             {
                 var events = await _context.Events
                     .Where(x => x.Status == EventStatus.DELETED)
+                    .Include(x => x.Organizer)
                     .Include(x => x.Tickets)
                     .Include(x => x.Reviews)
                         .ThenInclude(x => x.User)
@@ -506,6 +513,11 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                 }
 
                 await _context.SaveChangesAsync();
+
+                var @event = await _context.Events.FindAsync(id);
+
+                await _hubContext.Clients.All.SendAsync("EventUpdated", @event?.Title);
+
                 await transaction.CommitAsync();
                 return true;
             }
@@ -610,6 +622,11 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                 }
 
                 await _context.SaveChangesAsync();
+
+                var eventForSocket = await _context.Events.FindAsync(id);
+
+                await _hubContext.Clients.All.SendAsync("EventRescheduled", @event?.Title);
+
                 await transaction.CommitAsync();
 
                 return true;
@@ -660,6 +677,9 @@ namespace Event_Management.Repositories.EventRepositoryFolder
 
                 _context.Events.Update(@event);
                 await _context.SaveChangesAsync();
+
+                // Notify clients about the new event
+                await _hubContext.Clients.All.SendAsync("EventCreated", @event.Title);
 
                 return true;
             }
@@ -770,6 +790,9 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                 //_context.Events.Remove(@event);
 
                 await _context.SaveChangesAsync();
+
+                await _hubContext.Clients.All.SendAsync("EventDeleted", @event?.Title);
+
                 await transaction.CommitAsync();
 
                 return true;

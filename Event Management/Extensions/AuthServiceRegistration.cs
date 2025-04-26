@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
@@ -25,6 +26,20 @@ namespace Event_Management.Extensions
                         ValidAudience = configuration["Jwt:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(key)
                     };
+
+                    option.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+                            var path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/userHub") || path.StartsWithSegments("/participantHub"))
+                            {
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
 
             // Configure authorization policies
@@ -40,11 +55,11 @@ namespace Event_Management.Extensions
                 option.OperationFilter<SecurityRequirementsOperationFilter>();
             });
 
-            //services.AddStackExchangeRedisCache(options =>
-            //{
-            //    options.Configuration = configuration.GetConnectionString("Redis");
-            //    options.InstanceName = "chat-application";
-            //});
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = configuration.GetConnectionString("Redis");
+                options.InstanceName = "Event-Management"; // Instance name for Redis cache (Name of your created container)
+            });
 
             // CORS setup
             services.AddCors(options =>

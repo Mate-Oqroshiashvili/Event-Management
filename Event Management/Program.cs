@@ -24,6 +24,9 @@ app.UseCustomMiddleware(); // Use custom middleware for error handling + Authent
 app.MapControllers(); // Map controllers to routes
 
 app.MapHub<CommentHub>("/commentHub"); // Map SignalR hub for comments
-app.MapHub<CommentHub>("/userHub"); // Map SignalR hub for user notifications
+app.MapHub<ReviewHub>("/reviewHub"); // Map SignalR hub for reviews
+app.MapHub<EventHub>("/eventHub"); // Map SignalR hub for events
+app.MapHub<UserHub>("/userHub").RequireAuthorization(); // Map SignalR hub for user notifications
+app.MapHub<ParticipantHub>("/participantHub").RequireAuthorization(); // Map SignalR hub for participant notifications
 
 app.Run(); // Run the application

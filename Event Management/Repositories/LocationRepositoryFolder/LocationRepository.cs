@@ -49,6 +49,7 @@ namespace Event_Management.Repositories.LocationRepositoryFolder
         public async Task<IEnumerable<LocationDto>> GetLocationsByOrganizerIdAsync(int organizerId)
         {
             var locations = await _context.Locations
+                .Include(l => l.Organizers)
                 .Where(l => l.Organizers.Any(o => o.Id == organizerId))
                 .ToListAsync();
 

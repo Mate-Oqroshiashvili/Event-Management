@@ -4,6 +4,8 @@ using Event_Management.Exceptions;
 using Event_Management.Models;
 using Event_Management.Models.Dtos.ParticipantDtos;
 using Event_Management.Models.Enums;
+using Event_Management.Web_Sockets;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Event_Management.Repositories.ParticipantRepositoryFolder
@@ -11,11 +13,13 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
     public class ParticipantRepository : IParticipantRepository
     {
         private readonly DataContext _context; // Database context for accessing the database
+        private readonly IHubContext<ParticipantHub> _hubContext; // Hub context for sending messages to clients
         private readonly IMapper _mapper; // AutoMapper for mapping between DTOs and entities
 
-        public ParticipantRepository(DataContext context, IMapper mapper)
+        public ParticipantRepository(DataContext context, IHubContext<ParticipantHub> hubContext, IMapper mapper)
         {
             _context = context;
+            _hubContext = hubContext;
             _mapper = mapper;
         }
 
@@ -203,6 +207,9 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
                 }
 
                 await _context.SaveChangesAsync();
+
+                await _hubContext.Clients.User(user.Id.ToString()).SendAsync("GetBalance", user.Balance);
+
                 await transaction.CommitAsync();
 
                 return true;

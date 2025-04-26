@@ -1,8 +1,10 @@
 ﻿using Event_Management.Exceptions;
+using Event_Management.Extensions;
 using Event_Management.Models.Dtos.LocationDtos;
 using Event_Management.Repositories.LocationRepositoryFolder;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace Event_Management.Controllers
 {
@@ -12,10 +14,12 @@ namespace Event_Management.Controllers
     public class LocationController : ControllerBase
     {
         private readonly ILocationRepository _locationRepository; // This is the repository that will handle the data access for locations.
+        private readonly IDistributedCache _distributedCache; // This is the distributed cache for caching data.
 
-        public LocationController(ILocationRepository locationRepository)
+        public LocationController(ILocationRepository locationRepository, IDistributedCache distributedCache)
         {
             _locationRepository = locationRepository;
+            _distributedCache = distributedCache;
         }
 
         [HttpGet("get-all-locations")]
@@ -23,8 +27,14 @@ namespace Event_Management.Controllers
         {
             try
             {
-                var locations = await _locationRepository.GetLocationsAsync();
+                if (!string.IsNullOrEmpty(await _distributedCache.GetStringAsync("Locations")))
+                {
+                    var redisResult = await _distributedCache.GetValue<List<LocationDto>>("Locations");
+                    return Ok(redisResult);
+                }
 
+                var locations = await _locationRepository.GetLocationsAsync();
+                await _distributedCache.SetValue("Locations", locations);
                 return locations == null ? throw new NotFoundException("Locations not found!") : Ok(new { locations });
             }
             catch (Exception ex)
@@ -70,7 +80,7 @@ namespace Event_Management.Controllers
             try
             {
                 var location = await _locationRepository.AddLocationAsync(locationCreateDto);
-
+                await _distributedCache.RemoveAsync("Locations");
                 return location == null ? throw new NotFoundException("Something went wrong during location addition process!") : Ok(new { location });
             }
             catch (Exception ex)
@@ -86,7 +96,7 @@ namespace Event_Management.Controllers
             try
             {
                 var updated = await _locationRepository.UpdateLocationAsync(locationId, locationUpdateDto);
-
+                await _distributedCache.RemoveAsync("Locations");
                 return !updated ? throw new NotFoundException("Something went wrong during location update process!") : Ok(new { message = "Location updated successfully!" });
             }
             catch (Exception ex)
@@ -102,7 +112,7 @@ namespace Event_Management.Controllers
             try
             {
                 var removed = await _locationRepository.DeleteLocationAsync(locationId);
-
+                await _distributedCache.RemoveAsync("Locations");
                 return !removed ? throw new NotFoundException("Something went wrong during location removal process!") : Ok(new { message = "Location removed successfully!" });
             }
             catch (Exception ex)
