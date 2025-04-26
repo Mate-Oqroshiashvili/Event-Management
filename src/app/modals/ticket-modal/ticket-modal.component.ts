@@ -87,7 +87,6 @@ export class TicketModalComponent implements OnInit {
     this.ticketService.getTicketById(this.ticketId).subscribe({
       next: (data: any) => {
         this.ticket = data.ticket;
-        console.log(data);
       },
       error: (err) => {
         console.error(err);
@@ -117,7 +116,6 @@ export class TicketModalComponent implements OnInit {
     this.purchaseService.purchaseTicket(this.purchaseCreateDto).subscribe({
       next: (data: any) => {
         message = data.purchaseDto;
-        console.log(data);
       },
       error: (err) => {
         if (err.error.Message) {

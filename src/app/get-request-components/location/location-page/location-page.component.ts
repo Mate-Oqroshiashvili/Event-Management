@@ -85,7 +85,6 @@ export class LocationPageComponent implements OnInit {
     this.locationService.getLocationById(this.locationId).subscribe({
       next: (data: any) => {
         this.location = data.location;
-        console.log(data);
       },
       error: (err) => {
         console.error(err);
@@ -117,7 +116,6 @@ export class LocationPageComponent implements OnInit {
     this.organizerService.getOrganizersByLocationId(this.locationId).subscribe({
       next: (data: any) => {
         this.organizers = data.organizerDtos;
-        console.log(data);
       },
       error: (err) => {
         console.error(err);
@@ -148,7 +146,6 @@ export class LocationPageComponent implements OnInit {
     this.organizerService.getOrganizerByUserId(this.userId).subscribe({
       next: (data: any) => {
         this.organizerId = data.organizerDto.id;
-        console.log(data);
 
         let location = data.organizerDto.locations.find(
           (x: LocationDto) => x.id == this.locationId

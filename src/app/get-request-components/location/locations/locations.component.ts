@@ -34,8 +34,11 @@ export class LocationsComponent implements OnInit {
 
     this.locationService.getAllLocations().subscribe({
       next: (data: any) => {
-        this.locations = data.locations;
-        console.log(this.locations);
+        if (data.locations) {
+          this.locations = data.locations;
+        } else {
+          this.locations = data;
+        }
       },
       error: (err) => {
         console.error(err);

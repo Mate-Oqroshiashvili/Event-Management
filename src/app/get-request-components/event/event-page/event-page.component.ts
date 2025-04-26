@@ -33,20 +33,23 @@ import { CommentService } from '../../../services/comment/comment.service';
 import {
   FormBuilder,
   FormGroup,
+  FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import {
   ReviewCreateDto,
+  ReviewDto,
   ReviewService,
 } from '../../../services/review/review.service';
 import { filter } from 'rxjs';
 import Swal from 'sweetalert2';
 import { CommentSocketService } from '../../../services/web sockets/comment-socket.service';
+import { ReviewSocketService } from '../../../services/web sockets/review-socket.service';
 
 @Component({
   selector: 'app-event-page',
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule],
   templateUrl: './event-page.component.html',
   styleUrls: ['./event-page.component.css', './responsive.css'],
 })
@@ -103,6 +106,7 @@ export class EventPageComponent implements OnInit {
     private commentService: CommentService,
     private reviewService: ReviewService,
     private commentSocket: CommentSocketService,
+    private reviewSocket: ReviewSocketService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -137,11 +141,13 @@ export class EventPageComponent implements OnInit {
       });
 
     this.commentSocket.startConnection();
+    this.reviewSocket.startConnection();
 
-    this.socketMethods();
+    this.commentSocketMethods();
+    this.reviewSocketMethods();
   }
 
-  socketMethods() {
+  commentSocketMethods() {
     this.commentSocket.comment$.subscribe((data) => {
       if (data?.commentDto && data?.commentDto.eventId === this.eventId) {
         // Add the comment from this.event.comments
@@ -165,9 +171,7 @@ export class EventPageComponent implements OnInit {
           comments: [],
           usedPromoCodes: [],
         };
-        console.log(user);
         comment.user = user;
-        console.log(comment);
         this.event.comments.push(comment);
       }
     });
@@ -188,6 +192,69 @@ export class EventPageComponent implements OnInit {
         const index = this.event.comments.findIndex((c) => c.id === data.id);
         if (index !== -1) {
           this.event.comments[index].commentContent = data.commentContent;
+        }
+      }
+    });
+  }
+
+  reviewSocketMethods() {
+    this.reviewSocket.review$.subscribe((data) => {
+      if (data?.reviewDto && data?.reviewDto.eventId === this.eventId) {
+        // Add the review from this.event.reviews
+        let review: ReviewDto = data?.reviewDto;
+        let user: UserDto = {
+          id: data?.userObject?.id,
+          name: data?.userObject?.name,
+          email: '',
+          phoneNumber: '',
+          profilePicture: data?.userObject?.profilePicture,
+          role: data?.userObject?.role,
+          userType: data?.userObject?.userType,
+          balance: 0,
+          codeExpiration: undefined,
+          isLoggedIn: false,
+          organizer: null,
+          tickets: [],
+          purchases: [],
+          participants: [],
+          reviews: [],
+          comments: [],
+          usedPromoCodes: [],
+        };
+        review.user = user;
+
+        const alreadyExists = this.event.reviews.some(
+          (r) => r.userId === review.userId
+        );
+
+        if (!alreadyExists) {
+          this.event.reviews.push(review);
+
+          const totalStars = this.event.reviews.reduce(
+            (sum: number, review: any) => sum + review.starCount,
+            0
+          );
+          this.reviewsResult = totalStars / this.event.reviews.length;
+        }
+      }
+    });
+
+    this.reviewSocket.deletedReview$.subscribe((reviewId) => {
+      if (reviewId != null) {
+        // Remove the review from this.event.reviews
+        this.event.reviews = this.event.reviews.filter(
+          (c) => c.id !== reviewId
+        );
+      }
+    });
+
+    // Update the review in this.event.reviews
+    this.reviewSocket.updatedReview$.subscribe((data) => {
+      if (data?.id && data?.starCount && data?.eventId === this.eventId) {
+        // Update the review in the UI
+        const index = this.event.reviews.findIndex((c) => c.id === data.id);
+        if (index !== -1) {
+          this.event.reviews[index].starCount = data.starCount;
         }
       }
     });
@@ -271,13 +338,10 @@ export class EventPageComponent implements OnInit {
 
     this.commentService.addComment(comment).subscribe({
       next: (data: any) => {
-        console.log(data);
+        this.addCommentForm.reset();
       },
       error: (err) => {
         console.error(err);
-      },
-      complete: () => {
-        this.addCommentForm.reset();
       },
     });
   }
@@ -312,15 +376,12 @@ export class EventPageComponent implements OnInit {
       .updateComment(this.commentId, this.userId, updateDto)
       .subscribe({
         next: (data: any) => {
-          console.log(data);
-        },
-        error: (err) => {
-          console.error(err);
-        },
-        complete: () => {
           this.editing = false;
           this.getEventById();
           this.editCommentForm.reset();
+        },
+        error: (err) => {
+          console.error(err);
         },
       });
   }
@@ -357,7 +418,14 @@ export class EventPageComponent implements OnInit {
 
     this.reviewService.addReview(this.reviewDto).subscribe({
       next: (data: any) => {
-        console.log(data);
+        let review = this.event.reviews.find((x) => x.userId == this.userId);
+        if (review != null) {
+          this.hasReviewed = true;
+        } else {
+          this.hasReviewed = false;
+        }
+
+        Swal.fire('Success!', 'Review Added Successfully!', 'success');
       },
       error: (err) => {
         if (err.error.Message) {
@@ -374,10 +442,6 @@ export class EventPageComponent implements OnInit {
         }
         console.error(err);
       },
-      complete: () => {
-        Swal.fire('Success!', 'Review Added Successfully!', 'success');
-        this.getEventById();
-      },
     });
   }
 
@@ -387,7 +451,7 @@ export class EventPageComponent implements OnInit {
     this.ticketService.removeTicket(ticketId).subscribe({
       next: (data: any) => {
         message = data.message;
-        console.log(data);
+        Swal.fire('Success!', message, 'success');
       },
       error: (err) => {
         if (err.error.Message) {
@@ -399,7 +463,6 @@ export class EventPageComponent implements OnInit {
       complete: () => {
         this.getEventById();
         this.getTicketsByEventId();
-        Swal.fire('Success!', message, 'success');
       },
     });
   }
@@ -441,6 +504,5 @@ export class EventPageComponent implements OnInit {
 
   setRating(rating: number): void {
     this.selectedRating = rating;
-    console.log(this.selectedRating);
   }
 }

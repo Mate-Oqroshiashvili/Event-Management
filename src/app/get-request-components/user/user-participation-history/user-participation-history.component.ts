@@ -40,7 +40,6 @@ export class UserParticipationHistoryComponent implements OnInit {
           (x: ParticipantDto) => x.event.status == EventStatus.COMPLETED
         );
         this.participants = filtered;
-        console.log(data);
       },
       error: (err) => {
         console.error(err);
@@ -60,7 +59,6 @@ export class UserParticipationHistoryComponent implements OnInit {
       .subscribe({
         next: (data: any) => {
           message = data.message;
-          console.log(data);
         },
         error: (err) => {
           this.refunding = false;

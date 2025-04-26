@@ -97,7 +97,6 @@ export class AddEventComponent implements OnInit {
     this.organizerService.getOrganizerByUserId(this.userId).subscribe({
       next: (data: any) => {
         this.organizer = data.organizerDto;
-        console.log(data);
       },
       error: (err) => {
         console.error(err);

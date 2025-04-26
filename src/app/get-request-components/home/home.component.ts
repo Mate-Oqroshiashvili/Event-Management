@@ -64,7 +64,6 @@ export class HomeComponent implements OnInit, CanComponentDeactivate {
 
     this.eventService.getPublishedEvents().subscribe({
       next: (data: any) => {
-        console.log(data);
         this.published = data.events;
 
         this.upcoming = this.published
@@ -122,7 +121,6 @@ export class HomeComponent implements OnInit, CanComponentDeactivate {
       next: (data: any) => {
         this.promoCode = data.promoCode;
         this.canDeactivateBool = false;
-        console.log(data);
         this.startCountdown(300);
 
         // Set next available promo date (3 days later)

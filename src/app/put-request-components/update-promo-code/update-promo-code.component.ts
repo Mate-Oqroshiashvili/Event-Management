@@ -49,7 +49,6 @@ export class UpdatePromoCodeComponent implements OnInit {
   getPromoCode() {
     this.promoCodeService.getPromoCodeById(this.promoId).subscribe({
       next: (data: any) => {
-        console.log(data);
         this.promoAmont = data.promoCode.promoCodeAmount;
         this.promoForm.patchValue({
           promoCodeAmount: this.promoAmont,

@@ -151,7 +151,9 @@
 
             <p class="card-text">
               <i style="color: gold" class="me-1 bi bi-star-fill"></i>
-              Rating: {{ getReviewResult(event) }} ({{ event.reviews.length }})
+              Rating: {{ getReviewResult(event) | number : "1.1-1" }} ({{
+                event.reviews.length
+              }})
             </p>
           </div>
         </a>

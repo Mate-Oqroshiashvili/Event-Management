@@ -35,7 +35,6 @@ export class UserAnalyticsComponent implements OnInit {
           .getUserAnalytics(this.userId)
           .subscribe((data) => {
             this.analytics = data;
-            console.log(data);
             this.setGradients();
             this.setStats();
           });

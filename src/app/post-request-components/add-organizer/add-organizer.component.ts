@@ -14,6 +14,7 @@ import {
 import { UserService } from '../../services/user/user.service';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-add-organizer',
@@ -82,15 +83,14 @@ export class AddOrganizerComponent implements OnInit {
       .verifyOrganizer(this.organizerId, this.emailCode, this.smsCode)
       .subscribe({
         next: (data: any) => {
-          console.log(data);
+          this.added = false;
+          this.userService.logout();
         },
         error: (err) => {
           console.error(err);
           alert('Verification failed. Please check your codes and try again.');
         },
         complete: () => {
-          this.added = false;
-          this.userService.logout();
           this.router.navigate(['/login']);
         },
       });
@@ -128,7 +128,7 @@ export class AddOrganizerComponent implements OnInit {
       .sendVerificationCodesForOrganizer(this.organizerId)
       .subscribe({
         next: (data: any) => {
-          console.log(data);
+          Swal.fire('Success!', data, 'success');
         },
         error: (err) => {
           console.error(err);

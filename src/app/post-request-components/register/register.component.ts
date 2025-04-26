@@ -3,6 +3,7 @@ import { UserService } from '../../services/user/user.service';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CanComponentDeactivate } from '../../services/guards/register.guard';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-register',
@@ -70,8 +71,6 @@ export class RegisterComponent implements CanComponentDeactivate {
             );
           }
         }
-
-        console.log(this.serverErrors);
       },
       complete: () => {
         console.log('Verification codes sent successfully!');
@@ -83,7 +82,7 @@ export class RegisterComponent implements CanComponentDeactivate {
     this.serverErrors = {};
     this.userService.registerUser(this.registerForm.value).subscribe({
       next: (data) => {
-        console.log('Registered!', data);
+        Swal.fire('Success!', 'User registered successfully!', 'success');
       },
       error: (err) => {
         console.error(err);

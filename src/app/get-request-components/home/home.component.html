@@ -42,7 +42,9 @@
 
           <p class="card-text">
             <i style="color: gold" class="me-1 bi bi-star-fill"></i>
-            Rating: {{ getReviewResult(item) }} ({{ item.reviews.length }})
+            Rating: {{ getReviewResult(item) | number : "1.1-1" }} ({{
+              item.reviews.length
+            }})
           </p>
         </div>
       </div>
@@ -70,7 +72,9 @@
 
           <p class="card-text">
             <i style="color: gold" class="me-1 bi bi-star-fill"></i>
-            Rating: {{ getReviewResult(item) }} ({{ item.reviews.length }})
+            Rating: {{ getReviewResult(item) | number : "1.1-1" }} ({{
+              item.reviews.length
+            }})
           </p>
         </div>
       </div>

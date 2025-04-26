@@ -31,7 +31,6 @@ export class CommentsUserAddedComponent {
     this.commentService.getCommentsByUserId(this.userId).subscribe({
       next: (data: any) => {
         this.comments = data.comments;
-        console.log(data);
       },
       error: (err) => {
         console.error(err);

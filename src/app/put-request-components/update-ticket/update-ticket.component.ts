@@ -69,7 +69,6 @@ export class UpdateTicketComponent implements OnInit {
     this.ticketService.getTicketById(this.ticketId).subscribe({
       next: (data: any) => {
         this.ticket = data.ticket;
-        console.log(data);
 
         this.ticketUpdateForm.patchValue({
           type: this.ticket.type,

@@ -93,7 +93,6 @@ export class UpdateLocationComponent implements OnInit {
         });
 
         this.imagePreview = this.location.imageUrl;
-        console.log(data);
       },
       error: (err) => {
         console.error(err);

@@ -69,7 +69,6 @@ export class OrganizerPageComponent implements OnInit {
     this.organizerService.getOrganizerById(this.organizerId).subscribe({
       next: (data: any) => {
         this.organizer = data.organizerDto;
-        console.log(data);
       },
       error: (err) => {
         console.error(err);
@@ -84,7 +83,6 @@ export class OrganizerPageComponent implements OnInit {
     this.locationService.getLocationsByOrganizerId(this.organizerId).subscribe({
       next: (data: any) => {
         this.locations = data.locations;
-        console.log(data);
       },
       error: (err) => {
         console.error(err);
@@ -101,7 +99,6 @@ export class OrganizerPageComponent implements OnInit {
         this.events = data.events.filter(
           (event: EventDto) => event.status === EventStatus.PUBLISHED
         );
-        console.log(data);
       },
       error: (err) => {
         console.error(err);

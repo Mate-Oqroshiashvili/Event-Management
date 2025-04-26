@@ -5,6 +5,7 @@ import {
 } from '../../services/event/event.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-reschedule-event',
@@ -47,11 +48,9 @@ export class RescheduleEventComponent implements OnInit {
       newDate: utcDate,
     };
 
-    console.log('Parsed Date:', dto.newDate);
-
     this.eventService.rescheduleEvent(this.eventId, dto).subscribe({
       next: (data: any) => {
-        console.log(data);
+        Swal.fire('Success', 'Event rescheduled successfully!', 'success');
       },
       error: (err) => {
         this.errorMessage = err.error.Message;

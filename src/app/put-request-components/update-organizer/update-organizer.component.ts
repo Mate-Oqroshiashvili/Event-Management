@@ -104,7 +104,6 @@ export class UpdateOrganizerComponent implements OnInit {
     this.organizerService.UpdateOrganizer(this.organizerId, dto).subscribe({
       next: (data: any) => {
         message = data.message;
-        console.log(data);
       },
       error: (err) => {
         console.error(err);

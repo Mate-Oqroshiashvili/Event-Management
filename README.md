@@ -2,6 +2,24 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.12.
 
+## Launching Instructions
+
+First, clone this repository and run this command in your console - `npm install`.
+
+After that you will need to complete a few setup steps before running the project:
+
+1. Run the Swagger API:
+   Ensure the backend (Swagger) is running locally or hosted elsewhere, as the frontend depends on it.
+
+2. Set up Environment Files:
+   Remove the `.example` extension from the files in the `src/environments/` folder.
+
+   Update the placeholders with valid URLs for both `apiUrls` and `hubUrls` inside the `environment.ts` and `environment.development.ts` files.
+
+3. Set up Redis Caching:
+   Create and run a Docker container with the Redis image.
+   Make sure the backend is configured to connect to this Redis container.
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.

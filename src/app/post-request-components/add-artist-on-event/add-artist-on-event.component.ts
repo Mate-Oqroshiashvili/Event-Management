@@ -63,7 +63,6 @@ export class AddArtistOnEventComponent implements OnInit {
     this.userService.getArtists().subscribe({
       next: (data: any) => {
         this.artists = data.artists;
-        console.log(data);
       },
       error: (err) => {
         console.error(err);
@@ -103,7 +102,6 @@ export class AddArtistOnEventComponent implements OnInit {
       .subscribe({
         next: (data: any) => {
           message = data.result;
-          console.log(data);
         },
         error: (err) => {
           message = err.error.Message;

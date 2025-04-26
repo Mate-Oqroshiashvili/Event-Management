@@ -12,6 +12,7 @@ import { ImageService } from '../../../services/image/image.service';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { ParticipantService } from '../../../services/participant/participant.service';
+import { UserSocketService } from '../../../services/web sockets/user-socket.service';
 
 @Component({
   selector: 'app-user-info',
@@ -23,6 +24,7 @@ export class UserInfoComponent implements OnInit {
   userId: number = 0;
   userRole: string = '';
   userType: string = '';
+  balance: number = 0;
   isVerified: boolean = false;
   user: UserDto = {
     id: 0,
@@ -58,6 +60,7 @@ export class UserInfoComponent implements OnInit {
     private organizerService: OrganizerService,
     private participantService: ParticipantService,
     private imageService: ImageService,
+    private userSocket: UserSocketService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -84,17 +87,23 @@ export class UserInfoComponent implements OnInit {
     this.participantService.refund$.subscribe(() => {
       this.getUserById();
     });
+
+    this.userSocket.startConnection();
+
+    this.userSocket.balance$.subscribe((data) => {
+      this.balance = data!;
+    });
   }
 
   getUserById() {
     this.userService.getUserById(this.userId).subscribe({
       next: (data: any) => {
         this.user = data.userDto;
+        this.balance = data.userDto.balance;
         this.userRole = this.user.role.toString();
         if (this.userRole === '3') {
           this.getOrganizer();
         }
-        console.log(data);
       },
       error: (err) => {
         console.error(err);
@@ -122,13 +131,12 @@ export class UserInfoComponent implements OnInit {
   removeAsOrganizer() {
     this.organizerService.removeOrganizer(this.organizerId).subscribe({
       next: (data: any) => {
-        console.log(data);
+        this.userService.logout();
       },
       error: (err) => {
         console.error(err);
       },
       complete: () => {
-        this.userService.logout();
         this.router.navigate(['/login']);
       },
     });
@@ -136,9 +144,7 @@ export class UserInfoComponent implements OnInit {
 
   deleteUser() {
     this.userService.removeUser(this.userId).subscribe({
-      next: (data: any) => {
-        console.log(data);
-      },
+      next: (data: any) => {},
       error: (err) => {
         console.error(err);
       },
@@ -154,14 +160,13 @@ export class UserInfoComponent implements OnInit {
       .updateUserProfilePicture(this.userId, this.imageFile!)
       .subscribe({
         next: (data) => {
-          console.log(data);
+          this.imageFile = undefined;
+          this.imagePreview = '';
         },
         error: (err) => {
           console.error(err);
         },
         complete: () => {
-          this.imageFile = undefined;
-          this.imagePreview = '';
           this.getUserById();
         },
       });
@@ -198,7 +203,6 @@ export class UserInfoComponent implements OnInit {
     this.userService.addBalance(this.userId, this.balanceToAdd).subscribe({
       next: (data: any) => {
         message = data.message;
-        console.log(data);
       },
       error: (err) => {
         console.error(err);
@@ -207,16 +211,13 @@ export class UserInfoComponent implements OnInit {
         Swal.fire('Success!', message, 'success');
         this.addingBalance = false;
         this.balanceToAdd = 0;
-        this.getUserById();
       },
     });
   }
 
   registerAsArtist() {
     this.userService.changeUserType(this.userId, UserType.ARTIST).subscribe({
-      next: (data: any) => {
-        console.log(data);
-      },
+      next: (data: any) => {},
       error: (err) => {
         console.error(err);
       },
@@ -228,9 +229,7 @@ export class UserInfoComponent implements OnInit {
 
   registerAsSpeaker() {
     this.userService.changeUserType(this.userId, UserType.SPEAKER).subscribe({
-      next: (data: any) => {
-        console.log(data);
-      },
+      next: (data: any) => {},
       error: (err) => {
         console.error(err);
       },
@@ -242,9 +241,7 @@ export class UserInfoComponent implements OnInit {
 
   getBackToBasic() {
     this.userService.changeUserType(this.userId, UserType.BASIC).subscribe({
-      next: (data: any) => {
-        console.log(data);
-      },
+      next: (data: any) => {},
       error: (err) => {
         console.error(err);
       },

@@ -86,12 +86,12 @@
         formControlName="locationId"
         name="location"
         id="location"
-        class="form-select form-select-lg"
-        aria-label="Large select example"
+        class="form-select form-select"
+        aria-label="select example"
       >
         <option value="0" selected>Select The Event Location Address</option>
         @for (item of organizer.locations; track $index) {
-        <option [value]="$index">{{ item.address }}</option>
+        <option [value]="item.id">{{ item.address }}</option>
         }
       </select>
       @if (getFieldErrors('LocationId')) {
@@ -106,8 +106,8 @@
         formControlName="category"
         name="category"
         id="category"
-        class="form-select form-select-lg"
-        aria-label="Large select example"
+        class="form-select form-select"
+        aria-label="select example"
       >
         <option value="0" selected>Select The Event Category</option>
         <option value="1">IT And Technologies</option>

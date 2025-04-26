@@ -117,7 +117,6 @@ export class OrganizerPanelComponent implements OnInit {
         this.result = data.events.filter(
           (x: EventDto) => x.organizer?.id === this.organizerId
         );
-        console.log(this.result);
       },
       error: (err) => {
         console.error(err);
@@ -139,6 +138,7 @@ export class OrganizerPanelComponent implements OnInit {
         this.result = data.events.filter(
           (x: EventDto) => x.organizer?.id === this.organizerId
         );
+        console.log(this.result);
       },
       error: (err) => {
         console.error(err);
@@ -239,7 +239,6 @@ export class OrganizerPanelComponent implements OnInit {
     this.promoCodeService.removePromoCode(id).subscribe({
       next: (data: any) => {
         message = data.message;
-        console.log(data);
       },
       error: (err) => {
         console.error(err);
@@ -264,7 +263,6 @@ export class OrganizerPanelComponent implements OnInit {
     this.eventService.removeEvent(eventId).subscribe({
       next: (data: any) => {
         message = data.message;
-        console.log(data);
       },
       error: (err) => {
         message = err.error.Message;
@@ -284,7 +282,6 @@ export class OrganizerPanelComponent implements OnInit {
     this.eventService.publishEvent(eventId).subscribe({
       next: (data: any) => {
         message = data.message;
-        console.log(data);
       },
       error: (err) => {
         message = err.error.Message;
@@ -382,7 +379,6 @@ export class OrganizerPanelComponent implements OnInit {
     if (this.selectedFile) {
       this.ticketService.validateTicket(this.selectedFile).subscribe({
         next: (result: any) => {
-          console.log(result);
           this.validationResult = result.result;
         },
         error: (err) => {

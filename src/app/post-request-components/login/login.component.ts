@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { UserService } from '../../services/user/user.service';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -30,7 +31,7 @@ export class LoginComponent {
     this.serverErrors = {};
     this.userService.loginUser(this.loginForm.value).subscribe({
       next: (data: any) => {
-        console.log('Login success:', data);
+        Swal.fire('Success!', 'Logged in successfully!', 'success');
       },
       error: (err) => {
         console.error(err);

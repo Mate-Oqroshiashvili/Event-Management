@@ -1,23 +1,23 @@
 import { Injectable } from '@angular/core';
-import * as signalR from '@microsoft/signalr';
 import { BehaviorSubject } from 'rxjs';
-import { environment } from '../../../environments/environment.development';
 import { UserService } from '../user/user.service';
+import * as signalR from '@microsoft/signalr';
+import { environment } from '../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root',
 })
-export class UserSocketService {
+export class ParticipantSocketService {
   private hubConnection!: signalR.HubConnection;
 
-  private balanceSubject = new BehaviorSubject<number | null>(null);
-  balance$ = this.balanceSubject.asObservable();
+  private balaneSubject = new BehaviorSubject<number | null>(null);
+  balance$ = this.balaneSubject.asObservable();
 
   constructor(private userService: UserService) {}
 
   startConnection(): void {
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${environment.hubUrl}userHub`, {
+      .withUrl(`${environment.hubUrl}participantHub`, {
         accessTokenFactory: () => this.userService.getToken() || '',
       })
       .withAutomaticReconnect()
@@ -25,18 +25,14 @@ export class UserSocketService {
 
     this.hubConnection
       .start()
-      .then(() => console.log('User Hub Connection started'))
+      .then(() => console.log('Participant Hub Connection started'))
       .catch((err) =>
         console.error('Error starting SignalR connection: ', err)
       );
 
     this.hubConnection.on('GetBalance', (data: number) => {
-      this.balanceSubject.next(data);
+      this.balaneSubject.next(data);
     });
-  }
-
-  updateBalance(balance: number) {
-    if (balance) this.balanceSubject.next(balance);
   }
 
   stopConnection(): void {

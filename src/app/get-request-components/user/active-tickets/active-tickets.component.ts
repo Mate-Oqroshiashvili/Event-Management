@@ -7,6 +7,8 @@ import {
   ParticipantService,
 } from '../../../services/participant/participant.service';
 import { EventStatus } from '../../../services/event/event.service';
+import { ParticipantSocketService } from '../../../services/web sockets/participant-socket.service';
+import { UserSocketService } from '../../../services/web sockets/user-socket.service';
 
 @Component({
   selector: 'app-active-tickets',
@@ -21,6 +23,8 @@ export class ActiveTicketsComponent implements OnInit {
 
   constructor(
     private participantService: ParticipantService,
+    private participantSocket: ParticipantSocketService,
+    private userSocket: UserSocketService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -29,6 +33,12 @@ export class ActiveTicketsComponent implements OnInit {
     this.route.parent?.paramMap.subscribe((params) => {
       this.userId = +params.get('userId')!;
       this.getParticipants();
+    });
+
+    this.participantSocket.startConnection();
+
+    this.participantSocket.balance$.subscribe((data) => {
+      this.userSocket.updateBalance(data!);
     });
   }
 
@@ -39,7 +49,6 @@ export class ActiveTicketsComponent implements OnInit {
           (x: ParticipantDto) => x.event.status == EventStatus.PUBLISHED
         );
         this.participants = filtered;
-        console.log(data);
       },
       error: (err) => {
         console.error(err);
@@ -59,7 +68,6 @@ export class ActiveTicketsComponent implements OnInit {
       .subscribe({
         next: (data: any) => {
           message = data.message;
-          console.log(data);
         },
         error: (err) => {
           this.refunding = false;

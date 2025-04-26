@@ -31,7 +31,6 @@ export class ReviewsUserAddedComponent implements OnInit {
     this.reviewService.getReviewsByUserId(this.userId).subscribe({
       next: (data: any) => {
         this.reviews = data.reviews;
-        console.log(data);
       },
       error: (err) => {
         console.error(err);

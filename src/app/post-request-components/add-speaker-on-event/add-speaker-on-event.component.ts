@@ -63,7 +63,6 @@ export class AddSpeakerOnEventComponent implements OnInit {
     this.userService.getSpeakers().subscribe({
       next: (data: any) => {
         this.speakers = data.speakers;
-        console.log(data);
       },
       error: (err) => {
         console.error(err);
@@ -103,7 +102,6 @@ export class AddSpeakerOnEventComponent implements OnInit {
       .subscribe({
         next: (data: any) => {
           message = data.result;
-          console.log(data);
         },
         error: (err) => {
           message = err.error.Message;
