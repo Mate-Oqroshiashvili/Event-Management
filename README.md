@@ -1,45 +1,157 @@
-# EventManagement
+# Event Management Frontend
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.12.
+🌐 **Angular 19 Application**
 
-## Launching Instructions
+---
 
-First, clone this repository and run this command in your console - `npm install`.
+🚀 **Project Overview**  
+This project is the front-end client for the Event Management system, built with Angular 19. It communicates with an ASP.NET Core Web API backend and provides a real-time, interactive user experience.
 
-After that you will need to complete a few setup steps before running the project:
+**Core Features:**
 
-1. Run the Swagger API:
-   Ensure the backend (Swagger) is running locally or hosted elsewhere, as the frontend depends on it.
+- Angular 19 and Angular CLI
+- WebSocket real-time communication (SignalR)
+- API integration with JWT authentication
+- Redis caching via backend
+- Docker support (for Redis)
+- Responsive, mobile-friendly UI
 
-2. Set up Environment Files:
-   Remove the `.example` extension from the files in the `src/environments/` folder.
+---
 
-   Update the placeholders with valid URLs for both `apiUrls` and `hubUrls` inside the `environment.ts` and `environment.development.ts` files.
+📋 **Prerequisites**
 
-3. Set up Redis Caching:
-   Create and run a Docker container with the Redis image.
-   Make sure the backend is configured to connect to this Redis container.
+Make sure you have the following installed:
 
-## Development server
+- [Node.js](https://nodejs.org/) (v18+ recommended)
+- [Angular CLI](https://angular.io/cli) (v19.2.5)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop) (for Redis setup)
+- Backend API running locally or remotely (see backend setup)
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+---
 
-## Code scaffolding
+📦 **Cloning and Setup**
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Clone the repository:
 
-## Build
+```bash
+git clone https://github.com/Mate-Oqroshiashvili/Event-Management.git
+cd Event-Management
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Install dependencies:
 
-## Running unit tests
+```bash
+npm install
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Set up environment configuration:
 
-## Running end-to-end tests
+- Navigate to `src/environments/`
+- **Rename** the files:
+  - `environment.example.ts` ➔ `environment.ts`
+  - `environment.development.example.ts` ➔ `environment.development.ts`
+- Fill in the required API URLs and SignalR Hub URLs inside both `environment.ts` and `environment.development.ts`:
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+| Key                        | Description                              |
+| :------------------------- | :--------------------------------------- |
+| `apiUrls.baseUrl`          | Base URL of your running Web API backend |
+| `hubUrls.groupChatHubUrl`  | URL for SignalR Group Chat Hub           |
+| `hubUrls.userStatusHubUrl` | URL for SignalR User Status Hub          |
 
-## Further help
+Example:
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+```typescript
+export const environment = {
+  production: false,
+  apiUrl: "https://localhost:7056/api/",
+  hubUrl: "https://localhost:7056/",
+};
+```
+
+---
+
+⚙️ **Development Server**
+
+Run the following command to start the development server:
+
+```bash
+ng serve
+```
+
+Access the application at:
+
+- [http://localhost:4200/](http://localhost:4200/)
+
+The app will automatically reload if you change any source files.
+
+---
+
+🏗️ **Building the Project**
+
+Create a production build:
+
+```bash
+ng build
+```
+
+The build artifacts will be stored in the `dist/` directory.
+
+For a specific environment (e.g., production):
+
+```bash
+ng build --configuration production
+```
+
+---
+
+🧪 **Running Unit Tests**
+
+Execute unit tests via [Karma](https://karma-runner.github.io/):
+
+```bash
+ng test
+```
+
+Tests will automatically run and watch for changes.
+
+---
+
+🚀 **Running End-to-End (E2E) Tests**
+
+First, install an E2E testing package if needed (e.g., Cypress, Protractor).
+
+Then run:
+
+```bash
+ng e2e
+```
+
+---
+
+🛠 **Code Scaffolding**
+
+Generate a new component, service, module, etc., using Angular CLI:
+
+```bash
+ng generate component component-name
+ng generate service service-name
+ng generate module module-name
+```
+
+---
+
+📝 **Notes**
+
+- **CORS**:  
+  Ensure your backend API allows CORS requests from `http://localhost:4200` during development.
+
+- **Authentication**:  
+  The frontend expects a valid JWT token for protected routes and SignalR Hub connections.
+
+- **SignalR Connections**:  
+  Double-check that your Hub URLs are correct in your environment files for real-time communication features.
+
+---
+
+✅ **Done!**  
+You are now ready to build, run, and extend the Event Management Frontend project!
