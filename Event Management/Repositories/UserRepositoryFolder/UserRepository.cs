@@ -11,9 +11,9 @@ namespace Event_Management.Repositories.UserRepositoryFolder
 {
     public class UserRepository : IUserRepository
     {
-        private readonly DataContext _context;
-        private readonly IImageRepository _imageRepository;
-        private readonly IMapper _mapper;
+        private readonly DataContext _context; // Database context for accessing the database
+        private readonly IImageRepository _imageRepository; // Image repository for handling image-related operations
+        private readonly IMapper _mapper; // AutoMapper for mapping between DTOs and entities
 
         public UserRepository(DataContext context, IImageRepository imageRepository, IMapper mapper)
         {
@@ -22,6 +22,8 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Retrieves user analytics for a specific user.
         public async Task<UserAnalyticsDto> GetUserAnalyticsAsync(int userId)
         {
             var user = await _context.Users
@@ -70,6 +72,8 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             return dto;
         }
 
+        /// <summary>
+        /// Retrieves admin analytics for the entire system.
         public async Task<AdminAnalyticsDto> GetAdminAnalyticsAsync()
         {
             var dto = new AdminAnalyticsDto
@@ -100,7 +104,8 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             return dto;
         }
 
-
+        /// <summary>
+        /// Retrieves all users from the database.
         public async Task<IEnumerable<UserDto>> GetUsersAsync()
         {
             var users = await _context.Users
@@ -118,6 +123,8 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             return userDtos;
         }
 
+        /// <summary>
+        /// Retrieves a user by its ID.
         public async Task<UserDto> GetUserByIdAsync(int id)
         {
             var user = await _context.Users
@@ -135,6 +142,8 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             return userDto;
         }
 
+        /// <summary>
+        /// Retrieves a user by their email address.
         public async Task<UserDto> GetUserByEmailAsync(string email)
         {
             var user = await _context.Users
@@ -152,6 +161,8 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             return userDto;
         }
 
+        /// <summary>
+        /// Retrieves all speakers from the database.
         public async Task<IEnumerable<UserDto>> GetSpeakersAsync()
         {
             var speakers = await _context.Users
@@ -170,6 +181,8 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             return speakerDtos;
         }
 
+        /// <summary>
+        /// Retrieves all artists from the database.
         public async Task<IEnumerable<UserDto>> GetArtistsAsync()
         {
             var artists = await _context.Users
@@ -188,6 +201,8 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             return artistDtos;
         }
 
+        /// <summary>
+        /// Validates a password against a hashed password.
         public bool ValidatePassword(string passwordToVerify, string password)
         {
             if (passwordToVerify == null)
@@ -196,6 +211,8 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             return BCrypt.Net.BCrypt.Verify(password, passwordToVerify);
         }
 
+        /// <summary>
+        /// Adds a new user to the database.
         public async Task<UserDto> AddUserAsync(User user)
         {
             await _context.Users.AddAsync(user);
@@ -206,6 +223,8 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             return userDto;
         }
 
+        /// <summary>
+        /// Adds balance to a user's account.
         public async Task<decimal> AddBalanceAsync(int userId, decimal balanceToDeposit)
         {
             var user = await _context.Users
@@ -219,6 +238,8 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             return user.Balance;
         }
 
+        /// <summary>
+        /// Updates an existing user in the database.
         public async Task<bool> UpdateUserAsync(int id, UserUpdateDto userUpdateDto)
         {
             var existingUser = await _context.Users.FindAsync(id);
@@ -236,6 +257,8 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             return true;
         }
 
+        /// <summary>
+        /// Updates the login status of a user.
         public async Task<bool> UpdateLoginStatusAsync(int id)
         {
             var existingUser = await _context.Users.FindAsync(id);
@@ -247,6 +270,8 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             return true;
         }
 
+        /// <summary>
+        /// Updates the user type of a user.
         public async Task<bool> UpdateUserTypeAsync(int id, UserType userType)
         {
             var existingUser = await _context.Users.FindAsync(id);
@@ -258,6 +283,8 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             return true;
         }
 
+        /// <summary>
+        /// Updates the password of a user.
         public async Task<bool> UpdateUserPasswordAsync(int id, string password)
         {
             var existingUser = await _context.Users.FindAsync(id);
@@ -269,6 +296,8 @@ namespace Event_Management.Repositories.UserRepositoryFolder
             return true;
         }
 
+        /// <summary>
+        /// Deletes a user from the database.
         public async Task<bool> DeleteUserAsync(int id)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();

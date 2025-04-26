@@ -7,12 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Event_Management.Controllers
 {
-    [Authorize]
+    [Authorize] // This attribute ensures that all actions in this controller require authorization.
     [Route("api/[controller]")]
     [ApiController]
     public class CommentController : ControllerBase
     {
-        private readonly ICommentRepository _commentRepository;
+        private readonly ICommentRepository _commentRepository; // This is the repository that will handle the data access for comments.
 
         public CommentController(ICommentRepository commentRepository)
         {

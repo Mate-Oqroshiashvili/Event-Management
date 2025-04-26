@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Event_Management.Controllers
 {
-    [Authorize]
+    [Authorize] // This attribute ensures that all actions in this controller require authorization.
     [Route("api/[controller]")]
     [ApiController]
     public class PurchaseController : ControllerBase
     {
-        private readonly IPurchaseRepository _purchaseRepository;
+        private readonly IPurchaseRepository _purchaseRepository; // This is the repository that will handle the data access for purchases.
 
         public PurchaseController(IPurchaseRepository purchaseRepository)
         {

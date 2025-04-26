@@ -9,6 +9,7 @@ using Event_Management.Repositories.LocationRepositoryFolder;
 using Event_Management.Repositories.OrganizerRepositoryFolder;
 using Event_Management.Repositories.ParticipantRepositoryFolder;
 using Event_Management.Repositories.PromoCodeRepositoryFolder;
+using Event_Management.Repositories.PromoCodeRepositoryFolder.Background_Services;
 using Event_Management.Repositories.PurchaseRepositoryFolder;
 using Event_Management.Repositories.ReviewRepositoryFolder;
 using Event_Management.Repositories.TicketRepositoryFolder;
@@ -40,6 +41,7 @@ namespace Event_Management.Extensions
 
             // background services
             services.AddHostedService<EventStatusUpdaterService>();
+            services.AddHostedService<PromoCodeResetService>();
         }
     }
 }

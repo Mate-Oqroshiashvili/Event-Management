@@ -10,8 +10,8 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
 {
     public class ParticipantRepository : IParticipantRepository
     {
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
+        private readonly DataContext _context; // Database context for accessing the database
+        private readonly IMapper _mapper; // AutoMapper for mapping between DTOs and entities
 
         public ParticipantRepository(DataContext context, IMapper mapper)
         {
@@ -19,6 +19,8 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Retrieves all participants from the database.
         public async Task<IEnumerable<ParticipantDto>> GetParticipantsAsync()
         {
             var participants = await _context.Participants
@@ -33,6 +35,8 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
             return participantDtos;
         }
 
+        /// <summary>
+        /// Retrieves a participant by its ID.
         public async Task<ParticipantDto> GetParticipantByIdAsync(int id)
         {
             var participant = await _context.Participants
@@ -47,6 +51,8 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
             return participantDto;
         }
 
+        /// <summary>
+        /// Retrieves participants associated with a specific user ID.
         public async Task<IEnumerable<ParticipantDto>> GetParticipantsByUserIdAsync(int id)
         {
             var participants = await _context.Participants
@@ -62,6 +68,8 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
             return participantDtos;
         }
 
+        /// <summary>
+        /// Adds a new participant to the database.
         public async Task<ParticipantDto> AddParticipantAsync(ParticipantCreateDto participantCreateDto)
         {
             try
@@ -107,6 +115,8 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Updates an existing participant in the database.
         public async Task<bool> UpdateParticipantAsync(int id, ParticipantUpdateDto participantUpdateDto)
         {
             var existingParticipant = await _context.Participants.FindAsync(id);
@@ -118,7 +128,8 @@ namespace Event_Management.Repositories.ParticipantRepositoryFolder
             return true;
         }
 
-        // refund logic
+        /// <summary>
+        /// Deletes a participant by its ID and handles the refund process.
         public async Task<bool> DeleteParticipantAsync(int participantId, int purchaseId)
         {
             var participant = await _context.Participants

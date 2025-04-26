@@ -13,10 +13,11 @@ namespace Event_Management.Repositories.AuthRepositoryFolder
     public class AuthRepository : IAuthRepository
     {
 
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
-        private readonly ITokenRepository _tokenRepository;
-        private readonly IUserRepository _userRepository;
+        private readonly DataContext _context; // Database context for accessing the database
+        private readonly IMapper _mapper; // AutoMapper instance for mapping between DTOs and entities
+        private readonly ITokenRepository _tokenRepository; // Token repository for generating JWT tokens
+        private readonly IUserRepository _userRepository; // User repository for accessing user-related data
+
         public AuthRepository(DataContext context, IMapper mapper, ITokenRepository tokenRepository, IUserRepository user)
         {
             _context = context;
@@ -25,6 +26,8 @@ namespace Event_Management.Repositories.AuthRepositoryFolder
             _userRepository = user;
         }
 
+        /// <summary>
+        /// Registers a new user in the system.
         public async Task<UserDto> Registration(UserCreateDto registerUserDto)
         {
             var existingUser = await _userRepository.GetUserByEmailAsync(registerUserDto.Email);
@@ -39,6 +42,8 @@ namespace Event_Management.Repositories.AuthRepositoryFolder
             user.Role = Role.BASIC;
             user.UserType = UserType.BASIC;
             user.PasswordHash = passwordHash;
+            user.PromoCodeIsClaimable = true;
+            user.LastPromoClaimedAt = null;
 
             await _userRepository.AddUserAsync(user);
 
@@ -47,6 +52,8 @@ namespace Event_Management.Repositories.AuthRepositoryFolder
             return userDto;
         }
 
+        /// <summary>
+        /// Authorizes a user by validating their credentials and generating a JWT token.
         public async Task<string> Authorization(LoginDto logInDto)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == logInDto.Email) ?? throw new UnauthorizedAccessException("User not found");

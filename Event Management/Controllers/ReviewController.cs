@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Event_Management.Controllers
 {
-    [Authorize]
+    [Authorize] // This attribute ensures that all actions in this controller require authorization.
     [Route("api/[controller]")]
     [ApiController]
     public class ReviewController : ControllerBase
     {
-        private readonly IReviewRepository _reviewRepository;
+        private readonly IReviewRepository _reviewRepository; // This is the repository that will handle the data access for reviews.
 
         public ReviewController(IReviewRepository reviewRepository)
         {

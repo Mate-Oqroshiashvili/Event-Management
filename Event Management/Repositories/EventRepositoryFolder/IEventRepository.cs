@@ -6,21 +6,21 @@ namespace Event_Management.Repositories.EventRepositoryFolder
 {
     public interface IEventRepository
     {
-        Task<IEnumerable<EventDto>> GetPublishedEventsAsync();
-        Task<IEnumerable<EventDto>> GetDraftedEventsAsync();
-        Task<IEnumerable<EventDto>> GetCompletedEventsAsync();
-        Task<IEnumerable<EventDto>> GetDeletedEventsAsync();
-        Task<EventDto> GetEventByIdAsync(int id);
-        Task<IEnumerable<EventDto>> GetEventBySearchtermAsync(string searchTerm);
-        Task<IEnumerable<EventDto>> GetEventsByOrganizerIdAsync(int organizerId);
-        Task<IEnumerable<EventDto>> GetEventsByLocationIdAsync(int locationId);
-        Task<EventAnalyticsDto> GetEventAnalyticsAsync(int organizerId, int eventId);
-        Task<EventDto> AddEventAsync(EventCreateDto eventCreateDto);
-        Task<UserDto> AddSpeakerOrArtistOnEventAsync(int eventId, int userId);
-        Task<string> RemoveSpeakerOrArtistFromEventAsync(int eventId, int userId);
-        Task<bool> UpdateEventAsync(int id, EventUpdateDto eventUpdateDto);
-        Task<bool> RescheduleEventAsync(int id, RescheduleEventDto rescheduleEventDto);
-        Task<bool> PublishTheEvent(int eventId);
-        Task<bool> DeleteEventAsync(int id);
+        Task<IEnumerable<EventDto>> GetPublishedEventsAsync(); // Retrieves all published events
+        Task<IEnumerable<EventDto>> GetDraftedEventsAsync(); // Retrieves all drafted events
+        Task<IEnumerable<EventDto>> GetCompletedEventsAsync(); // Retrieves all completed events
+        Task<IEnumerable<EventDto>> GetDeletedEventsAsync(); // Retrieves all deleted events
+        Task<EventDto> GetEventByIdAsync(int id); // Retrieves an event by its ID
+        Task<IEnumerable<EventDto>> GetEventBySearchtermAsync(string searchTerm); // Retrieves events by search term
+        Task<IEnumerable<EventDto>> GetEventsByOrganizerIdAsync(int organizerId); // Retrieves events by organizer ID
+        Task<IEnumerable<EventDto>> GetEventsByLocationIdAsync(int locationId); // Retrieves events by location ID
+        Task<EventAnalyticsDto> GetEventAnalyticsAsync(int organizerId, int eventId); // Retrieves event analytics by organizer ID and event ID
+        Task<EventDto> AddEventAsync(EventCreateDto eventCreateDto); // Adds a new event
+        Task<UserDto> AddSpeakerOrArtistOnEventAsync(int eventId, int userId); // Adds a speaker or artist to an event
+        Task<string> RemoveSpeakerOrArtistFromEventAsync(int eventId, int userId); // Removes a speaker or artist from an event
+        Task<bool> UpdateEventAsync(int id, EventUpdateDto eventUpdateDto); // Updates an existing event
+        Task<bool> RescheduleEventAsync(int id, RescheduleEventDto rescheduleEventDto); // Reschedules an event
+        Task<bool> PublishTheEvent(int eventId); // Publishes an event
+        Task<bool> DeleteEventAsync(int id); // Deletes an event by its ID
     }
 }

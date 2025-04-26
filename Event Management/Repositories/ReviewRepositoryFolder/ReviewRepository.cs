@@ -10,8 +10,8 @@ namespace Event_Management.Repositories.ReviewRepositoryFolder
 {
     public class ReviewRepository : IReviewRepository
     {
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
+        private readonly DataContext _context; // Database context for accessing the database
+        private readonly IMapper _mapper; // AutoMapper for mapping between DTOs and entities
 
         public ReviewRepository(DataContext context, IMapper mapper)
         {
@@ -19,6 +19,8 @@ namespace Event_Management.Repositories.ReviewRepositoryFolder
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Retrieves all reviews from the database.
         public async Task<IEnumerable<ReviewDto>> GetReviewsAsync()
         {
             try
@@ -38,6 +40,8 @@ namespace Event_Management.Repositories.ReviewRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Retrieves a review by its ID.
         public async Task<ReviewDto> GetReviewByIdAsync(int id)
         {
             try
@@ -58,6 +62,8 @@ namespace Event_Management.Repositories.ReviewRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Retrieves reviews associated with a specific event ID.
         public async Task<IEnumerable<ReviewDto>> GetReviewsByEventIdAsync(int eventId)
         {
             try
@@ -78,6 +84,8 @@ namespace Event_Management.Repositories.ReviewRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Retrieves reviews associated with a specific user ID.
         public async Task<IEnumerable<ReviewDto>> GetReviewsByUserIdAsync(int userId)
         {
             try
@@ -98,6 +106,8 @@ namespace Event_Management.Repositories.ReviewRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Adds a new review to the database.
         public async Task<ReviewDto> AddReviewAsync(ReviewCreateDto reviewCreateDto)
         {
             try
@@ -126,6 +136,8 @@ namespace Event_Management.Repositories.ReviewRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Updates an existing review in the database.
         public async Task<bool> UpdateReviewAsync(int reviewId, int userId, ReviewUpdateDto reviewUpdateDto)
         {
             var existingReview = await _context.Reviews.FindAsync(reviewId);
@@ -140,6 +152,8 @@ namespace Event_Management.Repositories.ReviewRepositoryFolder
             return true;
         }
 
+        /// <summary>
+        /// Deletes a review by its ID.
         public async Task<bool> DeleteReviewAsync(int reviewId, int userId)
         {
             var review = await _context.Reviews.FindAsync(reviewId);

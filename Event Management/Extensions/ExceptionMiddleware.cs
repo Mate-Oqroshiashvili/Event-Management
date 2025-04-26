@@ -6,8 +6,8 @@ namespace Event_Management.Extensions
 {
     public class ExceptionMiddleware
     {
-        private readonly RequestDelegate _next;
-        private readonly ILogger<ExceptionMiddleware> _logger;
+        private readonly RequestDelegate _next; // Delegate to the next middleware in the pipeline
+        private readonly ILogger<ExceptionMiddleware> _logger; // Logger for logging exceptions
 
         public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
         {
@@ -15,7 +15,7 @@ namespace Event_Management.Extensions
             _logger = logger;
         }
 
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext context) // Method to invoke the middleware
         {
             try
             {
@@ -29,7 +29,7 @@ namespace Event_Management.Extensions
             }
         }
 
-        private async Task HandleExceptionAsync(HttpContext context, Exception ex)
+        private async Task HandleExceptionAsync(HttpContext context, Exception ex) // Method to handle the exception
         {
             context.Response.ContentType = "application/json";
 

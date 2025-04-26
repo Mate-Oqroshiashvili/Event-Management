@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Event_Management.Controllers
 {
-    [Authorize]
+    [Authorize] // This attribute ensures that all actions in this controller require authorization.
     [Route("api/[controller]")]
     [ApiController]
     public class TicketController : ControllerBase
     {
-        private readonly ITicketRepository _ticketRepository;
+        private readonly ITicketRepository _ticketRepository; // This is the repository that will handle the data access for tickets.
 
         public TicketController(ITicketRepository ticketRepository)
         {

@@ -14,9 +14,9 @@ namespace Event_Management.Repositories.CodeRepositoryFolder
 {
     public class CodeRepository : ICodeRepository
     {
-        private readonly DataContext _context;
-        private readonly IConfiguration _configuration;
-        private readonly IMemoryCache _cache;
+        private readonly DataContext _context; // Database context for accessing the database
+        private readonly IConfiguration _configuration; // Configuration for accessing app settings
+        private readonly IMemoryCache _cache; // Memory cache for storing temporary data
 
         public CodeRepository(DataContext dataContext, IConfiguration configuration, IMemoryCache cache)
         {
@@ -25,6 +25,8 @@ namespace Event_Management.Repositories.CodeRepositoryFolder
             _cache = cache;
         }
 
+        /// <summary>
+        /// Sends an email with the specified text to the given email address.
         public async Task<string> SendToEmail(string email, string text)
         {
             try
@@ -64,6 +66,8 @@ namespace Event_Management.Repositories.CodeRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Sends an SMS with the specified text to the given phone number using Twilio.
         public async Task<string> SendToPhone(string phone, string text)
         {
             string accountSid = _configuration["Twilio:AccountSID"]!;
@@ -79,6 +83,8 @@ namespace Event_Management.Repositories.CodeRepositoryFolder
             return "SMS Code Sent successfully";
         }
 
+        /// <summary>
+        /// Sends a ticket to the specified email address with the QR code attached.
         public async Task<string> SendTicketToEmail(string email, TicketDto ticket)
         {
             try
@@ -137,6 +143,8 @@ namespace Event_Management.Repositories.CodeRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Sends an email notification to the specified email address with the given subject and body.
         private async Task SendEmailToNotifyAsync(string email, string subject, string body)
         {
             try
@@ -174,6 +182,8 @@ namespace Event_Management.Repositories.CodeRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Sends an event cancellation notification to the specified email address.
         public async Task SendEventCancellationNotification(string email, string eventTitle)
         {
             string subject = "Event Cancellation Notice";
@@ -182,6 +192,8 @@ namespace Event_Management.Repositories.CodeRepositoryFolder
             await SendEmailToNotifyAsync(email, subject, body);
         }
 
+        /// <summary>
+        /// Sends an event reschedule notification to the specified email address.
         public async Task SendEventRescheduleNotification(string email, string eventTitle, DateTime newDate)
         {
             string subject = "Event Reschedule Notice";
@@ -190,6 +202,8 @@ namespace Event_Management.Repositories.CodeRepositoryFolder
             await SendEmailToNotifyAsync(email, subject, body);
         }
 
+        /// <summary>
+        /// Sends verification codes to the organizer's email and phone number.
         public async Task<string> SendCodes(int orgnizerId)
         {
             try
@@ -220,6 +234,8 @@ namespace Event_Management.Repositories.CodeRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Sends verification codes to the specified email and phone number.
         public async Task<bool> SendCodes(string email, string phoneNumber)
         {
             var errorMessages = new List<string>();
@@ -253,11 +269,15 @@ namespace Event_Management.Repositories.CodeRepositoryFolder
             return true;
         }
 
+        /// <summary>
+        /// Retrieves the verification codes from the cache for the specified email address.
         public string GetCodes(string email)
         {
             return _cache.TryGetValue(email, out string? codes) ? codes! : string.Empty;
         }
 
+        /// <summary>
+        /// Validates the email address format.
         private bool IsValidEmail(string email)
         {
             try

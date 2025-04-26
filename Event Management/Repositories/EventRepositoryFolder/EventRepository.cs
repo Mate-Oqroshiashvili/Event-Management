@@ -14,10 +14,10 @@ namespace Event_Management.Repositories.EventRepositoryFolder
 {
     public class EventRepository : IEventRepository
     {
-        private readonly DataContext _context;
-        private readonly ICodeRepository _codeRepository;
-        private readonly IImageRepository _imageRepository;
-        private readonly IMapper _mapper;
+        private readonly DataContext _context; // Database context for accessing the database
+        private readonly ICodeRepository _codeRepository; // Code repository for handling promo codes
+        private readonly IImageRepository _imageRepository; // Image repository for handling image uploads
+        private readonly IMapper _mapper; // AutoMapper instance for mapping between DTOs and entities
 
         public EventRepository(DataContext context, ICodeRepository codeRepository, IImageRepository imageRepository, IMapper mapper)
         {
@@ -27,23 +27,18 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Retrieves all published events from the database.
         public async Task<IEnumerable<EventDto>> GetPublishedEventsAsync()
         {
             try
             {
                 var events = await _context.Events
                     .Where(x => x.Status == EventStatus.PUBLISHED)
-                    .Include(x => x.Participants)
-                    .Include(x => x.Tickets)
-                    .Include(e => e.Location)
-                    .Include(x => x.Organizer)
-                        .ThenInclude(x => x.User)
-                    .Include(x => x.SpeakersAndArtists)
-                    .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
                         .ThenInclude(x => x.User)
-                    .Include(x => x.Comments)
-                        .ThenInclude(x => x.User)
+                    .Include(x => x.Tickets)
+                        .ThenInclude(x => x.Purchases)
                     .ToListAsync() ?? throw new NotFoundException("Events not found!");
 
                 var eventDtos = _mapper.Map<IEnumerable<EventDto>>(events);
@@ -56,22 +51,17 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Retrieves all drafted events from the database.
         public async Task<IEnumerable<EventDto>> GetDraftedEventsAsync()
         {
             try
             {
                 var events = await _context.Events
                     .Where(x => x.Status == EventStatus.DRAFT)
-                    .Include(x => x.Participants)
                     .Include(x => x.Tickets)
-                    .Include(e => e.Location)
-                    .Include(x => x.Organizer)
-                        .ThenInclude(x => x.User)
                     .Include(x => x.SpeakersAndArtists)
-                    .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
-                        .ThenInclude(x => x.User)
-                    .Include(x => x.Comments)
                         .ThenInclude(x => x.User)
                     .ToListAsync() ?? throw new NotFoundException("Events not found!");
 
@@ -85,22 +75,15 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Retrieves all completed events from the database.
         public async Task<IEnumerable<EventDto>> GetCompletedEventsAsync()
         {
             try
             {
                 var events = await _context.Events
                     .Where(x => x.Status == EventStatus.COMPLETED)
-                    .Include(x => x.Participants)
-                    .Include(x => x.Tickets)
-                    .Include(e => e.Location)
-                    .Include(x => x.Organizer)
-                        .ThenInclude(x => x.User)
-                    .Include(x => x.SpeakersAndArtists)
-                    .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
-                        .ThenInclude(x => x.User)
-                    .Include(x => x.Comments)
                         .ThenInclude(x => x.User)
                     .ToListAsync() ?? throw new NotFoundException("Events not found!");
 
@@ -114,22 +97,16 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Retrieves all deleted events from the database.
         public async Task<IEnumerable<EventDto>> GetDeletedEventsAsync()
         {
             try
             {
                 var events = await _context.Events
                     .Where(x => x.Status == EventStatus.DELETED)
-                    .Include(x => x.Participants)
                     .Include(x => x.Tickets)
-                    .Include(e => e.Location)
-                    .Include(x => x.Organizer)
-                        .ThenInclude(x => x.User)
-                    .Include(x => x.SpeakersAndArtists)
-                    .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
-                        .ThenInclude(x => x.User)
-                    .Include(x => x.Comments)
                         .ThenInclude(x => x.User)
                     .ToListAsync() ?? throw new NotFoundException("Events not found!");
 
@@ -143,6 +120,8 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Retrieves an event by its ID from the database.
         public async Task<EventDto> GetEventByIdAsync(int id)
         {
             try
@@ -173,6 +152,8 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Retrieves events by a search term from the database.
         public async Task<IEnumerable<EventDto>> GetEventBySearchtermAsync(string searchTerm)
         {
             try
@@ -204,6 +185,8 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Retrieves events by organizer ID from the database.
         public async Task<IEnumerable<EventDto>> GetEventsByOrganizerIdAsync(int organizerId)
         {
             try
@@ -213,16 +196,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
 
                 var events = await _context.Events
                     .Where(e => e.OrganizerId == organizerId)
-                    .Include(x => x.Participants)
-                    .Include(x => x.Tickets)
-                    .Include(e => e.Location)
-                    .Include(x => x.Organizer)
-                        .ThenInclude(x => x.User)
-                    .Include(x => x.SpeakersAndArtists)
-                    .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
-                        .ThenInclude(x => x.User)
-                    .Include(x => x.Comments)
                         .ThenInclude(x => x.User)
                     .ToListAsync() ?? throw new NotFoundException("Organizer does not have any events planed.");
 
@@ -236,6 +210,8 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Retrieves events by location ID from the database.
         public async Task<IEnumerable<EventDto>> GetEventsByLocationIdAsync(int locationId)
         {
             try
@@ -245,16 +221,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
 
                 var events = await _context.Events
                     .Where(e => e.LocationId == locationId)
-                    .Include(x => x.Participants)
-                    .Include(x => x.Tickets)
-                    .Include(e => e.Location)
-                    .Include(x => x.Organizer)
-                        .ThenInclude(x => x.User)
-                    .Include(x => x.SpeakersAndArtists)
-                    .Include(x => x.PromoCodes)
                     .Include(x => x.Reviews)
-                        .ThenInclude(x => x.User)
-                    .Include(x => x.Comments)
                         .ThenInclude(x => x.User)
                     .ToListAsync() ?? throw new NotFoundException("Locations does not have any events related.");
 
@@ -268,6 +235,8 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Retrieves events by user ID from the database.
         public async Task<EventAnalyticsDto> GetEventAnalyticsAsync(int organizerId, int eventId)
         {
             var eventData = await _context.Events
@@ -345,7 +314,8 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             return eventData;
         }
 
-
+        /// <summary>
+        /// Adds a new event to the database.
         public async Task<EventDto> AddEventAsync(EventCreateDto eventCreateDto)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -367,6 +337,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                     .FirstOrDefaultAsync(x => x.Id == @event.LocationId)
                     ?? throw new NotFoundException("Event location not found!");
 
+                // Check if the organizer is verified
                 if (!@event.Organizer.IsVerified)
                     throw new BadRequestException("Organizer is not verified!");
 
@@ -402,19 +373,25 @@ namespace Event_Management.Repositories.EventRepositoryFolder
                     @event.Location.Events.Add(@event);
                 }
 
+                // Check if the event capacity is valid
                 if (@event.Capacity <= 0)
                     throw new BadRequestException("Event capacity must be greater than zero!");
 
+                // Check if the event capacity exceeds the location's maximum capacity
                 if (@event.Capacity > @event.Location.RemainingCapacity)
                     throw new BadRequestException("Event capacity exceeds location’s maximum capacity!");
 
+                // Update location's remaining capacity and booked staff
                 @event.Location.RemainingCapacity -= @event.Capacity;
                 var ratio = @event.Capacity == 0 ? 1 : (double)@event.Location.MaxCapacity / @event.Capacity;
                 @event.BookedStaff = (int)Math.Floor((@event.Location.AvailableStaff + @event.Location.BookedStaff) / ratio);
                 @event.Location.AvailableStaff -= @event.BookedStaff;
                 @event.Location.BookedStaff += @event.BookedStaff;
+
+                // Set the event status to DRAFT
                 @event.Status = EventStatus.DRAFT;
 
+                // Add the event to the database
                 await _context.Events.AddAsync(@event);
                 await _context.SaveChangesAsync();
 
@@ -432,6 +409,8 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Adds a speaker or artist to an event.
         public async Task<UserDto> AddSpeakerOrArtistOnEventAsync(int eventId, int userId)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -462,6 +441,8 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Removes a speaker or artist from an event.
         public async Task<string> RemoveSpeakerOrArtistFromEventAsync(int eventId, int userId)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -487,6 +468,8 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Updates an existing event in the database.
         public async Task<bool> UpdateEventAsync(int id, EventUpdateDto eventUpdateDto)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -533,6 +516,8 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Reschedules an existing event in the database.
         public async Task<bool> RescheduleEventAsync(int id, RescheduleEventDto rescheduleEventDto)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -636,6 +621,8 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Publishes an event in the database.
         public async Task<bool> PublishTheEvent(int eventId)
         {
             try
@@ -682,6 +669,8 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Deletes an event from the database.
         public async Task<bool> DeleteEventAsync(int id)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();

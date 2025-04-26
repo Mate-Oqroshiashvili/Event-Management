@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Event_Management.Controllers
 {
-    [Authorize]
+    [Authorize] // This attribute ensures that all actions in this controller require authorization.
     [Route("api/[controller]")]
     [ApiController]
     public class PromoCodeController : ControllerBase
     {
-        private readonly IPromoCodeRepository _promoCodeRepository;
+        private readonly IPromoCodeRepository _promoCodeRepository; // This is the repository that will handle the data access for promo codes.
 
         public PromoCodeController(IPromoCodeRepository promoCodeRepository)
         {
@@ -74,6 +74,21 @@ namespace Event_Management.Controllers
                 var promoCodes = await _promoCodeRepository.GetPromoCodesByEventIdAsync(eventId);
 
                 return promoCodes == null ? throw new NotFoundException("Promo codes not found!") : Ok(new { promoCodes });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        [HttpGet("get-random-promo-code/{userId}")]
+        public async Task<ActionResult<PromoCodeDto>> GetRandomPromoCode(int userId)
+        {
+            try
+            {
+                var promoCode = await _promoCodeRepository.GetRandomPromoCodeAsync(userId);
+
+                return promoCode == null ? throw new NotFoundException("Promo code not found!") : Ok(new { promoCode });
             }
             catch (Exception ex)
             {

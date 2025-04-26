@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Event_Management.Controllers
 {
-    [Authorize]
+    [Authorize] // This attribute ensures that all actions in this controller require authorization.
     [Route("api/[controller]")]
     [ApiController]
     public class OrganizerController : ControllerBase
     {
-        private readonly IOrganizerRepository _organizerRepository;
-        private readonly ICodeRepository _codeRepository;
+        private readonly IOrganizerRepository _organizerRepository; // This is the repository that will handle the data access for organizers.
+        private readonly ICodeRepository _codeRepository; // This is the repository that will handle the data access for codes.
 
         public OrganizerController(IOrganizerRepository organizerRepository, ICodeRepository codeRepository)
         {

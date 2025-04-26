@@ -8,7 +8,6 @@ using Event_Management.Repositories.ParticipantRepositoryFolder;
 using Microsoft.EntityFrameworkCore;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using System.Net.Sockets;
 using ZXing;
 using ZXing.Common;
 using ZXing.ImageSharp;
@@ -18,9 +17,9 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
 {
     public class TicketRepository : ITicketRepository
     {
-        private readonly DataContext _context;
-        private readonly IParticipantRepository _participantRepository;
-        private readonly IMapper _mapper;
+        private readonly DataContext _context; // Database context for accessing the database
+        private readonly IParticipantRepository _participantRepository; // Repository for participant-related operations
+        private readonly IMapper _mapper; // AutoMapper for mapping between DTOs and entities
 
         public TicketRepository(DataContext context, IParticipantRepository participantRepository, IMapper mapper)
         {
@@ -29,6 +28,8 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Retrieves all tickets from the database.
         public async Task<IEnumerable<TicketDto>> GetTicketsAsync()
         {
             var tickets = await _context.Tickets
@@ -46,6 +47,8 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
             return ticketDtos;
         }
 
+        /// <summary>
+        /// Retrieves tickets associated with a specific event ID.
         public async Task<IEnumerable<TicketDto>> GetTicketsByEventIdAsync(int eventId)
         {
             var tickets = await _context.Tickets
@@ -61,6 +64,8 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
             return ticketDtos;
         }
 
+        /// <summary>
+        /// Retrieves tickets associated with a specific user ID.
         public async Task<IEnumerable<TicketDto>> GetTicketsByUserIdAsync(int userId)
         {
             try
@@ -84,6 +89,8 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Retrieves a ticket by its ID.
         public async Task<TicketDto> GetTicketByIdAsync(int id)
         {
             try
@@ -99,12 +106,14 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
 
                 return ticketDto;
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 throw new BadRequestException(ex.Message, ex.InnerException);
             }
         }
 
+        /// <summary>
+        /// Adds a new ticket to the database.
         public async Task<TicketDto> AddTicketAsync(TicketCreateDto ticketCreateDto)
         {
             if (ticketCreateDto == null)
@@ -130,19 +139,21 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
 
             int threshold = 0;
 
-            foreach(var item in ticket.Event.Tickets)
+            foreach (var item in ticket.Event.Tickets) // Loop through all tickets associated with the event
             {
-                threshold += item.Quantity;
+                threshold += item.Quantity; // Add the quantity of each ticket to the threshold
                 var purchase = item.Purchases.FirstOrDefault(x => x.Participants.Count != 0);
-                if(purchase != null)
+
+                // Check if there are any purchases with participants
+                if (purchase != null)
                 {
-                    threshold += purchase.Participants.Count;
+                    threshold += purchase.Participants.Count; // Add the number of participants in the purchase to the threshold
                 }
             }
 
             if (threshold >= ticket.Event.Capacity)
                 throw new BadRequestException("Tickets capacity exceeds the event's maximum capacity!");
-            
+
             if ((threshold + ticketCreateDto.Quantity) > ticket.Event.Capacity)
                 throw new BadRequestException("Tickets capacity exceeds the event's maximum capacity!");
 
@@ -150,22 +161,23 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
                 ticket.Event.StartDate > DateTime.UtcNow)
                 throw new BadRequestException("You cannot add new tickets within one hour before the event starts.");
 
-            ticket.QRCodeData = "PENDING";
-            ticket.QRCodeImageUrl = "PENDING";
+            ticket.QRCodeData = "PENDING"; // Placeholder for QR code data
+            ticket.QRCodeImageUrl = "PENDING"; // Placeholder for QR code image URL
 
             if (ticket.Quantity > ticket.Event.Capacity)
                 throw new BadRequestException($"Ticket quantity should not exceed the event's max capacity of {ticket.Event.Capacity}.");
 
             var existingTicket = ticket.Event.Tickets.FirstOrDefault(
                 x => x.EventId == ticket.EventId && x.Price == ticket.Price && x.Type == ticket.Type
-            );
+            ); // Check if a ticket with the same event, price, and type already exists
 
             if (existingTicket != null)
             {
-                existingTicket.Quantity += ticket.Quantity;
+                existingTicket.Quantity += ticket.Quantity; // Increase the quantity of the existing ticket
 
-                if (existingTicket.Status == TicketStatus.SOLD_OUT)
-                    existingTicket.Status = TicketStatus.AVAILABLE;
+                // Check if the existing ticket is sold out and update its status
+                if (existingTicket.Status == TicketStatus.SOLD_OUT) 
+                    existingTicket.Status = TicketStatus.AVAILABLE; 
 
                 ticket = existingTicket;
 
@@ -173,12 +185,13 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
             }
             else
             {
+                // Add the new ticket to the database
                 ticket.Users.Add(ticket.Event.Organizer.User);
 
                 await _context.Tickets.AddAsync(ticket);
                 await _context.SaveChangesAsync();
 
-                ticket.Status = TicketStatus.AVAILABLE;
+                ticket.Status = TicketStatus.AVAILABLE; // Set the status to available
                 ticket.ExpiryDate = ticket.Event?.EndDate
                     ?? throw new BadRequestException("Event EndDate is required.");
 
@@ -188,6 +201,8 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
             return _mapper.Map<TicketDto>(ticket);
         }
 
+        /// <summary>
+        /// Validates a ticket using a QR code image.
         public async Task<string> ValidateTicketByQRCodeImage(IFormFile uploadedQrCodeImage)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -210,6 +225,7 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
                     return "Invalid QR code format.";
                 }
 
+                // Extract the relevant parts from the QR code data
                 int ticketId = int.Parse(qrParts[0]);
                 int eventId = int.Parse(qrParts[1]);
                 var purchaseId = int.Parse(qrParts[2]);
@@ -269,6 +285,8 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Updates an existing ticket in the database.
         public async Task<string> UpdateTicketAsync(int id, TicketUpdateDto ticketUpdateDto)
         {
             try
@@ -297,12 +315,14 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
                 await _context.SaveChangesAsync();
                 return "Ticket updated successfully!";
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 throw new BadRequestException(ex.Message, ex.InnerException);
             }
         }
 
+        /// <summary>
+        /// Deletes a ticket by its ID.
         public async Task<string> DeleteTicketAsync(int id)
         {
             try
@@ -313,13 +333,14 @@ namespace Event_Management.Repositories.TicketRepositoryFolder
                 await _context.SaveChangesAsync();
                 return "Ticket deleted successfully!";
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 throw new BadRequestException(ex.Message, ex.InnerException);
             }
         }
 
-        // Method to decode QR code from an image
+        /// <summary>
+        /// Decodes a QR code from an image file.
         public string DecodeQRCode(IFormFile file)
         {
             try

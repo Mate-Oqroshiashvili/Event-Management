@@ -10,6 +10,7 @@ namespace Event_Management.Extensions
     {
         public static void AddAuthServices(this IServiceCollection services, IConfiguration configuration)
         {
+            // Configure JWT authentication
             var key = Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!);
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(option =>
@@ -26,6 +27,7 @@ namespace Event_Management.Extensions
                     };
                 });
 
+            // Configure authorization policies
             services.AddSwaggerGen(option =>
             {
                 option.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme()
@@ -57,6 +59,7 @@ namespace Event_Management.Extensions
                 });
             });
 
+            // Configure Web API with Newtonsoft.Json
             services.AddControllers()
                 .AddNewtonsoftJson(options =>
                 {

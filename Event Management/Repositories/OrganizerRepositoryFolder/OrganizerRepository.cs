@@ -10,9 +10,9 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
 {
     public class OrganizerRepository : IOrganizerRepository
     {
-        private readonly DataContext _context;
-        private readonly IImageRepository _imageRepository;
-        private readonly IMapper _mapper;
+        private readonly DataContext _context; // Database context for accessing the database
+        private readonly IImageRepository _imageRepository; // Image repository for handling image uploads
+        private readonly IMapper _mapper; // AutoMapper for mapping between DTOs and entities
 
         public OrganizerRepository(DataContext context, IImageRepository imageRepository, IMapper mapper)
         {
@@ -21,6 +21,8 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Retrieves all organizers from the database.
         public async Task<IEnumerable<OrganizerDto>> GetOrganizersAsync()
         {
             var organizers = await _context.Organizers
@@ -33,6 +35,8 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
             return organizerDtos;
         }
 
+        /// <summary>
+        /// Retrieves an organizer by its ID.
         public async Task<OrganizerDto> GetOrganizerByIdAsync(int id)
         {
             var organizer = await _context.Organizers
@@ -45,6 +49,8 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
             return organizerDto;
         }
 
+        /// <summary>
+        /// Retrieves an organizer by its user ID.
         public async Task<OrganizerDto> GetOrganizerByUserIdAsync(int userId)
         {
             var organizer = await _context.Organizers
@@ -58,6 +64,8 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
             return organizerDto;
         }
 
+        /// <summary>
+        /// Retrieves organizers associated with a specific location ID.
         public async Task<IEnumerable<OrganizerDto>> GetOrganizersByLocationIdAsync(int locationId)
         {
             var organizers = await _context.Organizers
@@ -72,8 +80,8 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
             return organizerDtos;
         }
 
-
-
+        /// <summary>
+        /// Adds a new organizer to the database.
         public async Task<OrganizerDto> AddOrganizerAsync(OrganizerCreateDto organizerCreateDto)
         {
             try
@@ -116,6 +124,8 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Adds an organizer to a location.
         public async Task<string> AddOrganizerOnLocationAsync(int organizerId, int locationId)
         {
             try
@@ -151,6 +161,8 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Removes an organizer from a location.
         public async Task<string> RemoveOrganizerFromLocationAsync(int organizerId, int locationId)
         {
             try
@@ -185,6 +197,8 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Updates an existing organizer's details.
         public async Task<bool> UpdateOrganizerAsync(int id, OrganizerUpdateDto organizerUpdateDto)
         {
             var existingOrganizer = await _context.Organizers.FirstOrDefaultAsync(o => o.Id == id);
@@ -201,6 +215,8 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
             return true;
         }
 
+        /// <summary>
+        /// Verifies an organizer.
         public async Task<bool> VerifyOrganizerAsync(int id)
         {
             var existingOrganizer = await _context.Organizers.FindAsync(id);
@@ -212,6 +228,8 @@ namespace Event_Management.Repositories.OrganizerRepositoryFolder
             return true;
         }
 
+        /// <summary>
+        /// Deletes an organizer by its ID.
         public async Task<bool> DeleteOrganizerAsync(int id)
         {
             var organizer = await _context.Organizers.FindAsync(id);

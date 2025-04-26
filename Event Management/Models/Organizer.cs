@@ -13,8 +13,8 @@
         public string Country { get; set; }  // Country (Optional)
         public bool IsVerified { get; set; } = false;  // Flag to indicate if the organizer is verified
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;  // Timestamp when the organizer was created
-        public int UserId { get; set; }
-        public User User { get; set; }
+        public int UserId { get; set; } // User ID of the organizer (if applicable)
+        public User User { get; set; } // User associated with the organizer (if applicable)
 
         // Navigation Property
         public List<Event> Events { get; set; } = new List<Event>();  // List of events organized by this entity

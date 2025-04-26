@@ -13,11 +13,11 @@ namespace Event_Management.Repositories.PurchaseRepositoryFolder
 {
     public class PurchaseRepository : IPurchaseRepository
     {
-        private readonly DataContext _context;
-        private readonly ICodeRepository _codeRepository;
-        private readonly IMapper _mapper;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IWebHostEnvironment _environment;
+        private readonly DataContext _context; // Database context for accessing the database
+        private readonly ICodeRepository _codeRepository; // Code repository for handling email sending
+        private readonly IMapper _mapper; // AutoMapper for mapping between DTOs and entities
+        private readonly IHttpContextAccessor _httpContextAccessor; // HTTP context accessor for getting request details
+        private readonly IWebHostEnvironment _environment; // Web host environment for file paths
 
         public PurchaseRepository(DataContext context, ICodeRepository codeRepository, IMapper mapper, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment webHostEnvironment)
         {
@@ -28,6 +28,8 @@ namespace Event_Management.Repositories.PurchaseRepositoryFolder
             _environment = webHostEnvironment;
         }
 
+        /// <summary>
+        /// Retrieves all purchases from the database.
         public async Task<IEnumerable<PurchaseDto>> GetPurchasesAsync()
         {
             var purchases = await _context.Purchases
@@ -40,6 +42,8 @@ namespace Event_Management.Repositories.PurchaseRepositoryFolder
             return purchaseDtos;
         }
 
+        /// <summary>
+        /// Retrieves a purchase by its ID.
         public async Task<PurchaseDto> GetPurchaseByIdAsync(int id)
         {
             var purchase = await _context.Purchases
@@ -52,6 +56,8 @@ namespace Event_Management.Repositories.PurchaseRepositoryFolder
             return purchaseDto;
         }
 
+        /// <summary>
+        /// Retrieves purchases associated with a specific user ID.
         public async Task<IEnumerable<PurchaseDto>> GetPurchasesByUserIdAsync(int userId)
         {
             var purchases = await _context.Purchases
@@ -65,6 +71,8 @@ namespace Event_Management.Repositories.PurchaseRepositoryFolder
             return purchaseDtos;
         }
 
+        /// <summary>
+        /// Adds a new purchase to the database.
         public async Task<string> AddPurchaseAsync(PurchaseCreateDto purchaseCreateDto)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -199,7 +207,7 @@ namespace Event_Management.Repositories.PurchaseRepositoryFolder
                             TicketId = ticket.Id,
                             PurchaseId = purchase.Id,
                             RegistrationDate = DateTime.UtcNow,
-                            Attendance = false
+                            Attendance = false,
                         };
 
                         // First, save the participant to the database to generate the Id
@@ -246,6 +254,8 @@ namespace Event_Management.Repositories.PurchaseRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Updates an existing purchase in the database.
         public async Task<bool> UpdatePurchaseAsync(int id, PurchaseUpdateDto purchaseUpdateDto)
         {
             var existingPurchase = await _context.Purchases.FirstOrDefaultAsync(p => p.Id == id);
@@ -258,6 +268,8 @@ namespace Event_Management.Repositories.PurchaseRepositoryFolder
             return true;
         }
 
+        /// <summary>
+        /// Deletes a purchase from the database.
         public async Task<bool> DeletePurchaseAsync(int id)
         {
             var purchase = await _context.Purchases.FindAsync(id);
@@ -268,6 +280,8 @@ namespace Event_Management.Repositories.PurchaseRepositoryFolder
             return true;
         }
 
+        /// <summary>
+        /// Generates a QR code image and saves it to the server.
         private async Task<string> GenerateQRCodeImage(string qrText)
         {
             try

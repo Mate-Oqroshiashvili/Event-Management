@@ -8,17 +8,21 @@ namespace Event_Management.Repositories.JwtRepositoryFolder
 {
     public class TokenRepository : ITokenRepository
     {
-        private readonly IConfiguration _configuration;
+        private readonly IConfiguration _configuration; // Configuration object to access app settings
 
         public TokenRepository(IConfiguration configuration)
         {
             _configuration = configuration;
         }
 
+        /// <summary>
+        /// Generates a JWT token for the user.
         public string GenerateToken(User user)
         {
+            // Create a new instance of JwtSecurityTokenHandler
             var securityHandler = new JwtSecurityTokenHandler();
 
+            // Get the key from the configuration
             var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]);
 
             var tokenDescriptor = new SecurityTokenDescriptor()
@@ -40,8 +44,10 @@ namespace Event_Management.Repositories.JwtRepositoryFolder
                 Issuer = _configuration["Jwt:Issuer"]
             };
 
+            // Create the token using the security handler
             SecurityToken securityToken = securityHandler.CreateToken(tokenDescriptor);
 
+            // Write the token to a string
             string token = securityHandler.WriteToken(securityToken);
 
             return token;

@@ -5,7 +5,7 @@ namespace Event_Management.Repositories.AuthRepositoryFolder
 {
     public interface IAuthRepository
     {
-        Task<UserDto> Registration(UserCreateDto registerUserDto);
-        Task<string> Authorization(LoginDto logInDto);
+        Task<UserDto> Registration(UserCreateDto registerUserDto); // Registers a new user
+        Task<string> Authorization(LoginDto logInDto); // Authorizes a user
     }
 }

@@ -5,18 +5,18 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Event_Management.Controllers
 {
+    [Authorize] // This attribute ensures that all actions in this controller require authorization.
     [Route("api/[controller]")]
     [ApiController]
     public class ImageController : ControllerBase
     {
-        private readonly IImageRepository _imageRepository;
+        private readonly IImageRepository _imageRepository; // This is the repository that will handle the data access for images.
 
         public ImageController(IImageRepository imageRepository)
         {
             _imageRepository = imageRepository;
         }
 
-        [Authorize]
         [HttpPost("update-user-profile-picture/{userId}")]
         [Consumes("multipart/form-data")]
         public async Task<ActionResult<string>> UpdateProfilePicture(int userId, IFormFile formFile)

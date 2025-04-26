@@ -470,6 +470,9 @@ namespace Event_Management.Migrations
                     b.Property<bool>("IsLoggedIn")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime?>("LastPromoClaimedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -484,6 +487,9 @@ namespace Event_Management.Migrations
 
                     b.Property<string>("ProfilePicture")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PromoCodeIsClaimable")
+                        .HasColumnType("bit");
 
                     b.Property<int>("Role")
                         .HasColumnType("int");

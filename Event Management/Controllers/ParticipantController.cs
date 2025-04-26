@@ -1,6 +1,5 @@
 ﻿using Event_Management.Exceptions;
 using Event_Management.Models.Dtos.ParticipantDtos;
-using Event_Management.Models.Enums;
 using Event_Management.Repositories.ParticipantRepositoryFolder;
 using Event_Management.Repositories.TicketRepositoryFolder;
 using Microsoft.AspNetCore.Authorization;
@@ -8,13 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Event_Management.Controllers
 {
-    [Authorize]
+    [Authorize] // This attribute ensures that all actions in this controller require authorization.
     [Route("api/[controller]")]
     [ApiController]
     public class ParticipantController : ControllerBase
     {
-        private readonly IParticipantRepository _participantRepository;
-        private readonly ITicketRepository _ticketRepository;
+        private readonly IParticipantRepository _participantRepository; // This is the repository that will handle the data access for participants.
+        private readonly ITicketRepository _ticketRepository; // This is the repository that will handle the data access for tickets.
 
         public ParticipantController(IParticipantRepository participantRepository, ITicketRepository ticketRepository)
         {

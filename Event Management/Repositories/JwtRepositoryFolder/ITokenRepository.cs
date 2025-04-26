@@ -4,6 +4,6 @@ namespace Event_Management.Repositories.JwtRepositoryFolder
 {
     public interface ITokenRepository
     {
-        string GenerateToken(User user);
+        string GenerateToken(User user); // Generates a JWT token for the user
     }
 }

@@ -2,6 +2,9 @@
 {
     public class Descriptive
     {
+        // This class contains methods for handling image files, including generating file names, creating directories, and writing files to disk.
+
+        // It is used to manage image uploads in the application.
         public static void WriteImageInFile(string newFileName, IFormFile imageFile)
         {
             var fileStream = new FileStream(newFileName, FileMode.Create);
@@ -10,6 +13,7 @@
 
         }
 
+        // This method generates a new file name for an image based on the provided path and the uploaded file.
         public static string GenerateImageSourceWithExtention(string path, IFormFile formFile)
         {
             List<string> extentions = new List<string>() { ".jpg", ".png", "PNG", ".jpeg", ".jfif" };
@@ -24,7 +28,7 @@
             return newFileName + ext;
         }
 
-
+        // This method creates a directory for storing images if it does not already exist.
         public static string CreateImageDirectory(string contentPath, string folderName)
         {
             var path = Path.Combine(contentPath, folderName);

@@ -5,10 +5,10 @@ namespace Event_Management.Repositories.ImageRepositoryFolder
 {
     public class ImageRepository : IImageRepository
     {
-        private static IHttpContextAccessor _contextAccessor;
+        private static IHttpContextAccessor _contextAccessor; // Static field to hold the HttpContextAccessor
+        private readonly IWebHostEnvironment _enviroment; // Web host environment for accessing the content root path
+        private readonly DataContext _context; // Database context for accessing the database
 
-        private readonly IWebHostEnvironment _enviroment;
-        private readonly DataContext _context;
         public ImageRepository(IWebHostEnvironment enviroment, IHttpContextAccessor httpContextAccessor, DataContext context)
         {
             _enviroment = enviroment;
@@ -16,6 +16,8 @@ namespace Event_Management.Repositories.ImageRepositoryFolder
             _contextAccessor = httpContextAccessor;
         }
 
+        /// <summary>
+        /// Generates a source URL for the given image file.
         public async Task<string> GenerateImageSource(IFormFile imageFile)
         {
             string contentPath = _enviroment.ContentRootPath;
@@ -37,6 +39,8 @@ namespace Event_Management.Repositories.ImageRepositoryFolder
             return final;
         }
 
+        /// <summary>
+        /// Changes the profile image of a user.
         public async Task<string> ChangeUserProfileImage(int userId, IFormFile formFile)
         {
             try
@@ -57,6 +61,8 @@ namespace Event_Management.Repositories.ImageRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Changes the logo image of an organizer.
         public async Task<string> ChangeOrganizerLogoImage(int organizerId, IFormFile formFile)
         {
             try
@@ -77,6 +83,8 @@ namespace Event_Management.Repositories.ImageRepositoryFolder
             }
         }
 
+        /// <summary>
+        /// Changes the images of an event.
         public async Task<string> ChangeEventImages(int eventId, List<string> existingImages, IEnumerable<IFormFile> formFiles)
         {
             try

@@ -18,6 +18,9 @@ namespace Event_Management.Models
         public string? SmsVerificationCode { get; set; }
         public DateTime CodeExpiration { get; set; }
         public bool IsLoggedIn { get; set; } = false;
+        public bool PromoCodeIsClaimable { get; set; } = true;
+        public DateTime? LastPromoClaimedAt { get; set; }
+
 
         public Organizer? Organizer { get; set; }
 

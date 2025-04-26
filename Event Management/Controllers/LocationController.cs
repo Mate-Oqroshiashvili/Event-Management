@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Event_Management.Controllers
 {
-    [Authorize]
+    [Authorize] // This attribute ensures that all actions in this controller require authorization.
     [Route("api/[controller]")]
     [ApiController]
     public class LocationController : ControllerBase
     {
-        private readonly ILocationRepository _locationRepository;
+        private readonly ILocationRepository _locationRepository; // This is the repository that will handle the data access for locations.
 
         public LocationController(ILocationRepository locationRepository)
         {

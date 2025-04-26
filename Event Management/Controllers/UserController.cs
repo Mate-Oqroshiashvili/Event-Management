@@ -7,7 +7,6 @@ using Event_Management.Repositories.CodeRepositoryFolder;
 using Event_Management.Repositories.UserRepositoryFolder;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Event_Management.Controllers
 {
@@ -15,9 +14,9 @@ namespace Event_Management.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IAuthRepository _authRepository;
-        private readonly ICodeRepository _codeRepository;
+        private readonly IUserRepository _userRepository; // This is the repository that will handle the data access for users.
+        private readonly IAuthRepository _authRepository; // This is the repository that will handle the authentication and authorization for users.
+        private readonly ICodeRepository _codeRepository; // This is the repository that will handle the data access for codes.
 
         public UserController(IUserRepository userRepository, IAuthRepository authRepository, ICodeRepository codeRepository)
         {

@@ -46,6 +46,8 @@ namespace Event_Management.Extensions
                 options.Providers.Add<BrotliCompressionProvider>();
                 options.Providers.Add<GzipCompressionProvider>();
             });
+
+            services.AddSignalR();
         }
     }
 }

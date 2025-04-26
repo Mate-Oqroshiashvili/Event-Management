@@ -6,8 +6,8 @@ namespace Event_Management.Repositories.EventRepositoryFolder.BackgroundServices
 {
     public class EventStatusUpdaterService : BackgroundService
     {
-        private readonly IServiceScopeFactory _serviceScopeFactory;
-        private readonly ILogger<EventStatusUpdaterService> _logger;
+        private readonly IServiceScopeFactory _serviceScopeFactory; // Factory for creating service scopes
+        private readonly ILogger<EventStatusUpdaterService> _logger; // Logger for logging information and errors
 
         public EventStatusUpdaterService(IServiceScopeFactory serviceScopeFactory, ILogger<EventStatusUpdaterService> logger)
         {
@@ -15,6 +15,8 @@ namespace Event_Management.Repositories.EventRepositoryFolder.BackgroundServices
             _logger = logger;
         }
 
+        /// <summary>
+        /// Executes the background service to update event statuses.
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("EventStatusUpdaterService is running.");
@@ -23,6 +25,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder.BackgroundServices
             {
                 try
                 {
+                    // Create a new scope for the service
                     using (var scope = _serviceScopeFactory.CreateScope())
                     {
                         var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
@@ -33,8 +36,10 @@ namespace Event_Management.Repositories.EventRepositoryFolder.BackgroundServices
                             .Include(e => e.Location)
                             .ToListAsync(stoppingToken);
 
+                        // Check if there are any events to update
                         if (eventsToUpdate.Count != 0)
                         {
+                            // Update the status of the events to COMPLETED
                             foreach (var ev in eventsToUpdate)
                             {
                                 ev.Status = EventStatus.COMPLETED;
@@ -46,6 +51,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder.BackgroundServices
                                 }
                             }
 
+                            // Save the changes to the database
                             await dbContext.SaveChangesAsync(stoppingToken);
                             _logger.LogInformation($"Updated {eventsToUpdate.Count} events to COMPLETED status.");
                         }
