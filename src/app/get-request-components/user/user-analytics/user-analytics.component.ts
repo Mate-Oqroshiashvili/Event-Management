@@ -5,6 +5,7 @@ import {
 } from '../../../services/user/user.service';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
+import { UserSocketService } from '../../../services/web sockets/user-socket.service';
 
 @Component({
   selector: 'app-user-analytics',
@@ -15,6 +16,7 @@ import { ActivatedRoute } from '@angular/router';
 export class UserAnalyticsComponent implements OnInit {
   analytics!: UserAnalyticsDto;
   userId: number = 0;
+  balance: number = 0;
 
   balanceSpendingGradient = '';
   promoCodeGradient = '';
@@ -23,6 +25,7 @@ export class UserAnalyticsComponent implements OnInit {
 
   constructor(
     private analyticsService: UserService,
+    private userSocket: UserSocketService,
     private route: ActivatedRoute
   ) {}
 
@@ -34,6 +37,7 @@ export class UserAnalyticsComponent implements OnInit {
         this.analyticsService
           .getUserAnalytics(this.userId)
           .subscribe((data) => {
+            this.balance = data.totalBalance;
             this.analytics = data;
             this.setGradients();
             this.setStats();
@@ -41,6 +45,12 @@ export class UserAnalyticsComponent implements OnInit {
       } else {
         console.error('User ID not found in route parameters');
       }
+    });
+
+    this.userSocket.startConnection();
+
+    this.userSocket.balance$.subscribe((data) => {
+      this.balance = data!;
     });
   }
 

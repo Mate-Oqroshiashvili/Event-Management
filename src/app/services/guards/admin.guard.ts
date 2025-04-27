@@ -20,5 +20,6 @@ export const adminGuard: CanActivateFn = (route, state) => {
     return true;
   }
   Swal.fire('Oops!', 'Only Admin Is Allowed Here!', 'error');
+  router.navigate(['/']);
   return false;
 };

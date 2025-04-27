@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CanComponentDeactivate } from '../../services/guards/register.guard';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -16,7 +17,11 @@ export class RegisterComponent implements CanComponentDeactivate {
   response = false;
   serverErrors: any = {};
 
-  constructor(private fb: FormBuilder, private userService: UserService) {
+  constructor(
+    private fb: FormBuilder,
+    private userService: UserService,
+    private router: Router
+  ) {
     this.registerForm = this.fb.group({
       name: [''],
       email: [''],
@@ -89,6 +94,9 @@ export class RegisterComponent implements CanComponentDeactivate {
         if (err.error && err.error.errors) {
           this.serverErrors = err.error.errors;
         }
+      },
+      complete: () => {
+        this.router.navigate(['/login']);
       },
     });
   }
