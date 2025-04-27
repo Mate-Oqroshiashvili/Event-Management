@@ -31,6 +31,54 @@ namespace Event_Management.Repositories.EventRepositoryFolder
         }
 
         /// <summary>
+        /// Retrieves the most popular published events from the database.
+        public async Task<IEnumerable<EventDto>> GetMostPopularPublishedEventsAsync()
+        {
+            try
+            {
+                var events = await _context.Events
+                    .Where(x => x.Status == EventStatus.PUBLISHED && x.Tickets.Any())
+                    .Include(x => x.Reviews)
+                        .ThenInclude(x => x.User)
+                    .OrderByDescending(x => x.Tickets.Sum(t => t.Purchases.Count))
+                    .Take(3)
+                    .ToListAsync() ?? throw new NotFoundException("Popular events not found!"); ;
+
+                var eventDtos = _mapper.Map<IEnumerable<EventDto>>(events);
+
+                return eventDtos;
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the most recent published events from the database.
+        public async Task<IEnumerable<EventDto>> GetMostRecentPublishedEventsAsync()
+        {
+            try
+            {
+                var events = await _context.Events
+                    .Where(x => x.Status == EventStatus.PUBLISHED && x.StartDate != null)
+                    .Include(x => x.Reviews)
+                        .ThenInclude(x => x.User)
+                    .OrderByDescending(x => x.StartDate)
+                    .Take(3)
+                    .ToListAsync() ?? throw new NotFoundException("Recent events not found!"); ;
+
+                var eventDtos = _mapper.Map<IEnumerable<EventDto>>(events);
+
+                return eventDtos;
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+
+        /// <summary>
         /// Retrieves all published events from the database.
         public async Task<IEnumerable<EventDto>> GetPublishedEventsAsync()
         {
@@ -38,7 +86,7 @@ namespace Event_Management.Repositories.EventRepositoryFolder
             {
                 var events = await _context.Events
                     .Where(x => x.Status == EventStatus.PUBLISHED)
-                    .Include(x => x.Organizer)
+                    //.Include(x => x.Organizer)
                     .Include(x => x.Reviews)
                         .ThenInclude(x => x.User)
                     .Include(x => x.Tickets)

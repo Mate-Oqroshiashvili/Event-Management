@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
-using Event_Management.Models.Dtos.EventDtos;
 using Event_Management.Models;
-using Event_Management.Models.Dtos.LocationDtos;
-using Event_Management.Models.Dtos.OrganizerDtos;
+using Event_Management.Models.Dtos.EventDtos;
 
 namespace Event_Management.Helpers
 {

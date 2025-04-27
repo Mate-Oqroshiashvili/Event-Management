@@ -164,7 +164,7 @@ namespace Event_Management.Repositories.ReviewRepositoryFolder
             var existingReview = await _context.Reviews.FindAsync(reviewId);
             if (existingReview == null) return false;
 
-            if(existingReview.UserId == userId) 
+            if(existingReview.UserId != userId) 
                 throw new BadRequestException("You don't have permission to update the review!");
 
             _mapper.Map(reviewUpdateDto, existingReview);
@@ -186,7 +186,7 @@ namespace Event_Management.Repositories.ReviewRepositoryFolder
             var review = await _context.Reviews.FindAsync(reviewId);
             if (review == null) return false;
 
-            if (review.UserId == userId)
+            if (review.UserId != userId)
                 throw new BadRequestException("You don't have permission to delete the review!");
 
             _context.Reviews.Remove(review);

@@ -18,6 +18,36 @@ namespace Event_Management.Controllers
             _eventRepository = eventRepository;
         }
 
+        [HttpGet("get-most-popular-published-events")]
+        public async Task<ActionResult<IEnumerable<EventDto>>> GetMostPopularPublishedEvents()
+        {
+            try
+            {
+                var events = await _eventRepository.GetMostPopularPublishedEventsAsync();
+
+                return events == null ? throw new NotFoundException("Events not found!") : Ok(new { events });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+        
+        [HttpGet("get-most-recent-published-events")]
+        public async Task<ActionResult<IEnumerable<EventDto>>> GetMostRecentPublishedEvents()
+        {
+            try
+            {
+                var events = await _eventRepository.GetMostRecentPublishedEventsAsync();
+
+                return events == null ? throw new NotFoundException("Events not found!") : Ok(new { events });
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ex.Message, ex.InnerException);
+            }
+        }
+        
         [HttpGet("get-published-events")]
         public async Task<ActionResult<IEnumerable<EventDto>>> GetPublishedEvents()
         {

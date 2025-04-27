@@ -6,6 +6,8 @@ namespace Event_Management.Repositories.EventRepositoryFolder
 {
     public interface IEventRepository
     {
+        Task<IEnumerable<EventDto>> GetMostPopularPublishedEventsAsync(); // Retrieves the most popular published events
+        Task<IEnumerable<EventDto>> GetMostRecentPublishedEventsAsync(); // Retrieves the most recent published events
         Task<IEnumerable<EventDto>> GetPublishedEventsAsync(); // Retrieves all published events
         Task<IEnumerable<EventDto>> GetDraftedEventsAsync(); // Retrieves all drafted events
         Task<IEnumerable<EventDto>> GetCompletedEventsAsync(); // Retrieves all completed events
