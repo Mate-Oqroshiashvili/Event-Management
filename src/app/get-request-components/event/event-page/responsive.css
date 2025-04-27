@@ -24,7 +24,8 @@
     gap: 0px;
   }
 
-  .group img {
+  .group img,
+  .speakers-and-artists .card.custom img {
     border-radius: 8px !important;
     height: auto !important;
   }
@@ -46,7 +47,8 @@
 }
 
 @media screen and (max-width: 830px) {
-  .group {
+  .group,
+  .speakers-and-artists .cards {
     grid-template-columns: 1fr;
   }
 
@@ -64,7 +66,8 @@
     height: auto !important;
   }
 
-  .group img {
+  .group img,
+  .speakers-and-artists .card.custom img {
     border-radius: 50% !important;
     height: 120px !important;
   }
@@ -119,7 +122,8 @@
     gap: 0px;
   }
 
-  .group img {
+  .group img,
+  .speakers-and-artists .card.custom img {
     border-radius: 8px !important;
     height: auto !important;
   }
@@ -146,5 +150,9 @@
 
   .px-5 {
     padding: 6px 1rem !important;
+  }
+
+  .email {
+    overflow-wrap: anywhere !important;
   }
 }

@@ -3,11 +3,11 @@ import {
   CommentDto,
   CommentService,
 } from '../../../services/comment/comment.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-comments-user-added',
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './comments-user-added.component.html',
   styleUrl: './comments-user-added.component.css',
 })

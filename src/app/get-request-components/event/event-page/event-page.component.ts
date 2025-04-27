@@ -90,6 +90,13 @@ export class EventPageComponent implements OnInit {
     userId: 0,
     eventId: 0,
   };
+  retrievedReview: ReviewDto = {
+    id: 0,
+    starCount: 0,
+    userId: 0,
+    user: undefined,
+    eventId: 0,
+  };
   hasReviewed: boolean = false;
 
   stars = Array(5).fill(0);
@@ -119,6 +126,7 @@ export class EventPageComponent implements OnInit {
         this.getUserInfo();
         this.getEventById();
         this.getTicketsByEventId();
+        this.getReviewByUserId();
 
         this.addCommentForm = this.fb.group({
           commentContent: ['', Validators.required],
@@ -425,6 +433,8 @@ export class EventPageComponent implements OnInit {
           this.hasReviewed = false;
         }
 
+        this.getReviewByUserId();
+        this.getEventById();
         Swal.fire('Success!', 'Review Added Successfully!', 'success');
       },
       error: (err) => {
@@ -443,6 +453,43 @@ export class EventPageComponent implements OnInit {
         console.error(err);
       },
     });
+  }
+
+  getReviewByUserId() {
+    this.reviewService.getReviewsByUserId(this.userId).subscribe({
+      next: (data: any) => {
+        this.retrievedReview = data.reviews.filter(
+          (x: ReviewDto) => x.eventId == this.eventId
+        )[0];
+        if (!this.retrievedReview) {
+          this.hasReviewed = false;
+        } else {
+          this.hasReviewed = true;
+        }
+      },
+      error: (err) => {
+        console.error(err);
+      },
+    });
+  }
+
+  deleteReview() {
+    this.reviewService
+      .removeReview(this.retrievedReview.id, this.userId)
+      .subscribe({
+        next: (data: any) => {
+          this.hasReviewed = false;
+          this.getReviewByUserId();
+          this.getEventById();
+          Swal.fire('Success', data.message, 'success');
+        },
+        error: (err) => {
+          console.error(err);
+          if (err.error.Message) {
+            Swal.fire('Oops!', err.error.Message, 'error');
+          }
+        },
+      });
   }
 
   deleteTicket(ticketId: number) {

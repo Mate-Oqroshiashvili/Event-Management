@@ -20,7 +20,6 @@ import { CanComponentDeactivate } from '../../services/guards/register.guard';
 })
 export class HomeComponent implements OnInit, CanComponentDeactivate {
   userId: number = 0;
-  published: EventDto[] = [];
   upcoming: EventDto[] = [];
   popular: EventDto[] = [];
   reviewsResult: number = 0;
@@ -62,40 +61,29 @@ export class HomeComponent implements OnInit, CanComponentDeactivate {
   getPublished() {
     this.isLoading = true;
 
-    this.eventService.getPublishedEvents().subscribe({
+    this.eventService.getMostRecentPublishedEvents().subscribe({
       next: (data: any) => {
-        this.published = data.events;
-
-        this.upcoming = this.published
-          .filter((event: EventDto) => event.startDate !== null)
-          .sort(
-            (a: EventDto, b: EventDto) =>
-              new Date(b.startDate!).getTime() -
-              new Date(a.startDate!).getTime()
-          )
-          .slice(0, 3);
-
-        this.popular = this.published
-          .filter((event: EventDto) => event.tickets?.length > 0)
-          .sort(
-            (a: EventDto, b: EventDto) =>
-              b.tickets.reduce(
-                (sum, ticket) => sum + (ticket.purchases?.length || 0),
-                0
-              ) -
-              a.tickets.reduce(
-                (sum, ticket) => sum + (ticket.purchases?.length || 0),
-                0
-              )
-          )
-          .slice(0, 3);
+        this.upcoming = data.events;
       },
       error: (err) => {
         console.error(err);
       },
       complete: () => {
         this.isLoading = false;
-        console.log('Events fetched successfully!');
+        console.log('Most recent events fetched successfully!');
+      },
+    });
+
+    this.eventService.getMostPopularPublishedEvents().subscribe({
+      next: (data: any) => {
+        this.popular = data.events;
+      },
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => {
+        this.isLoading = false;
+        console.log('Most popular events fetched successfully!');
       },
     });
   }

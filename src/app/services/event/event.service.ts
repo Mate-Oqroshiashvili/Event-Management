@@ -113,6 +113,18 @@ export class EventService {
 
   constructor(private http: HttpClient) {}
 
+  getMostPopularPublishedEvents(): Observable<EventDto[]> {
+    return this.http.get<EventDto[]>(
+      `${this.apiUrl}Event/get-most-popular-published-events`
+    );
+  }
+
+  getMostRecentPublishedEvents(): Observable<EventDto[]> {
+    return this.http.get<EventDto[]>(
+      `${this.apiUrl}Event/get-most-recent-published-events`
+    );
+  }
+
   getPublishedEvents(): Observable<EventDto[]> {
     return this.http.get<EventDto[]>(
       `${this.apiUrl}Event/get-published-events`

@@ -133,11 +133,33 @@
           </p>
           }
 
-          <p class="card-text">
-            <i style="color: gold" class="me-1 bi bi-star-fill"></i>
+          <p style="display: grid; grid-template-columns: auto auto 1fr" class="card-text">
+            <i style="color: gold" class="me-2 bi bi-star-fill"></i>
             Rating: {{ reviewsResult | number : "1.1-1" }} ({{
               event.reviews.length
             }})
+            @if (hasReviewed) {
+              <div class="ms-4 dropdown">
+                <button
+                  class="btn btn-warning"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="bi bi-three-dots-vertical"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <button
+                      class="dropdown-item"
+                      (click)="deleteReview()"
+                    >
+                      Delete
+                    </button>
+                  </li>
+                </ul>
+              </div>
+              }
           </p>
         </div>
       </div>
@@ -182,7 +204,7 @@
                 Ticket Type: {{ getTicketStatus(item.type).toLowerCase() }}
               </h3>
               <div class="update-group">
-                <p style="margin: 0px">Price: {{ item.price }}</p>
+                <p style="margin: 0px">Price: ${{ item.price }}</p>
                 @if (event.organizer?.user?.id == userId) {
                 <a
                   [routerLink]="['update-ticket', item.id]"
@@ -309,7 +331,7 @@
             </div>
             <div class="bottom">
               <h5>
-                <p class="card-text mb-3">
+                <p class="card-text mb-3 email">
                   <i class="bi bi-envelope-fill"></i> Email:
                   {{ item.email }}
                 </p>

@@ -30,9 +30,7 @@ export class LoginComponent {
   loginUser() {
     this.serverErrors = {};
     this.userService.loginUser(this.loginForm.value).subscribe({
-      next: (data: any) => {
-        Swal.fire('Success!', 'Logged in successfully!', 'success');
-      },
+      next: (data: any) => {},
       error: (err) => {
         console.error(err);
         if (err.status === 400 && err.error && err.error.errors) {

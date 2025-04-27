@@ -4,16 +4,19 @@
   <div class="row g-4">
     @for (item of reviews; track $index) {
     <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-      <div class="card h-100 shadow-sm border-0">
+      <a
+        [routerLink]="['/events/event', item.eventId]"
+        class="card h-100 shadow-sm border-0"
+      >
         <div class="card-body">
           <h5 class="card-title fw-bold text-primary">
-            #{{ item.id }} - {{ item.user.name }}
+            #{{ item.id }} - {{ item.user?.name }}
           </h5>
           <p class="card-text mb-2">
             ⭐ Star Count: <strong>{{ item.starCount }}</strong>
           </p>
         </div>
-      </div>
+      </a>
     </div>
     }
   </div>

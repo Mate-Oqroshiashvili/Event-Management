@@ -3,11 +3,11 @@ import {
   ReviewDto,
   ReviewService,
 } from '../../../services/review/review.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-reviews-user-added',
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './reviews-user-added.component.html',
   styleUrl: './reviews-user-added.component.css',
 })

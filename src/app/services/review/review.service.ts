@@ -18,7 +18,7 @@ export interface ReviewDto {
   id: number;
   starCount: number;
   userId: number;
-  user: UserDto;
+  user: UserDto | undefined;
   eventId: number;
 }
 
