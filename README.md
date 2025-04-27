@@ -34,7 +34,7 @@ Make sure you have the following installed:
 
 ```bash
 git clone https://github.com/Mate-Oqroshiashvili/Event-Management.git
-cd Event-Managememt
+cd Event-Management
 ```
 
 2. **Restore NuGet packages**
@@ -45,19 +45,19 @@ dotnet restore
 
 3. **Set up `appsettings.json`**
 
-- simply remove `.example` extention and use it as `appsetting.json` file.
+- simply remove `Example` extention and use it as `appsetting.json` file.
   
 Or
 
 - Copy `appsettings.example.json` to `appsettings.json`:
 
 ```bash
-cp appsettings.example.json appsettings.json
+cp appsettingsExample.json appsettings.json
 ```
 
 - Fill in the required fields in your new `appsettings.json`:
   - SQL Server Connection String
-  - Redis configuration (e.g., `localhost:6379`)
+  - Redis configuration (e.g., `localhost:5002`)
   - JWT Key, Issuer, and Audience
   - Twilio API credentials
   - SMTP (Gmail) credentials
@@ -84,6 +84,7 @@ Pull and start a Redis container:
 ```bash
 docker pull redis
 docker run --name CONTAINER_NAME -p 5002:6379 -d redis
+docker start CONTAINER_NAME
 docker exec -it CONTAINER_NAME redis-cli
 ```
 
