@@ -23,7 +23,7 @@ This project is the front-end client for the Event Management system, built with
 Make sure you have the following installed:
 
 - [Node.js](https://nodejs.org/) (v18+ recommended)
-- [Angular CLI](https://angular.io/cli) (v19.2.5)
+- [Angular CLI](https://angular.dev/tools/cli/setup-local) (v19.2.5)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop) (for Redis setup)
 - Backend API running locally or remotely (see backend setup)
 
@@ -35,6 +35,7 @@ Clone the repository:
 
 ```bash
 git clone https://github.com/Mate-Oqroshiashvili/Event-Management.git
+git checkout frontend
 cd Event-Management
 ```
 
