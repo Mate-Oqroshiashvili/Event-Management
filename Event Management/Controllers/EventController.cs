@@ -171,24 +171,6 @@ namespace Event_Management.Controllers
             }
         }
 
-        [HttpPost("get-analytics")]
-        public async Task<ActionResult<EventAnalyticsDto>> GetEventAnalytics([FromBody] EventAnalyticsRequestDto request)
-        {
-            try
-            {
-                var analytics = await _eventRepository.GetEventAnalyticsAsync(request.OrganizerId, request.EventId);
-
-                if (analytics == null)
-                    return NotFound(new { message = "Event not found or does not belong to the organizer." });
-
-                return Ok(analytics);
-            }
-            catch (Exception ex) 
-            {
-                throw new BadRequestException(ex.Message, ex.InnerException);
-            }
-        }
-
         [Authorize(Roles = "ORGANIZER")]
         [HttpPost("add-event")]
         public async Task<ActionResult<EventDto>> AddEvent([FromForm] EventCreateDto eventCreateDto)

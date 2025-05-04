@@ -25,37 +25,6 @@ namespace Event_Management.Controllers
             _codeRepository = codeRepository;
         }
 
-        [HttpGet("get-user-analytics/{userId}")]
-        public async Task<ActionResult<UserAnalyticsDto>> GetAnalytics(int userId)
-        {
-            try
-            {
-                var analytics = await _userRepository.GetUserAnalyticsAsync(userId);
-                if (analytics == null)
-                    return NotFound("User not found");
-
-                return Ok(analytics);
-            }
-            catch (Exception ex)
-            {
-                throw new BadRequestException(ex.Message, ex.InnerException);
-            }
-        }
-
-        [HttpGet("get-admin-analytics")]
-        public async Task<ActionResult<AdminAnalyticsDto>> GetAdminAnalytics()
-        {
-            try
-            {
-                var analytics = await _userRepository.GetAdminAnalyticsAsync();
-                return Ok(analytics);
-            }
-            catch (Exception ex)
-            {
-                throw new BadRequestException(ex.Message, ex.InnerException);
-            }
-        }
-
         [Authorize(Roles = "ADMINISTRATOR")]
         [HttpGet("get-all-users")]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers()
