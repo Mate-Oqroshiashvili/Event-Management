@@ -173,15 +173,6 @@ export class EventService {
     );
   }
 
-  getAnalytics(
-    reqeust: EventAnalyticsRequestDto
-  ): Observable<EventAnalyticsDto> {
-    return this.http.post<EventAnalyticsDto>(
-      `${this.apiUrl}Event/get-analytics`,
-      reqeust
-    );
-  }
-
   addEvent(eventData: EventCreateDto): Observable<EventDto> {
     const formData = new FormData();
 

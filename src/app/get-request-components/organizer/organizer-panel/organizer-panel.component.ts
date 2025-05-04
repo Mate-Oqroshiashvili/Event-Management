@@ -27,6 +27,7 @@ import {
   PromoCodeService,
 } from '../../../services/promo-code/promo-code.service';
 import { TicketService } from '../../../services/ticket/ticket.service';
+import { AnalyticsService } from '../../../services/analytics/analytics.service';
 
 @Component({
   selector: 'app-organizer-panel',
@@ -73,6 +74,7 @@ export class OrganizerPanelComponent implements OnInit {
     private eventService: EventService,
     private promoCodeService: PromoCodeService,
     private ticketService: TicketService,
+    private analyticsService: AnalyticsService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -314,7 +316,7 @@ export class OrganizerPanelComponent implements OnInit {
             OrganizerId: this.organizerId,
           };
 
-          this.eventService.getAnalytics(req).subscribe({
+          this.analyticsService.getAnalytics(req).subscribe({
             next: (analytics: any) => {
               this.allAnalyticsData.push(analytics);
             },

@@ -6,6 +6,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { UserSocketService } from '../../../services/web sockets/user-socket.service';
+import { AnalyticsService } from '../../../services/analytics/analytics.service';
 
 @Component({
   selector: 'app-user-analytics',
@@ -24,7 +25,7 @@ export class UserAnalyticsComponent implements OnInit {
   stats: { label: string; value: string | number }[] = [];
 
   constructor(
-    private analyticsService: UserService,
+    private analyticsService: AnalyticsService,
     private userSocket: UserSocketService,
     private route: ActivatedRoute
   ) {}

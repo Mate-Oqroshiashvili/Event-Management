@@ -17,6 +17,7 @@ import { jwtDecode } from 'jwt-decode';
 import { UserService } from '../../services/user/user.service';
 import { PromoCodeService } from '../../services/promo-code/promo-code.service';
 import Swal from 'sweetalert2';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-ticket-modal',
@@ -117,7 +118,16 @@ export class TicketModalComponent implements OnInit {
       next: (data: any) => {
         message = data.purchaseDto;
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
+        if (err.status === 403) {
+          Swal.fire(
+            'Oops!',
+            'You do not have a permission to make this purchase!',
+            'error'
+          );
+          this.isPurchasing = false;
+        }
+
         if (err.error.Message) {
           message = err.error.Message;
           Swal.fire('Oops!', message, 'error');
@@ -125,7 +135,6 @@ export class TicketModalComponent implements OnInit {
           message = err.error.errors.PromoCodeText[0];
           Swal.fire('Oops!', message, 'error');
         }
-        console.error(err);
       },
       complete: () => {
         this.isPurchasing = false;

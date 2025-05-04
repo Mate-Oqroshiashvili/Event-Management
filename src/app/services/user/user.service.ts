@@ -129,18 +129,6 @@ export class UserService {
     }
   }
 
-  getAdminAnalytics(): Observable<AdminAnalyticsDto> {
-    return this.http.get<AdminAnalyticsDto>(
-      `${this.apiUrl}User/get-admin-analytics`
-    );
-  }
-
-  getUserAnalytics(userId: number): Observable<UserAnalyticsDto> {
-    return this.http.get<UserAnalyticsDto>(
-      `${this.apiUrl}User/get-user-analytics/${userId}`
-    );
-  }
-
   getAllUsers(): Observable<UserDto[]> {
     return this.http.get<UserDto[]>(`${this.apiUrl}User/get-all-users`);
   }

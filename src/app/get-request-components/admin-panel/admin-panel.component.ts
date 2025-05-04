@@ -1,10 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import {
-  AdminAnalyticsDto,
-  UserService,
-} from '../../services/user/user.service';
+import { AdminAnalyticsDto } from '../../services/user/user.service';
 import { Router } from '@angular/router';
+import { AnalyticsService } from '../../services/analytics/analytics.service';
 
 @Component({
   selector: 'app-admin-panel',
@@ -18,7 +16,10 @@ export class AdminPanelComponent implements OnInit {
   userRoleGradient = '';
   eventStatusGradient = '';
 
-  constructor(private analyticsService: UserService, private router: Router) {}
+  constructor(
+    private analyticsService: AnalyticsService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.analyticsService.getAdminAnalytics().subscribe((data) => {
